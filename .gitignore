@@ -30,3 +30,17 @@
 *.exe
 *.out
 *.app
+
+.cxx/
+.project
+
+Dependencies/Build
+Dependencies/Include
+Dependencies/Lib
+Bin/Assets/Plugins
+Bin/Log
+Bin/Android
+Plugins
+LostPeterPlugin/Build
+LostPeterOpenGLES/Build
+Sample/Build
