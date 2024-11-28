@@ -7,7 +7,7 @@
 # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 #****************************************************************************/
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 
 SET(PLATFORM_MODE_DX12 "dx12")
 SET(PLATFORM_MODE_GL3 "gl3")
@@ -186,7 +186,7 @@ elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_ANDROID})
     #LIB_XXX
 
     #Build
-
+    ADD_LIBRARY(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C})
 
 elseif (${PLATFORM_MODE} STREQUAL ${PLATFORM_MODE_GLES3_IOS}) 
     #HEADER_FILES
