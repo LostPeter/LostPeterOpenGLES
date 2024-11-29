@@ -47,58 +47,80 @@ set name=%name_base%-1.85
 
 if "%debug%" == "debug" (
     set name_project=%name%"_"%mode%"_d"
-    set name_lib=%name%"_"%mode%"_d.lib"
-    set name_dll=%name%"_"%mode%"_d.dll"
+    set name_lib="lib"%name%"_"%mode%"_d.a"
+    set build_type="Debug"
 ) else (
     set name_project=%name%"_"%mode%
-    set name_lib=%name%"_"%mode%".lib"
-    set name_dll=%name%"_"%mode%".dll"
+    set name_lib="lib"%name%"_"%mode%".a"
+    set build_type="Release"
 )
 
-@rem build folder
-set build_folder="..\Build\Windows\"%name_project%
-if exist %build_folder% (
-    if "%rebuild%" == "rebuild" (
-        rmdir /S/Q %build_folder%
-    )
-)
-mkdir %build_folder%
 
-
-@rem Lib folder/file
-set lib_folder="..\Lib\Windows"
+@rem Plugins folder/file
+set lib_folder="..\Lib\Android"
 if not exist %lib_folder% (
     mkdir %lib_folder%
 )
-set lib_libfile=%lib_folder%"\"%name_lib%
-if exist %lib_libfile% (
-    del /S/Q %lib_libfile%
+
+
+@REM ################################ Compile armv7a ################################
+
+
+
+
+@REM ################################ Compile armv8a ################################
+set name_armv8a="arm64-v8a"
+
+@REM Build
+set build_folder_armv8a="..\Build\Android\"%name_armv8a%"\"%name_project%
+if exist %build_folder_armv8a% (
+    if "%rebuild%" == "rebuild" (
+        rmdir /S/Q %build_folder_armv8a%
+    )
 )
+mkdir %build_folder_armv8a%
+
+@REM Lib
+set plugins_folder_armv8a=%plugins_folder%"\"%name_armv8a%
+if not exist %plugins_folder_armv8a% (
+    mkdir %plugins_folder_armv8a%
+)
+set plugins_libfile_armv8a=%plugins_folder_armv8a%"\"%name_lib%
+if exist %plugins_libfile_armv8a% (
+    del /S/Q %plugins_libfile_armv8a%
+)
+
+@REM NDK
+set NDKABI_armv8a=21
+set NDKPATH=%ANDROID_NDK%
+echo ndk path: %NDKPATH%
 
 cd ..
 cd Build
-cd Windows
+cd Android
+cd %name_armv8a%
 cd %name_project%
 
+
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 -DPLATFORM_MODE=%mode% ../../../Sources/%name%/
-    msbuild "%name_project%".sln /p:configuration=debug
-    copy /Y ".\Debug\"%name_lib% "..\..\..\Lib\Windows\"%name_lib%
-    copy /Y ".\Debug\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
+    cmake -DDEBUG=1 -DPLATFORM_MODE=%mode% ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    msbuild "%name_project%".sln /p:configuration=debug /p:platform=ARM64
+    copy /Y ".\Debug\"%name_lib% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
-    cmake -DPLATFORM_MODE=%mode% ../../../Sources/%name%/
-    msbuild "%name_project%".sln /p:configuration=release
-    copy /Y ".\Release\"%name_lib% "..\..\..\Lib\Windows\"%name_lib%
-    copy /Y ".\Release\"%name_dll% "..\..\..\..\Bin\Windows\"%name_dll%
+    cmake -DPLATFORM_MODE=%mode% ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    msbuild "%name_project%".sln /p:configuration=release /p:platform=ARM64
+    copy /Y ".\Release\"%name_lib% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 )
 
 
+cd ..
 cd ..
 cd ..
 cd ..
 cd Compile
 
-set build_folder="..\Include\Windows\"%name%"_"%mode%
+
+set build_folder="..\Include\Android\"%name%"_"%mode%
 if exist %build_folder% (
     rmdir /S/Q %build_folder%
 )

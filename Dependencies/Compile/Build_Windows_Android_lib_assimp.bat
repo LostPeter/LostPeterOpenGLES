@@ -11,18 +11,21 @@
 
 @echo off
 set debug=%1
+set rebuild=%2
 
-set name=assimp-5.2.4
-set name_lib_base=%name%".lib"
+echo %debug%
+echo %rebuild%
 
+set name="assimp-5.2.4"
 if "%debug%" == "debug" (
     set name_project=%name%"_d"
-    set name_lib="lib"%name%"_d.a"
+    set name_lib=%name%"_d.a"
+    set build_type="Debug"
 ) else (
     set name_project=%name%
-    set name_lib="lib"%name%".a"
+    set name_lib=%name%".a"
+    set build_type="Release"
 )
-
 
 @rem Plugins folder/file
 set plugins_folder="..\Lib\Android"
@@ -35,13 +38,16 @@ if not exist %plugins_folder% (
 
 
 
+
 @REM ################################ Compile armv8a ################################
 set name_armv8a="arm64-v8a"
 
 @REM Build
 set build_folder_armv8a="..\Build\Android\"%name_armv8a%"\"%name_project%
 if exist %build_folder_armv8a% (
-    rmdir /S/Q %build_folder_armv8a%
+    if "%rebuild%" == "rebuild" (
+        rmdir /S/Q %build_folder_armv8a%
+    )
 )
 mkdir %build_folder_armv8a%
 
@@ -57,7 +63,7 @@ if exist %plugins_libfile_armv8a% (
 
 @REM NDK
 set NDKABI_armv8a=21
-set NDKPATH=%ANDROID_NDK%
+set NDKPATH=%NDK_ROOT%
 echo ndk path: %NDKPATH%
 
 cd ..
@@ -65,15 +71,18 @@ cd Build
 cd Android
 cd %name_armv8a%
 cd %name_project%
+Version:0.9 StartHTML:0000000105 EndHTML:0000000477 StartFragment:0000000141 EndFragment:0000000441
+-DANDROID_CPP_FEATURES="exceptions"
+
 
 if "%debug%" == "debug" (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DDEBUG=1 -DBUILD_SHARED_LIBS=0 -DANDROID=1 -DANDROID_NDK=%NDKPATH% -DANDROID_ARMV8A=1 -DPLATFORM_MODE=%mode% 
-    msbuild Assimp.sln /p:configuration=debug
-    copy /Y ".\Debug\"%name_lib_base% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    msbuild ./Assimp.sln /p:configuration=debug /p:platform=ARM64
+    @REM copy /Y ".\libcpuid\Debug\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DBUILD_SHARED_LIBS=0 -DANDROID=1 -DANDROID_NDK=%NDKPATH% -DANDROID_ARMV8A=1 -DPLATFORM_MODE=%mode% 
-    msbuild Assimp.sln /p:configuration=release
-    copy /Y ".\Release\"%name_lib_base% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    msbuild ./Assimp.sln /p:configuration=release /p:platform=ARM64
+    @REM copy /Y ".\libcpuid\Release\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 )
 
 
@@ -84,12 +93,11 @@ cd ..
 cd Compile
 
 
-@REM set include_folder="..\Include\Android\"%name%"\zthread"
-@REM if exist %include_folder% (
-@REM     rmdir /S/Q %include_folder%
-@REM )
-@REM mkdir %include_folder%
+set include_folder="..\Include\Android\"%name%
+if exist %include_folder% (
+    rmdir /S/Q %include_folder%
+)
+mkdir %include_folder%
 
-@REM xcopy /S /E /Y /F "..\Sources\%name%\include\zthread" %include_folder%"\"
-
-@echo over
+xcopy /S /E /Y /F "..\Sources\%name%\include\assimp\" %include_folder%"\assimp\"
+xcopy /S /E /Y /F "..\Build\Android\%name_armv8a%\%name_project%\include\assimp\config.h" %include_folder%"\assimp\"

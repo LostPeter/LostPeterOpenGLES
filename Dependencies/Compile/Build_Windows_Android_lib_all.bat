@@ -21,3 +21,6 @@ call ./Build_Windows_Android_lib_libcpuid.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_libnoise.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_libsquish.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_tinyxml.bat %debug% %rebuild%
+call ./Build_Windows_Android_lib_zlib.bat %debug% %rebuild%
+call ./Build_Windows_Android_lib_zziplib.bat %debug% %rebuild%
+call ./Build_Windows_Android_lib_imgui.bat %debug% %rebuild%

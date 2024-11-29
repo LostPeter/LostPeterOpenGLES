@@ -19,12 +19,14 @@ echo %rebuild%
 set name="libnoise-1.0.0"
 if "%debug%" == "debug" (
     set name_project=%name%"_d"
-    set name_lib=%name%"_d.lib"
-    set nameutil_lib="libnoiseutils-1.0.0_d.lib"
+    set name_lib=%name%"_d.a"
+    set nameutil_lib="libnoiseutils-1.0.0_d.a"
+    set build_type="Debug"
 ) else (
     set name_project=%name%
-    set name_lib=%name%".lib"
-    set nameutil_lib="libnoiseutils-1.0.0.lib"
+    set name_lib=%name%".a"
+    set nameutil_lib="libnoiseutils-1.0.0.a"
+    set build_type="Release"
 )
 
 @rem Plugins folder/file
@@ -63,7 +65,7 @@ if exist %plugins_libfile_armv8a% (
 
 @REM NDK
 set NDKABI_armv8a=21
-set NDKPATH=%ANDROID_NDK%
+set NDKPATH=%NDK_ROOT%
 echo ndk path: %NDKPATH%
 
 cd ..
@@ -73,13 +75,15 @@ cd %name_armv8a%
 cd %name_project%
 
 if "%debug%" == "debug" (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DDEBUG=1 -DBUILD_SHARED_LIBS=0 -DANDROID=1 -DANDROID_NDK=%NDKPATH% -DANDROID_ARMV8A=1 -DPLATFORM_MODE=%mode% 
-    msbuild "%name_project%".sln /p:configuration=debug
-    copy /Y ".\Debug\"%name_lib_base% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_CPP_FEATURES="exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    msbuild ./Project.sln /p:configuration=debug /p:platform=ARM64
+    copy /Y ".\src\Debug\libnoise.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    copy /Y ".\noiseutils\Debug\libnoiseutils-static.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%nameutil_lib%
 ) else (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DBUILD_SHARED_LIBS=0 -DANDROID=1 -DANDROID_NDK=%NDKPATH% -DANDROID_ARMV8A=1 -DPLATFORM_MODE=%mode% 
-    msbuild "%name_project%".sln /p:configuration=release
-    copy /Y ".\Release\"%name_lib_base% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_CPP_FEATURES="exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    msbuild ./Project.sln /p:configuration=release /p:platform=ARM64
+    copy /Y ".\src\Release\libnoise.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    copy /Y ".\noiseutils\Release\libnoiseutils-static.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%nameutil_lib%
 )
 
 
