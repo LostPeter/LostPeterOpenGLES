@@ -35,8 +35,10 @@ set(ZZIP_VERSION "${PROJECT_VERSION}")
 set(ZZIP_PACKAGE_NAME "${PROJECT_NAME}lib")
 set(ZZIP_PACKAGE_VERSION "${PROJECT_VERSION}")
 
-if(ZZIP_COMPAT OR ZZIP_PKGCONFIG)
-# find_package ( UnixCommands REQUIRED ) # bash cp mv rm gzip tar
+if(UNIX)
+  if(ZZIP_COMPAT OR ZZIP_PKGCONFIG)
+    find_package ( UnixCommands REQUIRED ) # bash cp mv rm gzip tar
+  endif()
 endif()
 
 check_include_files ( byteswap.h ZZIP_HAVE_BYTESWAP_H )

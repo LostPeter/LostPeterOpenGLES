@@ -42,10 +42,12 @@ if [ "$debug" == "debug" ]; then
     name_project=$name"_"$mode"_d"
     name_lib="lib"$name"_"$mode"_d.a"
     build_type="Debug"
+    isDebug=1
 else
     name_project=$name"_"$mode
     name_lib="lib"$name"_"$mode".a"
     build_type="Release"
+    isDebug=0
 fi
 
 ################################ Compile armv7a ################################
@@ -74,7 +76,7 @@ cd Android
 cd $name_armv8a
 cd $name_project
 
-cmake ../../../../Sources/$name/ \
+cmake -DDEBUG=$isDebug ../../../../Sources/$name/ \
     -DPLATFORM_MODE=$mode \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
     -DCMAKE_BUILD_TYPE=$build_type \

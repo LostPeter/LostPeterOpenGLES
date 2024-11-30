@@ -18,11 +18,13 @@ if [ "$debug" == "debug" ]; then
     name_lib=$name"_d.a"
     nameutil_lib="libnoiseutils-1.0.0_d.a"
     build_type="Debug"
+    isDebug=1
 else
     name_project=$name
     name_lib=$name".a"
     nameutil_lib="libnoiseutils-1.0.0.a"
     build_type="Release"
+    isDebug=0
 fi
 
 
@@ -52,7 +54,7 @@ cd Android
 cd $name_armv8a
 cd $name_project
 
-cmake ../../../../Sources/$name/ \
+cmake -DDEBUG=$isDebug ../../../../Sources/$name/ \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
     -DCMAKE_BUILD_TYPE=$build_type \
     -DANDROID=1 \

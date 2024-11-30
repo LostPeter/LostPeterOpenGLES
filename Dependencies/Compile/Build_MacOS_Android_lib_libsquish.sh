@@ -18,11 +18,13 @@ if [ "$debug" == "debug" ]; then
     name_lib=$name"_d.a"
     build_type="Debug"
     name_lib_base=libsquishd.a
+    isDebug=1
 else
     name_project=$name
     name_lib=$name".a"
     build_type="Release"
-    name_lib_base=libcpuid.a
+    name_lib_base=libsquish.a
+    isDebug=0
 fi
 
 
@@ -52,7 +54,7 @@ cd Android
 cd $name_armv8a
 cd $name_project
 
-cmake ../../../../Sources/$name/ \
+cmake -DDEBUG=$isDebug ../../../../Sources/$name/ \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
     -DCMAKE_BUILD_TYPE=$build_type \
     -DANDROID=1 \

@@ -67,7 +67,7 @@ cd %name_armv8a%
 cd %name_project%
 
 if "%debug%" == "debug" (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DDEBUG=1 -DBUILD_SHARED_LIBS=0 -DANDROID=1 -DANDROID_NDK=%NDKPATH% -DANDROID_ARMV8A=1 -DPLATFORM_MODE=%mode% 
+    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DDEBUG=1 -DBUILD_SHARED_LIBS=0 -DANDROID=1 -DANDROID_NDK=%NDKPATH% -DANDROID_ARMV8A=1 -DPLATFORM_MODE=%mode% 
     msbuild "%name_project%".sln /p:configuration=debug
     copy /Y ".\Debug\"%name_lib_base% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
