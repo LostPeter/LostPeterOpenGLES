@@ -14,42 +14,68 @@ rebuild=${2}
 
 if [ "$debug" == "debug" ]; then
     name_project="LostPeterOpenGLES_d"
-    name_dylib="libLostPeterOpenGL_d.dylib"
+    name_lib="libLostPeterOpenGL_d.so"
+    build_type="Debug"
+    isDebug=1
 else
     name_project="LostPeterOpenGLES"
-    name_dylib="libLostPeterOpenGL.dylib"
+    name_lib="libLostPeterOpenGL.so"
+    build_type="Release"
+    isDebug=0
 fi
 
 
 #1> Build LostPeterFoundation
-sh ./Build_MacOS_LostPeterFoundation.sh $debug $rebuild
+sh ./Build_MacOS_Android_LostPeterFoundation.sh $debug $rebuild
 
 
 #2> Build LostPeterOpenGLES
-if [ "$rebuild" == "rebuild" ]; then
-    rm -rf "../Build/MacOS/"$name_project
-fi
-mkdir -p "../Build/MacOS/"$name_project
+################################ Compile armv7a ################################
 
-rm -rf "../../Plugins/MacOS/"$name_dylib
-mkdir -p "../../Plugins/MacOS"
+
+
+################################ Compile armv8a ################################
+name_armv8a="arm64-v8a"
+# Build
+mkdir -p "../Build/Android/"$name_armv8a 
+if [ "$rebuild" == "rebuild" ]; then
+    rm -rf "../Build/Android/"$name_armv8a"/"$name_project
+fi
+mkdir -p "../Build/Android/"$name_armv8a"/"$name_project
+
+# Lib
+mkdir -p ../../Plugins/Android/$name_armv8a
+rm -rf "../../Plugins/Android/"$name_armv8a"/"$name_lib
+
+# NDK
+NDKABI_armv8a=21
 
 cd ..
 cd Build
-cd MacOS
+cd Android
+cd $name_armv8a
 cd $name_project
 
-#dylib
-if [ "$debug" == "debug" ]; then
-    cmake -DDEBUG=1 -DCMAKE_BUILD_TYPE=Debug ../../../LostPeterOpenGLES/
-else
-    cmake ../../../LostPeterOpenGLES/
-fi
+
+cmake -DDEBUG=$isDebug ../../../../LostPeterOpenGLES/ \
+    -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+    -DCMAKE_BUILD_TYPE=$build_type \
+    -DANDROID=1 \
+    -DANDROID_ABI=arm64-v8a \
+    -DANDROID_NDK=${ANDROID_NDK} \
+    -DANDROID_NATIVE_API_LEVEL=$NDKABI_armv8a \
+    -DANDROID_TOOLCHAIN=clang \
+    -DBUILD_SHARED_LIBS=0 \
+    -DANDROID_ARMV8A=1
 make
 
+
+# Copy
+cp -rf "./"$name_lib "../../../../../Plugins/Android/"$name_armv8a"/"$name_lib
+
+
+cd ..
 cd ..
 cd ..
 cd ..
 cd Compile
-
-cp -rfp "../Build/MacOS/"$name_project/$name_dylib "../../Plugins/MacOS/"$name_dylib

@@ -44,3 +44,6 @@ Plugins
 LostPeterPlugin/Build
 LostPeterOpenGLES/Build
 Sample/Build
+Sample/*/.gradle
+Sample/*/app/.cxx
+Sample/*/app/build

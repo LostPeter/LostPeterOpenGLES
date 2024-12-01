@@ -2,7 +2,7 @@
 # LostPeterOpenGLES - Copyright (C) 2022 by LostPeter
 # 
 # Author:   LostPeter
-# Time:     2022-10-30
+# Time:     2024-11-30
 # Github:   https://github.com/LostPeter/LostPeterOpenGLES
 # Document: https://www.zhihu.com/people/lostpeter/posts
 #
@@ -52,7 +52,19 @@ if (APPLE)
 endif ()
 
 #LIB_INCLUDE
-if (WIN32)
+if (ANDROID) 
+    SET(LIB_INCLUDE ${ANDROID_NDK}/sysroot/usr/include
+                    ${ANDROID_NDK}/sources/android/native_app_glue
+                    ${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/include
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/assimp-5.2.4"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/glm-0.9.9.8"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/imgui-1.85_gles3_android"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/libnoise-1.0.0"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/spdlog-1.10.0"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/stb-0.02"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include")
+
+elseif (WIN32)
     SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glad-4.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glfw-3.3.6"
@@ -62,9 +74,6 @@ if (WIN32)
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../LostPeterFoundation/include")
-
-elseif (ANDROID) 
-
 
 elseif (APPLE)
     SET(LIB_INCLUDE "/System/Library/Frameworks/OpenGL.framework"
@@ -89,12 +98,13 @@ MESSAGE(STATUS "LIB_INCLUDE: ${LIB_INCLUDE}")
 INCLUDE_DIRECTORIES(${LIB_INCLUDE})
 
 #LIB_DEPENDENCIES_DIR, LIB_PLUGINS_DIR
-if (WIN32)
+if (ANDROID)  
+    SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/Android/arm64-v8a") 
+    SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/Android/arm64-v8a")
+
+elseif (WIN32)
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/Windows") 
     SET(LIB_PLUGINS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Plugins/Windows")
-
-elseif (ANDROID)  
-
 
 elseif (APPLE)
     SET(LIB_DEPENDENCIES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Lib/MacOS")
@@ -105,30 +115,56 @@ MESSAGE(STATUS "LIB_DEPENDENCIES_DIR dir: ${LIB_DEPENDENCIES_DIR}")
 MESSAGE(STATUS "LIB_PLUGINS_DIR dir: ${LIB_PLUGINS_DIR}")
 
 
-function(ASSIGN_SOURCE_GROUP)
-    foreach(_source IN ITEMS ${ARGN})
-        if (IS_ABSOLUTE "${_source}")
-            FILE(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
-        else ()
-            SET(_source_rel "${_source}")
-        endif ()
-        GET_FILENAME_COMPONENT(_source_path "${_source_rel}" PATH)
-        STRING(REPLACE "/" "\\" _source_path_msvc "${_source_path}")
-        SOURCE_GROUP("${_source_path_msvc}" FILES "${_source}")
-    endforeach()
-endfunction(ASSIGN_SOURCE_GROUP)
+if (ANDROID)
+    MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Android !")  
 
-function(MY_ADD_LIBRARY)
-    foreach(_source IN ITEMS ${ARGN})
-        ASSIGN_SOURCE_GROUP(${_source})
-    endforeach()
-    ADD_LIBRARY(${ARGV})
-endfunction(MY_ADD_LIBRARY)
+    if (DEBUG)
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_gles3_android_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
+    else ()
+        LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
+                       ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_gles3_android.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
+                       ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
+                       ${LIB_DEPENDENCIES_DIR}/libtinyxml-2.6.2.a
+                       ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
+    endif()
+    ADD_DEFINITIONS("--sysroot=${ANDROID_NDK}/sysroot -Wall")
+    ADD_LIBRARY(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES_CPP} ${SOURCE_FILES_C} ${SOURCE_FILES_MM})
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+                          android
+                          log
+                          GLESv3
+                          EGL
+                          ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.so)
 
-
-if (WIN32)
+elseif (WIN32)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Win32 !")
     
+    function(ASSIGN_SOURCE_GROUP)
+        foreach(_source IN ITEMS ${ARGN})
+            if (IS_ABSOLUTE "${_source}")
+                FILE(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
+            else ()
+                SET(_source_rel "${_source}")
+            endif ()
+            GET_FILENAME_COMPONENT(_source_path "${_source_rel}" PATH)
+            STRING(REPLACE "/" "\\" _source_path_msvc "${_source_path}")
+            SOURCE_GROUP("${_source_path_msvc}" FILES "${_source}")
+        endforeach()
+    endfunction(ASSIGN_SOURCE_GROUP)
+
+    function(MY_ADD_LIBRARY)
+        foreach(_source IN ITEMS ${ARGN})
+            ASSIGN_SOURCE_GROUP(${_source})
+        endforeach()
+        ADD_LIBRARY(${ARGV})
+    endfunction(MY_ADD_LIBRARY)
+
     ADD_DEFINITIONS(-DOPENGL_EXPORTS)
     ADD_DEFINITIONS(-DNOISE_STATIC)
     if(MSVC)
@@ -163,10 +199,6 @@ if (WIN32)
     else ()
         SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/WHOLEARCHIVE:${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_gl3.lib")
     endif ()
-
-elseif (ANDROID)
-    MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom Android !")  
-
 
 elseif (APPLE)
     MESSAGE(STATUS "Build ${PROJECT_NAME} platfrom MacOS !")
