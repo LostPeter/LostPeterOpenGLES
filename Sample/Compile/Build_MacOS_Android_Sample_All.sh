@@ -9,3 +9,7 @@
 # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 #****************************************************************************/
 
+debug=${1}
+rebuild=${2}
+
+./Build_MacOS_Android_Sample.sh opengl_000_window $debug $rebuild
