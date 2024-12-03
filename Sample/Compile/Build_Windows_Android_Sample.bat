@@ -26,25 +26,27 @@ if "%debug%" == "debug" (
 )
 
 @REM Build Sample
-set bin_file="../../Bin/Windows/Android/"%name_apk%
+set bin_file="..\..\Bin\Windows\Android\"%name_apk%
 if exist %bin_file% (
     del /S/Q %bin_file%
 )
-mkdir -p "../../Bin/Windows/Android"
+if not exist "..\..\Bin\Windows\Android" (
+    mkdir "..\..\Bin\Windows\Android"
+)
 
 cd ..
-cd %name_project%
+cd %name_sample%
 
 if "%rebuild%" == "rebuild" (
-    ./gradlew.bat clean
+    call .\gradlew.bat clean
 )
 
 if "%debug%" == "debug" (
-    ./gradlew.bat assembleDebug
-    copy /Y "./app/build/outputs/apk/debug/app-debug.apk" "../../Bin/Windows/Android/"%name_apk%
+    call .\gradlew.bat assembleDebug
+    copy /Y ".\app\build\outputs\apk\debug\app-debug.apk" "..\..\Bin\Windows\Android\"%name_apk%
 ) else (
-    ./gradlew.bat assembleRelease
-    copy /Y "./app/build/outputs/apk/release/app-release-unsigned.apk" "../../Bin/Windows/Android/"%name_apk%
+    call .\gradlew.bat assembleRelease
+    copy /Y ".\app\build\outputs\apk\release\app-release-unsigned.apk" "..\..\Bin\Windows\Android\"%name_apk%
 )
 
 cd ..

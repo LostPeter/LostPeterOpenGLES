@@ -35,7 +35,7 @@ set(ZZIP_VERSION "${PROJECT_VERSION}")
 set(ZZIP_PACKAGE_NAME "${PROJECT_NAME}lib")
 set(ZZIP_PACKAGE_VERSION "${PROJECT_VERSION}")
 
-if(UNIX)
+if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   if(ZZIP_COMPAT OR ZZIP_PKGCONFIG)
     find_package ( UnixCommands REQUIRED ) # bash cp mv rm gzip tar
   endif()

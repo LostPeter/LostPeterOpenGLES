@@ -39,7 +39,8 @@ Dependencies/Include
 Dependencies/Lib
 Bin/Assets/Plugins
 Bin/Log
-Bin/Android
+Bin/MacOS/Android
+Bin/Windows/Android
 Plugins
 LostPeterPlugin/Build
 LostPeterOpenGLES/Build

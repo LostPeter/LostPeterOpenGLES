@@ -15,7 +15,7 @@ set name_sample=%1
 cd ..
 cd %name_sample%
 
-./gradlew.bat clean
+call .\gradlew.bat clean
 
 cd ..
 cd Compile

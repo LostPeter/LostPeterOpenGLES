@@ -116,6 +116,7 @@ if exist %include_folder% (
 )
 mkdir %include_folder%
 xcopy /S /E /Y /F "..\Sources\%name%\zzip\*.h" %include_folder%"\"
+copy /Y "..\Build\Android\%name_armv8a%\%name_project%\zzip\_config.h" %include_folder%"\_config.h"
 
 
 set include_folder_wrap="..\Include\Android\"%name%"\zzipwrap"

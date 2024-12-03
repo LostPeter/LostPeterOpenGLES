@@ -19,11 +19,11 @@ echo %rebuild%
 set name="assimp-5.2.4"
 if "%debug%" == "debug" (
     set name_project=%name%"_d"
-    set name_lib=%name%"_d.a"
+    set name_lib="lib"%name%"_d.a"
     set build_type="Debug"
 ) else (
     set name_project=%name%
-    set name_lib=%name%".a"
+    set name_lib="lib"%name%".a"
     set build_type="Release"
 )
 
@@ -71,18 +71,16 @@ cd Build
 cd Android
 cd %name_armv8a%
 cd %name_project%
-Version:0.9 StartHTML:0000000105 EndHTML:0000000477 StartFragment:0000000141 EndFragment:0000000441
--DANDROID_CPP_FEATURES="exceptions"
 
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_static -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
     msbuild ./Assimp.sln /p:configuration=debug /p:platform=ARM64
-    @REM copy /Y ".\libcpuid\Debug\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    copy /Y ".\lib\Debug\libassimpd.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_static -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
     msbuild ./Assimp.sln /p:configuration=release /p:platform=ARM64
-    @REM copy /Y ".\libcpuid\Release\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    copy /Y ".\lib\Release\libassimp.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 )
 
 

@@ -82,15 +82,15 @@ OPTION( ASSIMP_ANDROID_JNIIOSYSTEM
 )
 OPTION( ASSIMP_NO_EXPORT
   "Disable Assimp's export functionality."
-  OFF
+  ON
 )
 OPTION( ASSIMP_BUILD_ZLIB
   "Build your own zlib"
-  OFF
+  ON
 )
 OPTION( ASSIMP_BUILD_ASSIMP_TOOLS
   "If the supplementary tools for Assimp are built in addition to the library."
-  ON
+  OFF
 )
 OPTION ( ASSIMP_BUILD_SAMPLES
   "If the official samples are built as well (needs Glut)."
@@ -98,7 +98,7 @@ OPTION ( ASSIMP_BUILD_SAMPLES
 )
 OPTION ( ASSIMP_BUILD_TESTS
   "If the test suite for Assimp is built in addition to the library."
-  ON
+  OFF
 )
 OPTION ( ASSIMP_COVERALLS
   "Enable this to measure test coverage."
@@ -130,8 +130,8 @@ OPTION( ASSIMP_INJECT_DEBUG_POSTFIX
 )
 
 OPTION ( ASSIMP_IGNORE_GIT_HASH
-   "Don't call git to get the hash."
-   OFF
+  "Don't call git to get the hash."
+  OFF
 )
 
 IF (WIN32)
@@ -279,7 +279,7 @@ ELSEIF(MSVC)
   ENDIF()
   # disable "elements of array '' will be default initialized" warning on MSVC2013
   IF(MSVC12)
-    ADD_COMPILE_OPTIONS(/wd4351)	
+    ADD_COMPILE_OPTIONS(/wd4351)
   ENDIF()
   ADD_COMPILE_OPTIONS(/wd4244) #supress warning for double to float conversion if Double precission is activated
   SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /D_DEBUG /Zi /Od")
@@ -290,7 +290,12 @@ ELSEIF (CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     SET(CMAKE_CXX_STANDARD 11)
     SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
   ENDIF()
-  SET(CMAKE_CXX_FLAGS "-fvisibility=hidden -fno-strict-aliasing -Wall -Wno-long-long ${CMAKE_CXX_FLAGS}" )
+  IF(MSVC)
+    SET(CMAKE_CXX_FLAGS "-fvisibility=hidden -fno-strict-aliasing -Wall -Wno-long-long -std=c++11 -x c++ ${CMAKE_CXX_FLAGS}" )
+    ADD_COMPILE_OPTIONS(/TP)
+  ELSE()
+    SET(CMAKE_CXX_FLAGS "-fvisibility=hidden -fno-strict-aliasing -Wall -Wno-long-long -std=c++11 ${CMAKE_CXX_FLAGS}" )
+  ENDIF()
   SET(CMAKE_C_FLAGS "-fno-strict-aliasing ${CMAKE_C_FLAGS}")
 ELSEIF( MINGW )
   IF (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)

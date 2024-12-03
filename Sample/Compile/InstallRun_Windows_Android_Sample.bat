@@ -11,13 +11,14 @@
 
 @echo off
 set name_sample=%1
+set debug=%2
 
 if "%debug%" == "debug" (
     set name_apk=%name_sample%"_d.apk"
 ) else (
     set name_apk=%name_sample%".apk"
 )
-set path_apk="../../Bin/Windows/Android/"%name_apk%
+set path_apk=../../Bin/Windows/Android/%name_apk%
 
 @REM install
 adb install %path_apk%
