@@ -23,6 +23,7 @@ call ./Build_Windows_Android_lib_libsquish.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_tinyxml.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_zlib.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_zziplib.bat %debug% %rebuild%
+call ./Build_Windows_Android_lib_glad.bat 3.2 %debug% %rebuild%
 call ./Build_Windows_Android_lib_imgui.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_assimp.bat %debug% %rebuild%
 call ./Build_Windows_Android_lib_zthread.bat %debug% %rebuild%

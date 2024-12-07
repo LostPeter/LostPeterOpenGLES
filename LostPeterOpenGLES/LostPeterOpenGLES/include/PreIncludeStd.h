@@ -15,6 +15,17 @@
 #include "FPreIncludeStd.h"
 #include "PreMacro.h"
 
+#include <jni.h>
+#include <android/log.h>
+#include <android/native_window.h>
+#include <android/native_activity.h>
+#include <android/configuration.h>
+#include <android/asset_manager.h>
+#include <android/sensor.h>
+#include <android/input.h>
+#include <android_native_app_glue.h>
+#include <EGL/egl.h>
+
 namespace LostPeterOpenGLES
 {
 

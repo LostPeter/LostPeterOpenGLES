@@ -90,9 +90,9 @@ namespace LostPeterOpenGLES
 
         Window_Count,
     };
-    openglExport const String& Util_GetWindowTypeName(WindowType type);
-    openglExport const String& Util_GetWindowTypeName(int type);
-    openglExport WindowType Util_ParseWindowType(const String& strName);
+    openglesExport const String& Util_GetWindowTypeName(WindowType type);
+    openglesExport const String& Util_GetWindowTypeName(int type);
+    openglesExport WindowType Util_ParseWindowType(const String& strName);
 
 
     enum SwapStatusType
@@ -104,7 +104,7 @@ namespace LostPeterOpenGLES
     };
 
 
-    struct openglExport PointerBuffer
+    struct openglesExport PointerBuffer
     {
         void* pBase;
         int nPosStart;
@@ -148,7 +148,7 @@ namespace LostPeterOpenGLES
     typedef std::vector<PointerBuffer*> PointerBufferPtrVector;
 
 
-    struct openglExport PixelFormatDes
+    struct openglesExport PixelFormatDes
 	{
 		String name;
 		uint8 nElemBytes;
@@ -202,8 +202,8 @@ namespace LostPeterOpenGLES
 		PixelFormatComponent_Float32,                   //9: Float 32
         PixelFormatComponent_Double,                    //10: Double
 	};
-    openglExport const String& Util_GetPixelFormatComponentTypeName(PixelFormatComponentType type);
-    openglExport const String& Util_GetPixelFormatComponentTypeName(int type);
+    openglesExport const String& Util_GetPixelFormatComponentTypeName(PixelFormatComponentType type);
+    openglesExport const String& Util_GetPixelFormatComponentTypeName(int type);
 
 
     enum LodType
@@ -256,9 +256,9 @@ namespace LostPeterOpenGLES
         ShaderSort_Platform,        //1: Platform
 
     };
-    openglExport const String& Util_GetShaderSortTypeName(ShaderSortType type);
-    openglExport const String& Util_GetShaderSortTypeName(int type);
-    openglExport ShaderSortType Util_ParseShaderSortType(const String& strName);
+    openglesExport const String& Util_GetShaderSortTypeName(ShaderSortType type);
+    openglesExport const String& Util_GetShaderSortTypeName(int type);
+    openglesExport ShaderSortType Util_ParseShaderSortType(const String& strName);
 
 
     enum DescriptorSetType
@@ -306,28 +306,28 @@ namespace LostPeterOpenGLES
 
         DescriptorSet_Count,
     };
-    openglExport const String& Util_GetDescriptorSetTypeName(DescriptorSetType type);
-    openglExport const String& Util_GetDescriptorSetTypeName(int type);
+    openglesExport const String& Util_GetDescriptorSetTypeName(DescriptorSetType type);
+    openglesExport const String& Util_GetDescriptorSetTypeName(int type);
 
 
 
 ////////////////////////////// OpenGL //////////////////////////////
 
-    openglExport void Util_CreateAttributeDescriptions(FMeshVertexType type);
-    openglExport void Util_EnableAttributeDescriptions(FMeshVertexType type, bool enable);
+    openglesExport void Util_CreateAttributeDescriptions(FMeshVertexType type);
+    openglesExport void Util_EnableAttributeDescriptions(FMeshVertexType type, bool enable);
 
-    openglExport GLenum Util_Transform2GLShaderType(FShaderType type);
-    openglExport bool Util_IsSupportExtensionsGL(int type);
+    openglesExport GLenum Util_Transform2GLShaderType(FShaderType type);
+    openglesExport bool Util_IsSupportExtensionsGL(int type);
 
-    openglExport GLenum Util_Transform2GLTextureType(FTextureType type);
-    openglExport GLenum Util_Transform2GLFormat(FTexturePixelFormatType type);
-    openglExport GLenum Util_Transform2GLFilterSize(FTextureFilterSizeType type);
-    openglExport GLenum Util_Transform2GLFilter(FTextureFilterPixelType type);
-    openglExport GLenum Util_Transform2GLSamplerMipmapMode(FTextureFilterPixelType type);
-    openglExport GLenum Util_Transform2GLFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
-    openglExport GLenum Util_Transform2GLSamplerMipmapMode(FTextureFilterType type);
-    openglExport GLenum Util_Transform2GLSamplerAddressMode(FTextureAddressingType type);
-    openglExport int Util_Transform2GLSampleCountFlagBits(FMSAASampleCountType type);
+    openglesExport GLenum Util_Transform2GLTextureType(FTextureType type);
+    openglesExport GLenum Util_Transform2GLFormat(FTexturePixelFormatType type);
+    openglesExport GLenum Util_Transform2GLFilterSize(FTextureFilterSizeType type);
+    openglesExport GLenum Util_Transform2GLFilter(FTextureFilterPixelType type);
+    openglesExport GLenum Util_Transform2GLSamplerMipmapMode(FTextureFilterPixelType type);
+    openglesExport GLenum Util_Transform2GLFilter(FTextureFilterType typeFilter, FTextureFilterSizeType typeFilterSize);
+    openglesExport GLenum Util_Transform2GLSamplerMipmapMode(FTextureFilterType type);
+    openglesExport GLenum Util_Transform2GLSamplerAddressMode(FTextureAddressingType type);
+    openglesExport int Util_Transform2GLSampleCountFlagBits(FMSAASampleCountType type);
 
 ////////////////////////////// Class ///////////////////////////////
     struct LightConstants;
@@ -342,7 +342,7 @@ namespace LostPeterOpenGLES
     struct MaterialConstants;
     struct InstanceConstants;
 
-    struct openglExport MeshInfo
+    struct openglesExport MeshInfo
     {
         MeshInfo();
         MeshInfo(const String& _nameMesh,
@@ -373,7 +373,7 @@ namespace LostPeterOpenGLES
     typedef std::map<String, MeshInfo*> MeshInfoPtrMap;
 
 
-    struct openglExport ShaderModuleInfo
+    struct openglesExport ShaderModuleInfo
     {
         String nameShader;
         String nameShaderType;
@@ -383,7 +383,7 @@ namespace LostPeterOpenGLES
 
 
     typedef std::map<String, uint32> DescriptorSetName2IndexMap;
-    struct openglExport DescriptorSetLayout
+    struct openglesExport DescriptorSetLayout
     {
         String nameDescriptorSetLayout;
         StringVector aLayouts;
@@ -396,57 +396,58 @@ namespace LostPeterOpenGLES
     typedef std::map<String, DescriptorSetLayout*> DescriptorSetLayoutPtrMap;
 
 
+    class AndroidWindow;
     class App;
-    class OpenGLBase;
-    class OpenGLWindow;
+    class OpenGLESBase;
+    class OpenGLESWindow;
 
-    class GLDebug;
-    class GLBuffer;
-    class GLBufferStorage;
-    class GLBufferUniform; 
-    class GLBufferVertex;
-    class GLBufferVertexIndex;
-    class GLFrameBuffer;
-    class GLPipelineGraphicsCopyBlitToFrame;
-    class GLRenderBuffer;
-    class GLRenderPass;
-    class GLShader;
-    class GLShaderInclude;
-    class GLShaderProgram;
-    class GLTexture;
+    class GLESDebug;
+    class GLESBuffer;
+    class GLESBufferStorage;
+    class GLESBufferUniform; 
+    class GLESBufferVertex;
+    class GLESBufferVertexIndex;
+    class GLESFrameBuffer;
+    class GLESPipelineGraphicsCopyBlitToFrame;
+    class GLESRenderBuffer;
+    class GLESRenderPass;
+    class GLESShader;
+    class GLESShaderInclude;
+    class GLESShaderProgram;
+    class GLESTexture;
 
     typedef std::map<uint32, uint32> UintID2UintTypeMap;
     typedef std::map<uint32, uint32> UintType2UintIDMap;
 
-    typedef std::vector<GLBuffer*> GLBufferPtrVector;
-    typedef std::map<String, GLBuffer*> GLBufferPtrMap;
-    typedef std::vector<GLBufferStorage*> GLBufferStoragePtrVector;
-    typedef std::map<String, GLBufferStorage*> GLBufferStoragePtrMap;
-    typedef std::vector<GLBufferUniform*> GLBufferUniformPtrVector;
-    typedef std::map<String, GLBufferUniform*> GLBufferUniformPtrMap;
-    typedef std::vector<GLBufferVertex*> GLBufferVertexPtrVector;
-    typedef std::map<String, GLBufferVertex*> GLBufferVertexPtrMap;
-    typedef std::vector<GLBufferVertexIndex*> GLBufferVertexIndexPtrVector;
-    typedef std::map<String, GLBufferVertexIndex*> GLBufferVertexIndexPtrMap;
+    typedef std::vector<GLESBuffer*> GLESBufferPtrVector;
+    typedef std::map<String, GLESBuffer*> GLESBufferPtrMap;
+    typedef std::vector<GLESBufferStorage*> GLESBufferStoragePtrVector;
+    typedef std::map<String, GLESBufferStorage*> GLESBufferStoragePtrMap;
+    typedef std::vector<GLESBufferUniform*> GLESBufferUniformPtrVector;
+    typedef std::map<String, GLESBufferUniform*> GLESBufferUniformPtrMap;
+    typedef std::vector<GLESBufferVertex*> GLESBufferVertexPtrVector;
+    typedef std::map<String, GLESBufferVertex*> GLESBufferVertexPtrMap;
+    typedef std::vector<GLESBufferVertexIndex*> GLESBufferVertexIndexPtrVector;
+    typedef std::map<String, GLESBufferVertexIndex*> GLESBufferVertexIndexPtrMap;
 
-    typedef std::vector<GLRenderBuffer*> GLRenderBufferPtrVector;
-    typedef std::map<String, GLRenderBuffer*> GLRenderBufferPtrMap;
+    typedef std::vector<GLESRenderBuffer*> GLESRenderBufferPtrVector;
+    typedef std::map<String, GLESRenderBuffer*> GLESRenderBufferPtrMap;
 
-    typedef std::vector<GLFrameBuffer*> GLFrameBufferPtrVector;
-    typedef std::map<String, GLFrameBuffer*> GLFrameBufferPtrMap;
+    typedef std::vector<GLESFrameBuffer*> GLESFrameBufferPtrVector;
+    typedef std::map<String, GLESFrameBuffer*> GLESFrameBufferPtrMap;
 
-    typedef std::vector<GLRenderPass*> GLRenderPassPtrVector;
-    typedef std::map<String, GLRenderPass*> GLRenderPassPtrMap;
+    typedef std::vector<GLESRenderPass*> GLESRenderPassPtrVector;
+    typedef std::map<String, GLESRenderPass*> GLESRenderPassPtrMap;
 
-    typedef std::vector<GLShader*> GLShaderPtrVector;
-    typedef std::map<String, GLShader*> GLShaderPtrMap;
-    typedef std::map<int32, GLShader*> GLShaderPtrIDMap;
-    typedef std::vector<GLShaderProgram*> GLShaderProgramPtrVector;
-    typedef std::map<String, GLShaderProgram*> GLShaderProgramPtrMap;
-    typedef std::map<int32, GLShaderProgram*> GLShaderProgramPtrIDMap;
+    typedef std::vector<GLESShader*> GLESShaderPtrVector;
+    typedef std::map<String, GLESShader*> GLESShaderPtrMap;
+    typedef std::map<int32, GLESShader*> GLESShaderPtrIDMap;
+    typedef std::vector<GLESShaderProgram*> GLESShaderProgramPtrVector;
+    typedef std::map<String, GLESShaderProgram*> GLESShaderProgramPtrMap;
+    typedef std::map<int32, GLESShaderProgram*> GLESShaderProgramPtrIDMap;
 
-    typedef std::vector<GLTexture*> GLTexturePtrVector;
-    typedef std::map<String, GLTexture*> GLTexturePtrMap;
+    typedef std::vector<GLESTexture*> GLESTexturePtrVector;
+    typedef std::map<String, GLESTexture*> GLESTexturePtrMap;
 
 
     class Base;

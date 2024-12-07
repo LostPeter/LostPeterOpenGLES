@@ -10,11 +10,11 @@
 ****************************************************************************/
 
 #include "../include/Base.h"
-#include "../include/OpenGLWindow.h"
+#include "../include/OpenGLESWindow.h"
 
 namespace LostPeterOpenGLES
 {
-    OpenGLWindow* Base::ms_pWindow = nullptr;
+    OpenGLESWindow* Base::ms_pWindow = nullptr;
     Base::Base(const String& _name)
         : group(0)
         , name(_name)

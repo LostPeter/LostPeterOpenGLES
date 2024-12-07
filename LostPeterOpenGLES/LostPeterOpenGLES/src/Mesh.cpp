@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/Mesh.h"
-#include "../include/OpenGLWindow.h"
+#include "../include/OpenGLESWindow.h"
 #include "../include/MeshSub.h"
 
 #include <assimp/Importer.hpp>

@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport EditorCoordinateAxis : public EditorBase
+    class openglesExport EditorCoordinateAxis : public EditorBase
     {
     public:
         EditorCoordinateAxis();

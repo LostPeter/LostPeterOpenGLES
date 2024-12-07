@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport EditorLineFlat2DCollector : public EditorBase
+    class openglesExport EditorLineFlat2DCollector : public EditorBase
     {
     public:
         EditorLineFlat2DCollector();

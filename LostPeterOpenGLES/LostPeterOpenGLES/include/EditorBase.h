@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport EditorBase : public Base
+    class openglesExport EditorBase : public Base
     {
     public:
         EditorBase(const String& nameEditor);

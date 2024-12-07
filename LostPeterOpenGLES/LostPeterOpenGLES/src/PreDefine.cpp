@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/PreDefine.h"
-#include "../include/OpenGLDefine.h"
+#include "../include/OpenGLESDefine.h"
 
 namespace LostPeterOpenGLES
 {   
@@ -313,7 +313,7 @@ namespace LostPeterOpenGLES
     {
         switch ((int)type)
         {
-        case F_Texture_1D:          return GL_TEXTURE_1D;
+        case F_Texture_1D:          return GL_TEXTURE_2D; //GL_TEXTURE_1D;
         case F_Texture_2D:          return GL_TEXTURE_2D;
         case F_Texture_2DArray:     return GL_TEXTURE_2D_ARRAY;
         case F_Texture_3D:          return GL_TEXTURE_3D;
@@ -327,7 +327,7 @@ namespace LostPeterOpenGLES
         switch ((int32)type)
         {
             case F_TexturePixelFormat_R8_UNORM:          return GL_R8;
-            case F_TexturePixelFormat_R16_UNORM:         return GL_R16;
+            case F_TexturePixelFormat_R16_UNORM:         return GL_R8; //GL_R16;
             case F_TexturePixelFormat_R8G8B8A8_SRGB:     return GL_RGBA;
             case F_TexturePixelFormat_R8G8B8A8_UNORM:    return GL_RGBA;
         }

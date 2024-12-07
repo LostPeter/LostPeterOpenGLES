@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport EditorGrid : public EditorBase
+    class openglesExport EditorGrid : public EditorBase
     {
     public:
         EditorGrid();

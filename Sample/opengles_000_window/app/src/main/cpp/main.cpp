@@ -13,8 +13,8 @@
 #include "opengles_000_window.h"
 
 
-int main()
+void android_main(struct android_app* app)
 {
     OpenGL_000_Window sample(1280, 720, "LostPeter - OpenGLES_000_Window");
-    return App::Run(&sample);
+    return App::Run(app, &sample);
 }

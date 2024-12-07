@@ -58,6 +58,7 @@ if (ANDROID)
                     ${ANDROID_NDK}/sources/cxx-stl/llvm-libc++/include
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/assimp-5.2.4"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/glm-0.9.9.8"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/glad-3.2"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/imgui-1.85_gles3_android"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/spdlog-1.10.0"
@@ -66,10 +67,9 @@ if (ANDROID)
 
 elseif (WIN32)
     SET(LIB_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/assimp-5.2.4"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glad-4.6"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/glm-0.9.9.8"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/imgui-1.85_glfw_gl3"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Android/glad-3.2"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/imgui-1.85_gles3_android"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/Windows/stb-0.02"
@@ -78,10 +78,8 @@ elseif (WIN32)
 elseif (APPLE)
     SET(LIB_INCLUDE "/System/Library/Frameworks/OpenGL.framework"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/assimp-5.2.4"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glad-4.1"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glfw-3.3.6"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/glm-0.9.9.8"
-                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/imgui-1.85_glfw_gl3"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/imgui-1.85_gles3_android"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/libnoise-1.0.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/spdlog-1.10.0"
                     "${CMAKE_CURRENT_SOURCE_DIR}/../../Dependencies/Include/MacOS/stb-0.02"
@@ -120,6 +118,7 @@ if (ANDROID)
 
     if (DEBUG)
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4_d.a
+                       ${LIB_DEPENDENCIES_DIR}/libglad-3.2_d.a
                        ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_gles3_android_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.a
@@ -127,6 +126,7 @@ if (ANDROID)
                        ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11_d.a)
     else ()
         LINK_LIBRARIES(${LIB_DEPENDENCIES_DIR}/libassimp-5.2.4.a
+                       ${LIB_DEPENDENCIES_DIR}/libglad-3.2.a
                        ${LIB_DEPENDENCIES_DIR}/libimgui-1.85_gles3_android.a
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.a
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.a
@@ -165,7 +165,7 @@ elseif (WIN32)
         ADD_LIBRARY(${ARGV})
     endfunction(MY_ADD_LIBRARY)
 
-    ADD_DEFINITIONS(-DOPENGL_EXPORTS)
+    ADD_DEFINITIONS(-DOPENGLES_EXPORTS)
     ADD_DEFINITIONS(-DNOISE_STATIC)
     if(MSVC)
         ADD_DEFINITIONS(/wd4251 /wd4275)
@@ -173,8 +173,6 @@ elseif (WIN32)
     if (DEBUG)
         LINK_LIBRARIES(shlwapi.lib
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/glad-4.6_d.lib
-                       ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6_d.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_gl3_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0_d.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0_d.lib
@@ -184,8 +182,6 @@ elseif (WIN32)
     else ()
         LINK_LIBRARIES(shlwapi.lib
                        ${LIB_DEPENDENCIES_DIR}/assimp-5.2.4.lib
-                       ${LIB_DEPENDENCIES_DIR}/glad-4.6.lib
-                       ${LIB_DEPENDENCIES_DIR}/glfw-3.3.6.lib
                        ${LIB_DEPENDENCIES_DIR}/imgui-1.85_glfw_gl3.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoise-1.0.0.lib
                        ${LIB_DEPENDENCIES_DIR}/libnoiseutils-1.0.0.lib

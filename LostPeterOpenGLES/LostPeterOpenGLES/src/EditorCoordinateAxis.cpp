@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/EditorCoordinateAxis.h"
-#include "../include/OpenGLWindow.h"
+#include "../include/OpenGLESWindow.h"
 #include "../include/Mesh.h"
 #include "../include/MeshSub.h"
 

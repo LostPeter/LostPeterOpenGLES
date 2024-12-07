@@ -10,10 +10,10 @@
 ****************************************************************************/
 
 #include "../include/MeshSub.h"
-#include "../include/OpenGLWindow.h"
+#include "../include/OpenGLESWindow.h"
 #include "../include/Mesh.h"
-#include "../include/GLBufferVertex.h"
-#include "../include/GLBufferVertexIndex.h"
+#include "../include/GLESBufferVertex.h"
+#include "../include/GLESBufferVertexIndex.h"
 
 namespace LostPeterOpenGLES
 {
@@ -31,7 +31,7 @@ namespace LostPeterOpenGLES
         , isNeedUpdate_VertexBuffer(isUpdateVertexBuffer)
         , isNeedUpdate_IndexBuffer(isUpdateIndexBuffer)
 
-        //GLBufferVertex/GLBufferVertexIndex
+        //GLESBufferVertex/GLESBufferVertexIndex
         , pBufferVertex(nullptr)
         , pBufferVertexIndex(nullptr)
 

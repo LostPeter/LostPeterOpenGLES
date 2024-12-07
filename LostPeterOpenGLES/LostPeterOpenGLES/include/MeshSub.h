@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport MeshSub : public Base
+    class openglesExport MeshSub : public Base
     {
     public:
         MeshSub(Mesh* _pMesh, 
@@ -37,9 +37,9 @@ namespace LostPeterOpenGLES
         FSphere sphere;
         FAABB aabb;
 
-        //GLBufferVertex/GLBufferVertexIndex
-        GLBufferVertex* pBufferVertex;
-        GLBufferVertexIndex* pBufferVertexIndex;
+        //GLESBufferVertex/GLESBufferVertexIndex
+        GLESBufferVertex* pBufferVertex;
+        GLESBufferVertexIndex* pBufferVertexIndex;
 
         //Vertex
         FMeshVertexType poTypeVertex;

@@ -13,11 +13,11 @@
 #define _BASE_H_
 
 #include "PreDefine.h"
-#include "OpenGLDefine.h"
+#include "OpenGLESDefine.h"
 
 namespace LostPeterOpenGLES
 {
-    class openglExport Base
+    class openglesExport Base
     {
     public:
         Base(const String& _name);
@@ -25,10 +25,10 @@ namespace LostPeterOpenGLES
         virtual ~Base();
 
     public:
-        static OpenGLWindow* ms_pWindow;
+        static OpenGLESWindow* ms_pWindow;
 
     public:
-        static OpenGLWindow* GetWindowPtr() { return ms_pWindow; }
+        static OpenGLESWindow* GetWindowPtr() { return ms_pWindow; }
 
     protected:
         uint32 group;

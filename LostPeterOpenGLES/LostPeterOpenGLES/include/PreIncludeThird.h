@@ -15,14 +15,13 @@
 #include "PreMacro.h"
 #include "FPreIncludeThird.h"
 
-//GLFW
+//glad
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 //imgui
 #include <imgui/imgui.h>
-#include <impl_glfw/imgui_impl_glfw.h>
-#include <impl_gl3/imgui_impl_opengl3.h>
+//#include <impl_gles3_android/imgui_impl_android.h>
+#include <impl_gles3_android/imgui_impl_opengl3.h>
 
 
 #endif

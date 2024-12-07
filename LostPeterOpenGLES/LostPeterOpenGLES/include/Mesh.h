@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport Mesh : public Base
+    class openglesExport Mesh : public Base
     {
     public:
         Mesh(uint32 _group,

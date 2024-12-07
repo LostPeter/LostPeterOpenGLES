@@ -14,7 +14,7 @@
 
 
 OpenGL_000_Window::OpenGL_000_Window(int width, int height, String name)
-    : OpenGLWindow(width, height, name)
+    : OpenGLESWindow(width, height, name)
 {
     
 }

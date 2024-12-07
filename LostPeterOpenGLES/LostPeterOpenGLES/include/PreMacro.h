@@ -15,15 +15,15 @@
 #include "FPreMacro.h"
 
 #if F_PLATFORM == F_PLATFORM_WINDOW
-	#if defined(OPENGL_EXPORTS)
-		#define openglExport        	__declspec(dllexport) 
+	#if defined(OPENGLES_EXPORTS)
+		#define openglesExport        	__declspec(dllexport) 
 	#else
-		#define openglExport      		__declspec(dllimport)
+		#define openglesExport      	__declspec(dllimport)
 	#endif
 #elif F_PLATFORM == F_PLATFORM_ANDROID
-	#define openglExport				__attribute__ ((visibility("default")))
+	#define openglesExport				__attribute__ ((visibility("default")))
 #else
-	#define openglExport
+	#define openglesExport
 #endif
 
 

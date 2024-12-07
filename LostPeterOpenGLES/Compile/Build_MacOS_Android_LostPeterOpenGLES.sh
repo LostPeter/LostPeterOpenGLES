@@ -2,7 +2,7 @@
 # LostPeterOpenGLES - Copyright (C) 2022 by LostPeter
 # 
 # Author:   LostPeter
-# Time:     2024-11-30
+# Time:     2024-12-08
 # Github:   https://github.com/LostPeter/LostPeterOpenGLES
 # Document: https://www.zhihu.com/people/lostpeter/posts
 #
@@ -14,12 +14,12 @@ rebuild=${2}
 
 if [ "$debug" == "debug" ]; then
     name_project="LostPeterOpenGLES_d"
-    name_lib="libLostPeterOpenGL_d.so"
+    name_lib="libLostPeterOpenGLES_d.so"
     build_type="Debug"
     isDebug=1
 else
     name_project="LostPeterOpenGLES"
-    name_lib="libLostPeterOpenGL.so"
+    name_lib="libLostPeterOpenGLES.so"
     build_type="Release"
     isDebug=0
 fi

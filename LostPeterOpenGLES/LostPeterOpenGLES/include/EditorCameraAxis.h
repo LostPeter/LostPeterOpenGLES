@@ -16,7 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
-    class openglExport EditorCameraAxis : public EditorBase
+    class openglesExport EditorCameraAxis : public EditorBase
     {
     public:
         EditorCameraAxis();

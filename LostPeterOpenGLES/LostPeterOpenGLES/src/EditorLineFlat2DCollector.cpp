@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "../include/EditorLineFlat2DCollector.h"
-#include "../include/OpenGLWindow.h"
+#include "../include/OpenGLESWindow.h"
 
 namespace LostPeterOpenGLES
 {

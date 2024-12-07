@@ -12,10 +12,10 @@
 #ifndef _OPENGLES_000_WINDOW_H_
 #define _OPENGLES_000_WINDOW_H_
 
-#include "OpenGLWindow.h"
+#include "OpenGLESWindow.h"
 using namespace LostPeterOpenGLES; 
 
-class OpenGL_000_Window : public OpenGLWindow
+class OpenGL_000_Window : public OpenGLESWindow
 {
 public:
     OpenGL_000_Window(int width, int height, String name);
