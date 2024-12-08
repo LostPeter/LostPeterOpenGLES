@@ -20,7 +20,7 @@
 
 //imgui
 #include <imgui/imgui.h>
-//#include <impl_gles3_android/imgui_impl_android.h>
+#include <impl_gles3_android/imgui_impl_android.h>
 #include <impl_gles3_android/imgui_impl_opengl3.h>
 
 

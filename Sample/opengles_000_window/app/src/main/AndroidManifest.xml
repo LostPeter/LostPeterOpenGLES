@@ -3,16 +3,22 @@
     package="com.lostpeter.opengles.opengles_000_window">
 
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.opengles_000_window">
+        android:theme="@style/Theme.opengles_000_window"
+        android:allowBackup="true"
+        android:fullBackupContent="false"
+        android:hasCode="true">
         
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|screenSize">
+            <meta-data android:name="android.app.lib_name"
+                android:value="opengles_000_window" />
+            
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

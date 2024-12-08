@@ -103,6 +103,21 @@
 	#include <dirent.h>
     //#include <filesystem>
     #define MAX_PATH	MAXPATHLEN
+    
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        
+        #include <jni.h>
+        #include <android/log.h>
+        #include <android/native_window.h>
+        #include <android/native_activity.h>
+        #include <android/configuration.h>
+        #include <android/asset_manager.h>
+        #include <android/sensor.h>
+        #include <android/input.h>
+        #include <sys/system_properties.h>
+        #include <android_native_app_glue.h>
+
+    #endif
 
 #elif F_PLATFORM == F_PLATFORM_iOS
     
@@ -113,23 +128,14 @@ namespace LostPeterFoundation
 {
    //Log
 #if F_PLATFORM == F_PLATFORM_ANDROID
-    #include <jni.h>
-    #include <android/log.h>
-    #include <android/native_window.h>
-    #include <android/native_activity.h>
-    #include <android/configuration.h>
-    #include <android/asset_manager.h>
-    #include <android/sensor.h>
-	#include <sys/system_properties.h>
-
     #ifndef LOG_TAG
         #define LOG_TAG "NDK-LIB"
     #endif
 
-	#include <android_native_app_glue.h>
     #define F_LogError(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
     #define F_LogInfo(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
     #define F_LogWarning(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+
 #else
 	foundationExport void F_LogError(const char* fmt, ...);
 	foundationExport void F_LogWarning(const char* fmt, ...);
