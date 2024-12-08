@@ -9,4 +9,12 @@
 @REM # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 @REM #****************************************************************************/
 
-call ./InstallRun_Windows_Android_Sample.bat opengl_000_window
+call ./InstallRun_Windows_Android_Sample.bat opengles_000_window
+call ./InstallRun_Windows_Android_Sample.bat opengles_001_triangle
+call ./InstallRun_Windows_Android_Sample.bat opengles_002_imgui
+call ./InstallRun_Windows_Android_Sample.bat opengles_003_texture
+call ./InstallRun_Windows_Android_Sample.bat opengles_004_model
+call ./InstallRun_Windows_Android_Sample.bat opengles_005_camera
+call ./InstallRun_Windows_Android_Sample.bat opengles_006_depth
+call ./InstallRun_Windows_Android_Sample.bat opengles_007_stencil
+call ./InstallRun_Windows_Android_Sample.bat opengles_008_blend

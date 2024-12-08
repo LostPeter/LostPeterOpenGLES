@@ -15,10 +15,10 @@
 #include "OpenGLESWindow.h"
 using namespace LostPeterOpenGLES; 
 
-class OpenGL_000_Window : public OpenGLESWindow
+class OpenGLES_000_Window : public OpenGLESWindow
 {
 public:
-    OpenGL_000_Window(int width, int height, String name);
+    OpenGLES_000_Window(int width, int height, String name);
 
 public:
 

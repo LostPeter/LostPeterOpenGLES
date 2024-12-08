@@ -9,4 +9,12 @@
 @REM # This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 @REM #****************************************************************************/
 
-call ./Clean_Windows_Android_Sample.bat opengl_000_window
+call ./Clean_Windows_Android_Sample.bat opengles_000_window
+call ./Clean_Windows_Android_Sample.bat opengles_001_triangle
+call ./Clean_Windows_Android_Sample.bat opengles_002_imgui
+call ./Clean_Windows_Android_Sample.bat opengles_003_texture
+call ./Clean_Windows_Android_Sample.bat opengles_004_model
+call ./Clean_Windows_Android_Sample.bat opengles_005_camera
+call ./Clean_Windows_Android_Sample.bat opengles_006_depth
+call ./Clean_Windows_Android_Sample.bat opengles_007_stencil
+call ./Clean_Windows_Android_Sample.bat opengles_008_blend

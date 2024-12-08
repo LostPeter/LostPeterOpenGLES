@@ -1,9 +1,20 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
-project(opengles_000_window)
+SET(NAME_PROJECT "opengles_000_window")
+if (DEBUG)
+    PROJECT(${NAME_PROJECT}_d)
+    SET(CMAKE_BUILD_TYPE "Debug")
+    if (!WIN32)
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+    endif()
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+    MESSAGE(STATUS "Set Debug Build !")
+else ()
+    PROJECT(${NAME_PROJECT})
+endif ()
+
+SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(CMAKE_CXX_EXTENSIONS OFF)
 
 #MESSAGE(STATUS "HOME dir: $ENV{HOME}")
 MESSAGE(STATUS "Binary dir: ${PROJECT_BINARY_DIR}")
@@ -62,15 +73,15 @@ else ()
                  ${LIB_DEPENDENCIES_DIR}/libzlib-1.2.11.a)
 endif()
 ADD_DEFINITIONS("--sysroot=${ANDROID_NDK}/sysroot -Wall")
-ADD_LIBRARY(${CMAKE_PROJECT_NAME} SHARED 
+ADD_LIBRARY(${PROJECT_NAME} SHARED 
             ${HEADER_FILES} ${SOURCE_FILES_CPP}
             ${ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c)
 
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
-TARGET_COMPILE_DEFINITIONS(${CMAKE_PROJECT_NAME} PRIVATE IMGUI_IMPL_OPENGL_ES3)
+TARGET_COMPILE_DEFINITIONS(${PROJECT_NAME} PRIVATE IMGUI_IMPL_OPENGL_ES3)
 
 if (DEBUG)
-  TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} PRIVATE
+  TARGET_LINK_LIBRARIES(${PROJECT_NAME} PRIVATE
                         android
                         log
                         GLESv3
@@ -78,7 +89,7 @@ if (DEBUG)
                         ${LIB_PLUGINS_DIR}/libLostPeterFoundation_d.so
                         ${LIB_PLUGINS_DIR}/libLostPeterOpenGLES_d.so)
 else ()
-  TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} PRIVATE
+  TARGET_LINK_LIBRARIES(${PROJECT_NAME} PRIVATE
                         android
                         log
                         GLESv3

@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGL_000_Window sample(1280, 720, "LostPeter - OpenGLES_000_Window");
+    OpenGLES_000_Window sample(1280, 720, "LostPeter - OpenGLES_000_Window");
     App::Run(app, &sample);
 }
