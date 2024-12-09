@@ -76,12 +76,12 @@ cd %name_project%
 
 if "%debug%" == "debug" (
     cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ".\%name_project%".sln /p:configuration=debug /p:platform=ARM64
-    copy /Y ".\"%name_lib% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    msbuild %name_project%.sln /p:configuration=debug /p:platform=ARM64
+    copy /Y ".\Debug\"%name_lib% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
     cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ".\%name_project%".sln /p:configuration=release /p:platform=ARM64
-    copy /Y ".\"%name_lib% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    msbuild %name_project%.sln /p:configuration=release /p:platform=ARM64
+    copy /Y ".\Release\"%name_lib% "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 )
 
 

@@ -20,12 +20,12 @@ echo %rebuild%
 @REM #2) Build LostPeterOpenGLES
 if "%debug%" == "debug" (
     set name_project="LostPeterOpenGLES_d"
-    set name_lib="LostPeterOpenGLES_d.so"
+    set name_lib="libLostPeterOpenGLES_d.so"
     set build_type="Debug"
     set isDebug=1
 ) else (
     set name_project="LostPeterOpenGLES"
-    set name_lib="LostPeterOpenGLES.so"
+    set name_lib="libLostPeterOpenGLES.so"
     set build_type="Release"
     set isDebug=0
 )
@@ -77,7 +77,7 @@ cd %name_project%
 
 if "%debug%" == "debug" (
     cmake -DDEBUG=1 ../../../../LostPeterOpenGLES/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_shared -DANDROID_CPP_FEATURES="rtti exceptions"
-    msbuild "%name_project%".sln /p:configuration=debug /p:platform=ARM64
+    msbuild %name_project%.sln /p:configuration=debug /p:platform=ARM64
     copy /Y ".\Debug\%name_lib%" "..\..\..\..\..\Plugins\Android\"%name_armv8a%"\"%name_lib%
 ) else (
     cmake ../../../../LostPeterOpenGLES/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_shared -DANDROID_CPP_FEATURES="rtti exceptions"
