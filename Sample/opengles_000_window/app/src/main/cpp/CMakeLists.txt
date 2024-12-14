@@ -1,15 +1,12 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 SET(NAME_PROJECT "opengles_000_window")
+PROJECT(${NAME_PROJECT})
 if (DEBUG)
-    PROJECT(${NAME_PROJECT}_d)
     SET(CMAKE_BUILD_TYPE "Debug")
     if (!WIN32)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
     endif()
-
     MESSAGE(STATUS "Set Debug Build !")
-else ()
-    PROJECT(${NAME_PROJECT})
 endif ()
 
 SET(CMAKE_CXX_STANDARD 11)

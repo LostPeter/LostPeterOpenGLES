@@ -16,6 +16,7 @@
 #include "PreMacro.h"
 
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 namespace LostPeterOpenGLES
 {
