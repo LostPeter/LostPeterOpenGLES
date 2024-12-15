@@ -57,9 +57,11 @@ namespace LostPeterOpenGLES
 
         m_bIsEGLInit = false;
 
-        func_Draw = nullptr;
-        func_ShutDown = nullptr;
+        func_Init = nullptr;
         func_Update = nullptr;
+        func_Render = nullptr;    
+        func_ShutDown = nullptr;
+
         onWindowResize = nullptr;
         onRedrawIfNeeded = nullptr;
         onWindowContentChanged = nullptr;
@@ -171,7 +173,7 @@ namespace LostPeterOpenGLES
             return GL_FALSE;
         }
 
-        //11> 指eglMakeCurrent
+        //11> eglMakeCurrent
         if (!eglMakeCurrent(this->m_eglDisplay, this->m_eglSurface,
                             this->m_eglSurface, this->m_eglContext)) 
         {

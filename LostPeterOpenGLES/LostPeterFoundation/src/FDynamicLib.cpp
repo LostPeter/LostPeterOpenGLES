@@ -90,6 +90,10 @@ namespace LostPeterFoundation
 		return true;
 	}
 
+	void* FDynamicLib::GetSymbol(const char* name)
+	{
+		return (void*)DYNLIB_GETSYM(this->m_hInst, name);
+	}
 	void* FDynamicLib::GetSymbol(const String& strName) const throw()
 	{
 		return (void*)DYNLIB_GETSYM(this->m_hInst, strName.c_str());

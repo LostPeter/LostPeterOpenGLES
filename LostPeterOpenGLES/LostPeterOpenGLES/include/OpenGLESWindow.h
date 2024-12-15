@@ -139,6 +139,10 @@ namespace LostPeterOpenGLES
         static const String c_strShaderProgram;
 
     public:
+        static FDynamicLib* s_poDynLoader_EGL;
+        static void* GetEGLSymbol(const char* name);
+
+    public:
         GLESDebug* poDebug;
         GLESShaderInclude* poShaderInclude;
         int poMSAASamples;

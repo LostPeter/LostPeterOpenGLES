@@ -75,6 +75,7 @@ namespace LostPeterFoundation
 		bool Load();
 		bool Unload();
 
+		void* GetSymbol(const char* name);
 		void* GetSymbol(const String& strName) const throw();
 
 	private:

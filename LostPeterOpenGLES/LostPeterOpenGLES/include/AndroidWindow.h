@@ -47,10 +47,11 @@ namespace LostPeterOpenGLES
         bool m_bIsEGLInit;
 
     public:
-        void (* func_Draw)(AndroidWindow* eglWindow);
+        void (* func_Init)(AndroidWindow* eglWindow);
+        void (* func_Update)(AndroidWindow* eglWindow);
+        void (* func_Render)(AndroidWindow* eglWindow);
         void (* func_ShutDown)(AndroidWindow* eglWindow);
-        void (* func_Update)(AndroidWindow* eglWindow, float delta);
-
+        
         void (* onWindowResize)(AndroidWindow* eglWindow, int width, int height);
         void (* onRedrawIfNeeded)(AndroidWindow* eglWindow);
         void (* onWindowContentChanged)(AndroidWindow* eglWindow);
@@ -79,7 +80,7 @@ namespace LostPeterOpenGLES
         GLboolean CreateWindow(GLuint flags);
     
         GLint GetContextRenderableType(EGLDisplay eglDisplay);
-        
+
     };
 
 }; //LostPeterOpenGLES

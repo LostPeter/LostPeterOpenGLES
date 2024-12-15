@@ -31,15 +31,18 @@ namespace LostPeterOpenGLES
         static AndroidWindow* GetWindow() { return s_pWindow; }
 
     public:
-        static void ShutDown();
-        
     protected:
-        static void error_callback(int error, const char* description);
-        static void key_callback(AndroidWindow* window, int key, int scancode, int action, int mods);
-        static void framebuffer_size_callback(AndroidWindow* window, int width, int height);
-        static void mouse_button_callback(AndroidWindow* window, int button, int action, int mods);
-        static void cursor_position_callback(AndroidWindow* window, double x, double y);
-        static void scroll_callback(AndroidWindow* window, double x, double y);
+        void initInternal(AndroidWindow* pWindow);
+
+    protected:
+        static void onInit(AndroidWindow* pWindow);
+        static void onUpdate(AndroidWindow* pWindow);
+        static void onRender(AndroidWindow* pWindow);
+        static void onShutDown(AndroidWindow* pWindow);
+
+        static void onWindowResize(AndroidWindow* pWindow, int width, int height);
+        static int32_t onTouchEvent(AndroidWindow* pWindow, AInputEvent* event);
+        static int32_t onKeyEvent(AndroidWindow* pWindow, AInputEvent* event);
     };
 
 }; //LostPeterOpenGLES

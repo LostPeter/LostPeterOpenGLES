@@ -29,13 +29,11 @@ namespace LostPeterOpenGLES
     static void s_AppWndProc(struct android_app* app, int32_t cmd)
     {
         F_LogInfo("s_AppWndProc: cmd: %d", cmd);
-        //App* pApp = (App*)app->userData;
         AndroidWindow* pAndroidWindow = App::GetWindow();
         
         switch (cmd)
         {
         case APP_CMD_INPUT_CHANGED: 
-            //Input Change
             {
                 
             }
@@ -52,6 +50,11 @@ namespace LostPeterOpenGLES
                     {
                         F_LogError("*********************** s_AppWndProc: APP_CMD_INIT_WINDOW: EGL create failed !");
                         exit(0);
+                    }
+
+                    if (pAndroidWindow->func_Init != nullptr)
+                    {
+                        pAndroidWindow->func_Init(pAndroidWindow);
                     }
                 }
                 F_LogInfo("s_AppWndProc: APP_CMD_INIT_WINDOW 2");
@@ -250,7 +253,6 @@ namespace LostPeterOpenGLES
 
     static int32_t s_AppInputProc(struct android_app* app, AInputEvent* event)
     {
-        //App* pApp = (App*)app->userData;
         AndroidWindow* pAndroidWindow = App::GetWindow();
 
         switch (AInputEvent_getType(event))
@@ -295,6 +297,7 @@ namespace LostPeterOpenGLES
 
     int App::Run(android_app* app, OpenGLESBase* pBase)
     {
+        App* pApp = GetApp();
         FUtil::ms_pAndroidApp = app;
         String nameApp(pBase->GetTitle());
         F_LogInfo("App::Run: [%s] Enter ***********************", nameApp.c_str());
@@ -325,7 +328,7 @@ namespace LostPeterOpenGLES
         //3> Data
         s_pAndroidApp->onAppCmd = s_AppWndProc;
         s_pAndroidApp->onInputEvent = s_AppInputProc;
-        s_pAndroidApp->userData = GetApp();
+        s_pAndroidApp->userData = pApp;
         if (app->savedState != nullptr)
         {
             s_pWindow->m_pSavedState = app->savedState;
@@ -334,21 +337,9 @@ namespace LostPeterOpenGLES
         {
             s_pWindow->m_pConfig = app->config;
         }
+        pApp->initInternal(s_pWindow);
 
-        //4> OnInit
-        // pBase->OnInit();
-
-        //5> OnResize
-        // pBase->OnResize(pBase->width, pBase->height, true);
-
-        //6> OnLoad
-        // pBase->OnLoad();
-
-        //7> OnIsInit
-        // bool isInit = pBase->OnIsInit();
-
-        //8> Main loop
-        float timeLast = AndroidWindow::GetCurrentTime();
+        //3> Main loop
         while (true) 
         {
             int events;
@@ -378,14 +369,16 @@ namespace LostPeterOpenGLES
                 break;
             }
 
-            //2> wait native window
-            if (s_pWindow->m_eglNativeWindow == nullptr) 
+            //2> wait native egl window and opengles window init
+            if (s_pWindow->m_eglNativeWindow == nullptr ||
+                !pBase->OnIsInit()) 
             {
                 continue;
             }
 
             //3> animate
-            if (s_pWindow->m_bIsAnimate && s_pWindow->onAnimate != nullptr) 
+            if (s_pWindow->m_bIsAnimate && 
+                s_pWindow->onAnimate != nullptr) 
             {
                 s_pWindow->onAnimate(s_pWindow);
             }
@@ -393,113 +386,99 @@ namespace LostPeterOpenGLES
             //4> app update
             if (s_pWindow->func_Update != nullptr) 
             {
-                float curTime = AndroidWindow::GetCurrentTime();
-                float deltaTime = curTime - timeLast;
-                timeLast = curTime;
-                s_pWindow->func_Update(s_pWindow, deltaTime);
+                s_pWindow->func_Update(s_pWindow);
             }
 
             //5> draw
-            if (s_pWindow->func_Draw != nullptr) 
+            if (s_pWindow->func_Render != nullptr) 
             {
-                s_pWindow->func_Draw(s_pWindow);
+                s_pWindow->func_Render(s_pWindow);
                 eglSwapBuffers(s_pWindow->m_eglDisplay, s_pWindow->m_eglSurface);
             }
 
-
-            // //0) timer
-            // pBase->UpdateTimer();
-            
-            // //1) input
-            // pBase->OnMouseInput();
             // pBase->OnKeyboardInput();
 
-            // //3) render
-            // if (isInit)
-            // {
-            //     if (!pBase->isAppPaused)
-            //     {
-            //         pBase->CalculateFrameStats(s_pWindow);
-
-            //         //Compute Before Render
-            //         if (pBase->OnBeginCompute_BeforeRender())
-            //         {
-            //             pBase->OnUpdateCompute_BeforeRender();
-            //             pBase->OnCompute_BeforeRender();
-            //             pBase->OnEndCompute_BeforeRender();
-            //         }
-
-            //         //Render
-            //         if (pBase->OnBeginRender())
-            //         {
-            //             pBase->OnUpdateRender();
-            //             pBase->OnRender();
-            //             pBase->OnEndRender();
-            //         }
-
-            //         //Compute After Render
-            //         if (pBase->OnBeginCompute_AfterRender())
-            //         {
-            //             pBase->OnUpdateCompute_AfterRender();
-            //             pBase->OnCompute_AfterRender();
-            //             pBase->OnEndCompute_AfterRender();
-            //         }
-
-            //         pBase->OnPresent();
-
-            //         if (pBase->isMinimizedWindowNeedClose) 
-            //         {
-            //             break;
-            //         }
-            //     }  
-            // }
+            if (pBase->isMinimizedWindowNeedClose) 
+            {
+                break;
+            }
         }
-
-        //9> OnDestroy
-        pBase->OnDestroy();
-
-        //10> Cleanup
-        ShutDown();
 
         F_LogInfo("App::Run: [%s] Exit ***********************", nameApp.c_str());
         return 0;
     }
 
-    void App::ShutDown()
+    void App::initInternal(AndroidWindow* pWindow)
     {
+        pWindow->func_Init = onInit;
+        pWindow->func_Update = onUpdate;
+        pWindow->func_Render = onRender;
+        pWindow->func_ShutDown = onShutDown;
 
+        pWindow->onWindowResize = onWindowResize;
+        pWindow->onTouchEvent = onTouchEvent;
+        pWindow->onKeyEvent = onKeyEvent;
     }
 
-    void App::error_callback(int error, const char* description)
+    void App::onInit(AndroidWindow* pWindow)
     {
-        F_LogError("*********************** App::error_callback: [%s]", description);
+        s_pBase->OnInit();
+        s_pBase->OnLoad();
     }
-    void App::key_callback(AndroidWindow* window, int key, int scancode, int action, int mods)
+    void App::onUpdate(AndroidWindow* pWindow)
     {
-        // if (action == GLFW_PRESS)
-        // {
-        //     s_pBase->OnKeyDown(key);
-        // }
-        // else if (action == GLFW_RELEASE)
-        // {
-        //     s_pBase->OnKeyUp(key);
-        // }
+        s_pBase->UpdateTimer();
     }
-    void App::framebuffer_size_callback(AndroidWindow* window, int width, int height)
+    void App::onRender(AndroidWindow* pWindow)
+    {
+        if (!s_pBase->isAppPaused)
+        {
+            s_pBase->CalculateFrameStats(s_pWindow);
+
+            //Compute Before Render
+            if (s_pBase->OnBeginCompute_BeforeRender())
+            {
+                s_pBase->OnUpdateCompute_BeforeRender();
+                s_pBase->OnCompute_BeforeRender();
+                s_pBase->OnEndCompute_BeforeRender();
+            }
+
+            //Render
+            if (s_pBase->OnBeginRender())
+            {
+                s_pBase->OnUpdateRender();
+                s_pBase->OnRender();
+                s_pBase->OnEndRender();
+            }
+
+            //Compute After Render
+            if (s_pBase->OnBeginCompute_AfterRender())
+            {
+                s_pBase->OnUpdateCompute_AfterRender();
+                s_pBase->OnCompute_AfterRender();
+                s_pBase->OnEndCompute_AfterRender();
+            }
+
+            s_pBase->OnPresent();
+        }  
+    }
+    void App::onShutDown(AndroidWindow* pWindow)
+    {
+        s_pBase->OnDestroy();
+    }
+    void App::onWindowResize(AndroidWindow* pWindow, int width, int height)
     {
         s_pBase->OnResize(width, height, true);
     }
-    void App::mouse_button_callback(AndroidWindow* window, int button, int action, int mods)
+    int32_t App::onTouchEvent(AndroidWindow* pWindow, AInputEvent* event)
     {
-        
+
+        return 1;
     }
-    void App::cursor_position_callback(AndroidWindow* window, double x, double y)
+    int32_t App::onKeyEvent(AndroidWindow* pWindow, AInputEvent* event)
     {
-        
-    }
-    void App::scroll_callback(AndroidWindow* window, double x, double y)
-    {
-        s_pBase->OnMouseWheel(x, y);
+
+        return 1;
     }
 
 }; //LostPeterOpenGLES

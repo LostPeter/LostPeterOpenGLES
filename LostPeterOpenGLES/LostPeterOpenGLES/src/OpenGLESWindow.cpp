@@ -857,6 +857,7 @@ namespace LostPeterOpenGLES
 
     /////////////////////////// OpenGLESWindow //////////////////////
     const String OpenGLESWindow::c_strShaderProgram = "ShaderProgram";
+    FDynamicLib* OpenGLESWindow::s_poDynLoader_EGL = nullptr;
     OpenGLESWindow::OpenGLESWindow(int width, int height, String name)
         : OpenGLESBase(width, height, name)
 
@@ -974,6 +975,12 @@ namespace LostPeterOpenGLES
         F_DELETE(pCamera)
         F_DELETE(pCameraRight)
         F_DELETE(pCameraMainLight)
+        if (s_poDynLoader_EGL != nullptr)
+        {
+            s_poDynLoader_EGL->Unload();
+            delete s_poDynLoader_EGL;
+        }
+        s_poDynLoader_EGL = nullptr;
     }
 
     void OpenGLESWindow::OnInit()
@@ -1400,33 +1407,43 @@ namespace LostPeterOpenGLES
         F_LogInfo("**********<1> OpenGLESWindow::createPipeline finish **********");
     }
 
-    // void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-    // {
-    //     OpenGLESWindow* pWnd = (OpenGLESWindow*)glfwGetWindowUserPointer(window);
-    //     pWnd->isFrameBufferResized = true;
-    //     pWnd->OnResize(width, height, false);
-    // }
     void OpenGLESWindow::createWindowCallback()
     {   
         
 
         F_LogInfo("*****<1-1> OpenGLESWindow::createWindowCallback finish *****");
     }
+        void* OpenGLESWindow::GetEGLSymbol(const char* name)
+        {
+            void* result = s_poDynLoader_EGL->GetSymbol(name);
+            if (result == nullptr) 
+            {
+                result = (void*)eglGetProcAddress(name);
+            }
+            return result;
+        }
     void OpenGLESWindow::createDevice()
     {
         F_LogInfo("*****<1-2> OpenGLESWindow::createDevice start *****");
         {
-            // //1> make window
-            // glfwMakeContextCurrent(this->pWindow);
-            // glfwSwapInterval(1); // Enable vsync
-            // glfwSetFramebufferSizeCallback(this->pWindow, framebuffer_size_callback);
+            //1> libEGL
+            String strlibEGL = "libEGL.so";
+            s_poDynLoader_EGL = new FDynamicLib(strlibEGL, strlibEGL);
+            if (!s_poDynLoader_EGL->Load())
+            {
+                F_LogError("*********************** OpenGLESWindow::createDevice: load [libEGL.so] failed !");
+                exit(0);
+            }
+            F_LogInfo("OpenGLESWindow::createDevice: load [libEGL.so] success !");
 
-            // //2> glad load all OpenGL function pointers 
-            // if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-            //     F_LogError("*********************** OpenGLESWindow::createDevice: gladLoadGLLoader failed !");
-            //     glfwTerminate();
-            //     return;
-            // }
+            //2> glad load all OpenGLES function pointers 
+            if (!gladLoadGLES2Loader((GLADloadproc)GetEGLSymbol)) 
+            {
+                F_LogError("*********************** OpenGLESWindow::createDevice: gladLoadGLES2Loader load failed !");
+                s_poDynLoader_EGL->Unload();
+                exit(0);
+            }
+            F_LogInfo("OpenGLESWindow::createDevice: gladLoadGLES2Loader load success !");
             this->poDebug = new GLESDebug();
             this->poDebug->Init();
             this->poShaderInclude = new GLESShaderInclude();
