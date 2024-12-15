@@ -295,6 +295,7 @@ namespace LostPeterOpenGLES
 
     int App::Run(android_app* app, OpenGLESBase* pBase)
     {
+        FUtil::ms_pAndroidApp = app;
         String nameApp(pBase->GetTitle());
         F_LogInfo("App::Run: [%s] Enter ***********************", nameApp.c_str());
         s_pAndroidApp = app;

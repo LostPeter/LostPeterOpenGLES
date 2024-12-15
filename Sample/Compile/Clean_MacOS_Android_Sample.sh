@@ -16,5 +16,8 @@ cd $name_sample
 
 ./gradlew clean
 
+rm -rf "./app/src/main/assets"
+rm -rf "./app/.cxx"
+
 cd ..
 cd Compile

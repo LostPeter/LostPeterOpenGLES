@@ -49,3 +49,4 @@ Sample/Build
 Sample/*/.gradle
 Sample/*/app/.cxx
 Sample/*/app/build
+Sample/*/app/src/main/assets

@@ -17,6 +17,13 @@ cd %name_sample%
 
 call .\gradlew.bat clean
 
+if exist "./app/src/main/assets" (
+    rmdir /S/Q "./app/src/main/assets"
+)
+if exist "./app/.cxx" (
+    rmdir /S/Q "./app/.cxx"
+)
+
 cd ..
 cd Compile
 

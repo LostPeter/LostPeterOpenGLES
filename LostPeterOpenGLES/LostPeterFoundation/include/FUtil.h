@@ -20,6 +20,11 @@ namespace LostPeterFoundation
     {
     //////////////////////// Common ////////////////////////
     public:
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        static android_app* ms_pAndroidApp;
+    #endif
+
+    public:
         static String ms_strPathBin;
         static const String& GetPathBinSaved(); 
 

@@ -29,6 +29,10 @@ namespace LostPeterFoundation
 
 
     //////////////////////// Common ////////////////////////
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        android_app* FUtil::ms_pAndroidApp = nullptr;
+    #endif
+
     String FUtil::ms_strPathBin = "";
     const String& FUtil::GetPathBinSaved()
     {
@@ -42,9 +46,12 @@ namespace LostPeterFoundation
     //Path
     String FUtil::GetPathExecute()
     {
-        String path;
+        String path("");
+    
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        return path;
 
-    #if F_PLATFORM == F_PLATFORM_WINDOW
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         wchar_t szBuf[512];
         ::GetModuleFileNameW(NULL, szBuf, 512);
         ::PathRemoveFileSpecW(szBuf);
@@ -55,10 +62,6 @@ namespace LostPeterFoundation
 
         std::replace(path.begin(), path.end(), '\\', '/');
 
-    #elif F_PLATFORM == F_PLATFORM_MAC
-        path = F_OCGetPathExecute();
-        
-    #endif
         if (path[path.size() - 1] == '.')
         {
             path = path.substr(0, path.size() - 2);
@@ -66,6 +69,19 @@ namespace LostPeterFoundation
         size_t index = path.find_last_of('/');
         path = path.substr(0, index);
         path += "/";
+
+    #elif F_PLATFORM == F_PLATFORM_MAC
+        path = F_OCGetPathExecute();
+
+        if (path[path.size() - 1] == '.')
+        {
+            path = path.substr(0, path.size() - 2);
+        }
+        size_t index = path.find_last_of('/');
+        path = path.substr(0, index);
+        path += "/";
+        
+    #endif
 
         return path;
     }
@@ -113,8 +129,8 @@ namespace LostPeterFoundation
         
     #endif
 
-    F_Assert(false && "FUtil::IsExistFile, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::IsExistFile, Not implement !")
+        return false;
     }
 
     bool FUtil::DeleteFile(const String& strPath)
@@ -129,8 +145,8 @@ namespace LostPeterFoundation
 
     #endif
 
-    F_Assert(false && "FUtil::DeleteFile, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::DeleteFile, Not implement !")
+        return false;
     }
 
     bool FUtil::ClearFile(const String& strPath)
@@ -146,8 +162,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::ClearFile, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::ClearFile, Not implement !")
+        return false;
     }
 
     bool FUtil::CopyFile(const String& strSrcPath, const String& strDstPath)
@@ -162,8 +178,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::CopyFile, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::CopyFile, Not implement !")
+        return false;
     }
 
 
@@ -209,8 +225,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::IsDirectory, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::IsDirectory, Not implement !")
+        return false;
     }
 
     bool FUtil::CreateDirectory(const String& strPath)
@@ -228,8 +244,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::CreateDirectory, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::CreateDirectory, Not implement !")
+        return false;
     }
 
     bool FUtil::DeleteDirectory(const String& strPath)
@@ -376,8 +392,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::EnumFiles, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::EnumFiles, Not implement !")
+        return false;
     }
 
     bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bDelSuffix)
@@ -487,8 +503,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::EnumFiles, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::EnumFiles, Not implement !")
+        return false;
     }
 
     bool FUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
@@ -580,8 +596,8 @@ namespace LostPeterFoundation
     
     #endif
 
-    F_Assert(false && "FUtil::EnumFolders, Not implement !")
-    return false;
+        F_Assert(false && "FUtil::EnumFolders, Not implement !")
+        return false;
     }
 
     bool FUtil::GenerateFolders(const String& strPath)
@@ -686,6 +702,7 @@ namespace LostPeterFoundation
         return true;
 
     #else
+
     
     #endif
 
@@ -771,6 +788,38 @@ namespace LostPeterFoundation
 ////LoadFile
     bool FUtil::LoadFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
     {
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetManager* manager = ms_pAndroidApp->activity->assetManager;
+        if (manager == nullptr) 
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: AssetManager is null !");
+            return false;
+        }
+
+        AAsset* asset = AAssetManager_open(manager, szFile, AASSET_MODE_UNKNOWN);
+        if (asset == nullptr)
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: asset is null, can not open file: [%s]", szFile);
+            return false;
+        }
+        off_t fileSize = AAsset_getLength(asset);
+        if (fileSize < 1) 
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: file is null !");
+            return false;
+        }
+        if (addEnd0)
+            content.resize(fileSize + 1);
+        else
+            content.resize(fileSize);
+        AAsset_read(asset, (void*)content.data(), fileSize);
+        if (addEnd0)
+            content[fileSize] = 0;
+        AAsset_close(asset);
+    
+        return true;
+
+    #elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_WINDOW
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
@@ -789,9 +838,50 @@ namespace LostPeterFoundation
         if (addEnd0)
             content[fileSize] = 0;
         return true;
+
+    #else
+
+
+    #endif
+
+        F_Assert(false && "FUtil::LoadFileContent, error !")
+        return false;
     }
     bool FUtil::LoadFileToBuffer(const char* szFile, uint8** ppData, int32& sizeData, bool addEnd0 /*= false*/)
     {
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetManager* manager = ms_pAndroidApp->activity->assetManager;
+        if (manager == nullptr) 
+        {
+            F_LogError("*********************** FUtil::LoadFileToBuffer: AssetManager is null !");
+            return false;
+        }
+
+        AAsset* asset = AAssetManager_open(manager, szFile, AASSET_MODE_UNKNOWN);
+        if (asset == nullptr)
+        {
+            F_LogError("*********************** FUtil::LoadFileToBuffer: asset is null, can not open file: [%s]", szFile);
+            return false;
+        }
+        off_t fileSize = AAsset_getLength(asset);
+        if (fileSize < 1) 
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: file is null !");
+            return false;
+        }
+        if (addEnd0)
+            fileSize += 1;
+        uint8* pData = new uint8[fileSize];
+        AAsset_read(asset, (void*)pData, fileSize);
+        if (addEnd0)
+            pData[fileSize] = 0;
+        AAsset_close(asset);
+
+        *ppData = pData;
+        sizeData = (int32)fileSize;
+        return true;
+
+    #elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_WINDOW
         std::ifstream file(szFile, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
@@ -812,9 +902,44 @@ namespace LostPeterFoundation
         *ppData = pData;
         sizeData = (int32)fileSize;
         return true;
+
+    #else
+
+
+    #endif
+
+        F_Assert(false && "FUtil::LoadFileToBuffer, error !")
+        return false;
     }
     bool FUtil::LoadFileToString(const char* szFile, String& contentFile)
     {
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetManager* manager = ms_pAndroidApp->activity->assetManager;
+        if (manager == nullptr) 
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: AssetManager is null !");
+            return false;
+        }
+
+        AAsset* asset = AAssetManager_open(manager, szFile, AASSET_MODE_UNKNOWN);
+        if (asset == nullptr)
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: asset is null, can not open file: [%s]", szFile);
+            return false;
+        }
+        off_t fileSize = AAsset_getLength(asset);
+        if (fileSize < 1) 
+        {
+            F_LogError("*********************** FUtil::LoadFileContent: file is null !");
+            return false;
+        }
+        contentFile.resize(fileSize);
+        AAsset_read(asset, (void*)contentFile.data(), fileSize);
+        AAsset_close(asset);
+    
+        return true;
+
+    #elif F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_WINDOW
         std::ifstream file;
         file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try 
@@ -831,6 +956,14 @@ namespace LostPeterFoundation
             return false;
         }
         return true;
+
+    #else
+
+
+    #endif
+
+        F_Assert(false && "FUtil::LoadFileToString, error !")
+        return false;
     }
 
     bool FUtil::LoadAssetFileContent(const char* szFile, CharVector& content, bool addEnd0 /*= false*/)
@@ -857,6 +990,7 @@ namespace LostPeterFoundation
     }
     bool FUtil::SaveFileContent(const char* szFile, uint8* pData, int32 sizeData)
     {
+    #if F_PLATFORM == F_PLATFORM_MAC || F_PLATFORM == F_PLATFORM_WINDOW
         std::ofstream file(szFile, std::ios::out | std::ios::binary);
         if (!file.is_open())
         {
@@ -867,6 +1001,14 @@ namespace LostPeterFoundation
         file.write((const char*)pData, sizeData);
         file.close();
         return true;
+
+    #else
+
+
+    #endif
+
+        F_Assert(false && "FUtil::SaveFileContent, error !")
+        return false;
     }
     bool FUtil::SaveFileContent(const char* szFile, String& contentFile)
     {
