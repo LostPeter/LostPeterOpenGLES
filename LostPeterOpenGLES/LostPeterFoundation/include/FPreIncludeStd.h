@@ -129,7 +129,7 @@ namespace LostPeterFoundation
    //Log
 #if F_PLATFORM == F_PLATFORM_ANDROID
     #ifndef LOG_TAG
-        #define LOG_TAG "NDK-LIB"
+        #define LOG_TAG "LostPeter"
     #endif
 
     #define F_LogError(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)

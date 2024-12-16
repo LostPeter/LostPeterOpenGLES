@@ -29,9 +29,9 @@ namespace LostPeterFoundation
 
 
     //////////////////////// Common ////////////////////////
-    #if F_PLATFORM == F_PLATFORM_ANDROID
-        android_app* FUtil::ms_pAndroidApp = nullptr;
-    #endif
+#if F_PLATFORM == F_PLATFORM_ANDROID
+    android_app* FUtil::ms_pAndroidApp = nullptr;
+#endif
 
     String FUtil::ms_strPathBin = "";
     const String& FUtil::GetPathBinSaved()
@@ -96,7 +96,9 @@ namespace LostPeterFoundation
     String FUtil::GetPathAssets()
     {
         const String& pathBin = GetPathBin();
-    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        String pathAssets = pathBin;
+    #elif F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
         String pathAssets = pathBin + "/Assets/";
     #else
         String pathAssets = pathBin + "/";
@@ -116,7 +118,22 @@ namespace LostPeterFoundation
 ////File
     bool FUtil::IsExistFile(const String& strPath)
     {
-    #if F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetManager* manager = ms_pAndroidApp->activity->assetManager;
+        if (manager == nullptr) 
+        {
+            F_LogError("*********************** FUtil::IsExistFile: AssetManager is null !");
+            return false;
+        }
+        AAsset* asset = AAssetManager_open(manager, strPath.c_str(), AASSET_MODE_UNKNOWN);
+        if (asset == nullptr)
+        {
+            return false;
+        }
+        AAsset_close(asset);
+        return true;
+
+    #elif F_PLATFORM == F_PLATFORM_WINDOW || F_PLATFORM == F_PLATFORM_MAC
         String pathReal = GetPathReal(strPath);
         std::ifstream file(pathReal.c_str(), std::ios::ate | std::ios::binary);
         if (!file.is_open())
@@ -209,7 +226,16 @@ namespace LostPeterFoundation
 ////Directory
     bool FUtil::IsDirectory(const String& strPath)
     {
-    #if F_PLATFORM == F_PLATFORM_WINDOW
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetDir* assetDir = AAssetManager_openDir(ms_pAndroidApp->activity->assetManager, strPath.c_str());
+        if (assetDir != nullptr)
+        {
+            AAssetDir_close(assetDir);
+            return true;
+        }
+        return false;
+
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         return ::PathIsDirectory(strPath.c_str()) ? true : false;
 
     #elif F_PLATFORM == F_PLATFORM_MAC
@@ -285,7 +311,45 @@ namespace LostPeterFoundation
 ////File/Folder Op
     bool FUtil::EnumFiles(const String& strFolderPath, StringVector& aFiles, bool bFilePath, bool bDelSuffix)
     {
-    #if F_PLATFORM == F_PLATFORM_WINDOW
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetManager* manager = ms_pAndroidApp->activity->assetManager;
+        if (manager == nullptr) 
+        {
+            F_LogError("*********************** FUtil::EnumFolders: AssetManager is null !");
+            return false;
+        }
+
+        AAssetDir* assetDir = AAssetManager_openDir(manager, strFolderPath.c_str());
+        if (assetDir == nullptr)
+            return false;
+        
+        const char* filename;
+        while ((filename = AAssetDir_getNextFileName(assetDir)) != nullptr)
+        {
+            String strName(filename);
+            if (bDelSuffix)
+            {
+                int index = (int)strName.find_last_of('.');
+                if (index > 0)
+                {
+                    strName = strName.substr(0, index);
+                }
+            }
+            String pathSub = strFolderPath + "/" + strName;
+
+            if (bFilePath)
+            {
+                aFiles.push_back(pathSub);
+            }
+            else
+            {
+                aFiles.push_back(strName);
+            }
+        }
+        AAssetDir_close(assetDir);
+        return true;
+
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
@@ -398,7 +462,43 @@ namespace LostPeterFoundation
 
     bool FUtil::EnumFiles(const String& strFolderPath, String2StringMap& mapFiles, bool bIsRecursive, bool bDelSuffix)
     {
-    #if F_PLATFORM == F_PLATFORM_WINDOW
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        AAssetManager* manager = ms_pAndroidApp->activity->assetManager;
+        if (manager == nullptr) 
+        {
+            F_LogError("*********************** FUtil::EnumFolders: AssetManager is null !");
+            return false;
+        }
+
+        AAssetDir* assetDir = AAssetManager_openDir(manager, strFolderPath.c_str());
+        if (assetDir == nullptr)
+            return false;
+        
+        const char* filename;
+        while ((filename = AAssetDir_getNextFileName(assetDir)) != nullptr)
+        {
+            String strName(filename);
+            if (bDelSuffix)
+            {
+                int index = (int)strName.find_last_of('.');
+                if (index > 0)
+                {
+                    strName = strName.substr(0, index);
+                }
+            }
+            String pathSub = strFolderPath + "/" + strName;
+
+            if (mapFiles.find(strName) != mapFiles.end())
+            {
+                F_LogError("*********************** FUtil::EnumFiles: File name: [%s] already exist, path: [%s] !", strName.c_str(), pathSub.c_str());
+                return false;
+            }
+            mapFiles[strName] = pathSub;
+        }
+        AAssetDir_close(assetDir);
+        return true;
+
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);
@@ -509,7 +609,10 @@ namespace LostPeterFoundation
 
     bool FUtil::EnumFolders(const String& strFolderPath, StringVector& aFolders, bool bFolderPath, bool bIsRecursive)
     {
-    #if F_PLATFORM == F_PLATFORM_WINDOW
+    #if F_PLATFORM == F_PLATFORM_ANDROID
+        
+
+    #elif F_PLATFORM == F_PLATFORM_WINDOW
         String strWild = strFolderPath + "/*.*";
 		WIN32_FIND_DATA fd;
 		HANDLE findFile = ::FindFirstFile(strWild.c_str(), &fd);

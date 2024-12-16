@@ -24,21 +24,21 @@ namespace LostPeterOpenGLES
         ~GLESDebug();
 
     public:
-        // PFNGLDEBUGMESSAGECONTROLPROC func_glDebugMessageControl;
-        // PFNGLDEBUGMESSAGECALLBACKPROC func_glDebugMessageCallback;
-        // PFNGLDEBUGMESSAGEINSERTPROC func_glDebugMessageInsert;
-        // PFNGLOBJECTLABELPROC func_glObjectLabel;
-        // PFNGLGETOBJECTLABELPROC func_glGetObjectLabel;
-        // PFNGLPUSHDEBUGGROUPPROC func_glPushDebugGroup;
-        // PFNGLPOPDEBUGGROUPPROC func_glPopDebugGroup;
+        PFNGLDEBUGMESSAGECONTROLPROC func_glDebugMessageControl;
+        PFNGLDEBUGMESSAGECALLBACKPROC func_glDebugMessageCallback;
+        PFNGLDEBUGMESSAGEINSERTPROC func_glDebugMessageInsert;
+        PFNGLOBJECTLABELPROC func_glObjectLabel;
+        PFNGLGETOBJECTLABELPROC func_glGetObjectLabel;
+        PFNGLPUSHDEBUGGROUPPROC func_glPushDebugGroup;
+        PFNGLPOPDEBUGGROUPPROC func_glPopDebugGroup;
 
-        // PFNGLDEBUGMESSAGECONTROLKHRPROC func_glDebugMessageControlKHR;
-        // PFNGLDEBUGMESSAGECALLBACKKHRPROC func_glDebugMessageCallbackKHR;
-        // PFNGLDEBUGMESSAGEINSERTKHRPROC func_glDebugMessageInsertKHR;
-        // PFNGLOBJECTLABELKHRPROC func_glObjectLabelKHR;
-        // PFNGLGETOBJECTLABELKHRPROC func_glGetObjectLabelKHR;
-        // PFNGLPUSHDEBUGGROUPKHRPROC func_glPushDebugGroupKHR;
-        // PFNGLPOPDEBUGGROUPKHRPROC func_glPopDebugGroupKHR;
+        PFNGLDEBUGMESSAGECONTROLKHRPROC func_glDebugMessageControlKHR;
+        PFNGLDEBUGMESSAGECALLBACKKHRPROC func_glDebugMessageCallbackKHR;
+        PFNGLDEBUGMESSAGEINSERTKHRPROC func_glDebugMessageInsertKHR;
+        PFNGLOBJECTLABELKHRPROC func_glObjectLabelKHR;
+        PFNGLGETOBJECTLABELKHRPROC func_glGetObjectLabelKHR;
+        PFNGLPUSHDEBUGGROUPKHRPROC func_glPushDebugGroupKHR;
+        PFNGLPOPDEBUGGROUPKHRPROC func_glPopDebugGroupKHR;
 
     public:
         static GLESDebug& GetSingleton();
@@ -50,7 +50,7 @@ namespace LostPeterOpenGLES
 
     public:
         void DebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
-        //void DebugMessageCallback(GLDEBUGPROCKHR callback, const void* userParam);
+        void DebugMessageCallback(GLDEBUGPROCKHR callback, const void* userParam);
         void DebugMessageInsert(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* buf);
         void ObjectLabel(GLenum identifier, GLuint name, GLsizei length, const GLchar* label);
         void GetObjectLabel(GLenum identifier, GLuint name, GLsizei bufSize, GLsizei* length, GLchar* label);
