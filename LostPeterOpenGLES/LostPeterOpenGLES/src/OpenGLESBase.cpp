@@ -45,7 +45,7 @@ namespace LostPeterOpenGLES
 
         , nameTitle(name)
     {
-        this->pathBin = FUtil::GetPathBin() + "/";
+        this->pathBin = FUtil::GetPathBin();
         F_LogInfo("Path Bin: [%s] !", this->pathBin.c_str());
 
         RefreshAspectRatio();

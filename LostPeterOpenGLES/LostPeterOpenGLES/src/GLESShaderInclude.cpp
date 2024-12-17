@@ -27,7 +27,7 @@ namespace LostPeterOpenGLES
 	}
 
 
-    String GLESShaderInclude::s_pathInclude = "Assets/Shader/Include/";
+    String GLESShaderInclude::s_pathInclude = "Shader/Include/";
     String2StringMap GLESShaderInclude::s_mapIncludeKey2Content;
     GLESShaderInclude::GLESShaderInclude()
         : Base("ShaderInclude")

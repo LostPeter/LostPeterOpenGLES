@@ -131,9 +131,9 @@ namespace LostPeterOpenGLES
         "geo_entity_torus",             "Pos3Color4Normal3Tex2",      "geometry",         "",                                   "EntityTorus",              "false;false;0.5;0.2;50;20",                                    "false", //geo_entity_torus
 
         "quad",                         "Pos3Color4Tex2",             "geometry",         "",                                   "EntityQuad",               "true;false;0;0;1;1;0",                                         "false", //quad
-        "plane",                        "Pos3Color4Normal3Tex2",      "file",             "Assets/Mesh/Common/plane.fbx",       "",                         "",                                                             "false", //plane
-        "cube",                         "Pos3Color4Normal3Tex2",      "file",             "Assets/Mesh/Common/cube.obj",        "",                         "",                                                             "false", //cube
-        "sphere",                       "Pos3Color4Normal3Tex2",      "file",             "Assets/Mesh/Common/sphere.fbx",      "",                         "",                                                             "false", //sphere
+        "plane",                        "Pos3Color4Normal3Tex2",      "file",             "Mesh/Common/plane.fbx",              "",                         "",                                                             "false", //plane
+        "cube",                         "Pos3Color4Normal3Tex2",      "file",             "Mesh/Common/cube.obj",               "",                         "",                                                             "false", //cube
+        "sphere",                       "Pos3Color4Normal3Tex2",      "file",             "Mesh/Common/sphere.fbx",             "",                         "",                                                             "false", //sphere
 
     };
     static bool g_MeshIsFlipYs_Internal[g_MeshCount_Internal] = 
@@ -403,10 +403,10 @@ namespace LostPeterOpenGLES
     static const char* g_TexturePaths_Internal[5 * g_TextureCount_Internal] = 
     {
         //Texture Name                      //Texture Type   //TextureIsRenderTarget   //TextureIsGraphicsComputeShared   //Texture Path
-        "default_black",                    "2D",            "false",                  "false",                           "Assets/Texture/Common/default_black.bmp", //default_black
-        "default_white",                    "2D",            "false",                  "false",                           "Assets/Texture/Common/default_white.bmp", //default_white
-        "default_blackwhite",               "2D",            "false",                  "false",                           "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite
-        "texture2d",                        "2D",            "false",                  "false",                           "Assets/Texture/Common/texture2d.jpg", //texture2d
+        "default_black",                    "2D",            "false",                  "false",                           "Texture/Common/default_black.bmp", //default_black
+        "default_white",                    "2D",            "false",                  "false",                           "Texture/Common/default_white.bmp", //default_white
+        "default_blackwhite",               "2D",            "false",                  "false",                           "Texture/Common/default_blackwhite.png", //default_blackwhite
+        "texture2d",                        "2D",            "false",                  "false",                           "Texture/Common/texture2d.jpg", //texture2d
         
     };
     static FTexturePixelFormatType g_TextureFormats_Internal[g_TextureCount_Internal] = 
@@ -927,9 +927,9 @@ namespace LostPeterOpenGLES
         , cfg_shaderFragment_Path("")
         , cfg_texture_Path("")
         , cfg_terrain_Path("")
-        , cfg_terrainTextureDiffuse_Path("Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png")
-        , cfg_terrainTextureNormal_Path("Assets/Texture/Terrain/shore_sand_norm.png;Assets/Texture/Terrain/moss_norm.tga;Assets/Texture/Terrain/rock_cliff_norm.tga;Assets/Texture/Terrain/cliff_norm.png")
-        , cfg_terrainTextureControl_Path("Assets/Texture/Terrain/terrain_control.png")
+        , cfg_terrainTextureDiffuse_Path("Texture/Terrain/shore_sand_albedo.png;Texture/Terrain/moss_albedo.png;Texture/Terrain/rock_cliff_albedo.png;Texture/Terrain/cliff_albedo.png")
+        , cfg_terrainTextureNormal_Path("Texture/Terrain/shore_sand_norm.png;Texture/Terrain/moss_norm.tga;Texture/Terrain/rock_cliff_norm.tga;Texture/Terrain/cliff_norm.png")
+        , cfg_terrainTextureControl_Path("Texture/Terrain/terrain_control.png")
         , cfg_terrainHeightStart(0.0f)
         , cfg_terrainHeightMax(200.0f)
 
@@ -2653,8 +2653,14 @@ namespace LostPeterOpenGLES
                 {
                     //1> Load Texture From File
                     String pathTexture = GetAssetFullPath(pathAsset_Tex);
+                    CharVector content;
+                    if (!FUtil::LoadAssetFileContent(pathTexture.c_str(), content))
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createTexture2D: Failed to load texture from file, path: [%s] !", pathTexture.c_str());
+                        return false;
+                    }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, 0);
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
                     int imageSize = width * height * texChannels;
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
@@ -3001,7 +3007,7 @@ namespace LostPeterOpenGLES
             }
             String OpenGLESWindow::getShaderPathRelative(const String& nameShader, ShaderSortType type)
             {
-                String pathRelative = "Assets/Shader/";
+                String pathRelative = "Shader/";
                 if (type == ShaderSort_Common)
                 {
                     pathRelative += "Common/";

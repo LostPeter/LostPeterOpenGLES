@@ -111,7 +111,10 @@ namespace LostPeterFoundation
     }
     String FUtil::GetPathReal(const String& strPath)
     {
-        return GetPathBin() + "/" + strPath;
+        const String& pathBin = GetPathBin();
+        if (pathBin.empty())
+            return strPath;
+        return pathBin + "/" + strPath;
     }
 
 
