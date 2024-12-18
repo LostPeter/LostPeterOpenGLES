@@ -10,12 +10,19 @@
 ****************************************************************************/
 
 #version 300 es
-#extension GL_ARB_shading_language_include : enable
-#include "/glsl_common.glsl"
 
 layout (location = 0) in vec2 inPosition;
 layout (location = 1) in vec4 inColor;
 layout (location = 2) in vec2 inTexCoord;
+
+//CopyBlitObjectConstants
+layout (std140) uniform CopyBlitObjectConstants
+{
+    float offsetX;
+    float offsetY;
+    float scaleX;
+    float scaleY;
+} objectCopyBlit;
 
 out vec4 fragColor;
 out vec2 fragTexCoord;

@@ -637,7 +637,7 @@ namespace LostPeterOpenGLES
         {
             String shaderName = g_ShaderModulePaths_Internal[3 * i + 0];
             String shaderType = g_ShaderModulePaths_Internal[3 * i + 1];
-            String shaderPath = getShaderPathRelative(g_ShaderModulePaths_Internal[3 * i + 2], ShaderSort_Common);
+            String shaderPath = getShaderPathRelative(g_ShaderModulePaths_Internal[3 * i + 2]);
             FShaderType typeShader = F_ParseShaderType(shaderType);
 
             GLESShader* pShader = createShader(shaderName, shaderPath, typeShader);
@@ -3003,29 +3003,12 @@ namespace LostPeterOpenGLES
             }
             String OpenGLESWindow::getShaderPathRelative(const String& nameShader)
             {
-                return getShaderPathRelative(nameShader, ShaderSort_Platform);
-            }
-            String OpenGLESWindow::getShaderPathRelative(const String& nameShader, ShaderSortType type)
-            {
-                String pathRelative = "Shader/";
-                if (type == ShaderSort_Common)
-                {
-                    pathRelative += "Common/";
-                } 
-                else
-                {
-                #if F_PLATFORM == F_PLATFORM_MAC
-                    pathRelative += "MacOS/";
-                #else
-                    pathRelative += "Windows/";
-                #endif
-                }
-                pathRelative += nameShader;
+                String pathRelative = "Shader/Android/" + nameShader;
                 return pathRelative;
             }
-            String OpenGLESWindow::getShaderPath(const String& nameShader, ShaderSortType type)
+            String OpenGLESWindow::getShaderPath(const String& nameShader)
             {
-                String pathRelative = getShaderPathRelative(nameShader, type);
+                String pathRelative = getShaderPathRelative(nameShader);
                 return GetAssetFullPath(pathRelative);
             }
 

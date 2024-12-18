@@ -647,8 +647,7 @@ namespace LostPeterOpenGLES
 
                 virtual GLESShader* createShader(const String& nameShader, const String& pathFile, FShaderType typeShader);
                 virtual String getShaderPathRelative(const String& nameShader);
-                virtual String getShaderPathRelative(const String& nameShader, ShaderSortType type);
-                virtual String getShaderPath(const String& nameShader, ShaderSortType type);
+                virtual String getShaderPath(const String& nameShader);
 
                 virtual bool createGLShader(const String& nameShader, const String& pathFile, FShaderType typeShader, uint32& nShaderID);
                 virtual bool createGLShader(const String& nameShader, const String& strTypeShader, const String& pathFile, FShaderType typeShader, uint32& nShaderID);

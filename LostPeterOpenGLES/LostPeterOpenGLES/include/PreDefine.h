@@ -257,17 +257,6 @@ namespace LostPeterOpenGLES
     };
     
 
-    enum ShaderSortType
-    {
-        ShaderSort_Common = 0,      //0: Common
-        ShaderSort_Platform,        //1: Platform
-
-    };
-    openglesExport const String& Util_GetShaderSortTypeName(ShaderSortType type);
-    openglesExport const String& Util_GetShaderSortTypeName(int type);
-    openglesExport ShaderSortType Util_ParseShaderSortType(const String& strName);
-
-
     enum DescriptorSetType
     {
         DescriptorSet_PassConstants = 0,             //0:  PassConstants

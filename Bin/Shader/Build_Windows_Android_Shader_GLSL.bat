@@ -10,11 +10,29 @@
 @REM #****************************************************************************/
 
 @echo off
+setlocal enabledelayedexpansion
 
 set name_shader=%1
 set folder_shader=%2
 
 set folderSrc=.\glsl\sample
 set folderDst=..\Assets\Shader
+set fileDst=%folderDst%\%folder_shader%\%name_shader%.spv
 
-copy %folderSrc%\%name_shader% %folderDst%\%folder_shader%\%name_shader%.spv
+copy %folderSrc%\%name_shader% %fileDst%
+
+set version=#version
+set lineSkip=0
+for /f "delims=" %%i in (%fileDst%) do (
+    set /a lineSkip+=1
+    echo %%i| findstr %version% >nul && (
+        goto abc
+    )
+)
+:abc
+echo "%version% is in line: %lineSkip%"
+
+more +%lineSkip% "%fileDst%" > "%fileDst%.txt"
+move /y %fileDst%.txt %fileDst%
+
+endlocal

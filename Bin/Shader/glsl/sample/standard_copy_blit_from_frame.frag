@@ -10,10 +10,11 @@
 ****************************************************************************/
 
 #version 300 es
-
-out vec4 outColor;
+precision mediump float;
 
 in vec4 fragColor;
+
+out vec4 outColor;
 
 void main()
 {

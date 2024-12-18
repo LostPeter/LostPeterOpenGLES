@@ -71,33 +71,6 @@ namespace LostPeterOpenGLES
     }
 
 
-    //ShaderSortType
-    static String s_nameShaderSort[] = 
-    {
-        "Common",               //0:    Common
-        "Platform",             //1:    Platform
-
-    };
-    const String& Util_GetShaderSortTypeName(ShaderSortType type)
-    {
-        return s_nameShaderSort[(int)type];
-    }
-    const String& Util_GetShaderSortTypeName(int type)
-    {
-        return s_nameShaderSort[(int)type];
-    }
-    ShaderSortType Util_ParseShaderSortType(const String& strName)
-    {
-        for (size_t i = 0; i < (int)ShaderSort_Platform; i++)
-        {
-            if (s_nameShaderSort[i] == strName)
-                return (ShaderSortType)(i);
-        }
-        F_Assert(false && "Util_ParseShaderSortType: Wrong type name !")
-        return ShaderSort_Common;
-    }
-
-
     //DescriptorSetType
     static String s_nameDescriptorSetTypes[] = 
     {
