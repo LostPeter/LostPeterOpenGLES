@@ -13,8 +13,8 @@
 #include "opengles_006_depth.h"
 
 
-OpenGLES_006_Depth::OpenGLES_006_Depth(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_006_Depth::OpenGLES_006_Depth(String name)
+    : OpenGLESWindow(name)
 {
     
 }

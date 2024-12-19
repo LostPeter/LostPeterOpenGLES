@@ -13,8 +13,8 @@
 #include "opengles_008_blend.h"
 
 
-OpenGLES_008_Blend::OpenGLES_008_Blend(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_008_Blend::OpenGLES_008_Blend(String name)
+    : OpenGLESWindow(name)
 {
     
 }

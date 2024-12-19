@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_005_Camera sample(1280, 720, "LostPeter - OpenGLES_005_Camera");
+    OpenGLES_005_Camera sample("LostPeter - OpenGLES_005_Camera");
     App::Run(app, &sample);
 }

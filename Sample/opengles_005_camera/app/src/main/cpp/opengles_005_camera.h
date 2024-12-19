@@ -18,7 +18,7 @@ using namespace LostPeterOpenGLES;
 class OpenGLES_005_Camera : public OpenGLESWindow
 {
 public:
-    OpenGLES_005_Camera(int width, int height, String name);
+    OpenGLES_005_Camera(String name);
 
 public:
 

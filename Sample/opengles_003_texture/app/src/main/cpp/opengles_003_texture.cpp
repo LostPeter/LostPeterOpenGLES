@@ -13,8 +13,8 @@
 #include "opengles_003_texture.h"
 
 
-OpenGLES_003_Texture::OpenGLES_003_Texture(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_003_Texture::OpenGLES_003_Texture(String name)
+    : OpenGLESWindow(name)
 {
     
 }

@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_008_Blend sample(1280, 720, "LostPeter - OpenGLES_008_Blend");
+    OpenGLES_008_Blend sample("LostPeter - OpenGLES_008_Blend");
     App::Run(app, &sample);
 }

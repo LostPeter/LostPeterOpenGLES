@@ -20,7 +20,7 @@ namespace LostPeterOpenGLES
     class openglesExport OpenGLESWindow : public OpenGLESBase
     {
     public:
-        OpenGLESWindow(int width, int height, String name);
+        OpenGLESWindow(String name);
         virtual ~OpenGLESWindow();
 
     ///////////////////////// Internal /////////////////////////
@@ -277,7 +277,7 @@ namespace LostPeterOpenGLES
 
     public:
         // Common
-        virtual void OnInit();
+        virtual void OnInit(int w, int h);
         virtual void OnLoad();
         virtual bool OnIsInit();
         virtual void OnResize(int w, int h, bool force);
@@ -525,11 +525,9 @@ namespace LostPeterOpenGLES
                     virtual void bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 nUniformBlockIndex);
                     virtual void destroyGLBufferUniform(uint32 nBufferUniformID);
 
-                    virtual void* mapGLBuffer(uint32 nBufferID, GLenum target, GLenum access);
-                    virtual void unMapGLBuffer(GLenum target);
-
-                    virtual void* mapGLBufferRange(uint32 nBufferID, size_t offset, size_t bufSize, GLbitfield access);
-                    virtual void flushGLMappedBufferRange(uint32 nBufferID, size_t offset, size_t bufSize);
+                    virtual void* mapGLBufferRange(uint32 nBufferID, GLenum target, size_t offset, size_t bufSize, GLbitfield access);
+                        virtual void flushGLMappedBufferRange(uint32 nBufferID, size_t offset, size_t bufSize);
+                    virtual void unMapGLBufferRange(GLenum target);
 
 
                 virtual void loadTexture();

@@ -19,16 +19,11 @@ namespace LostPeterOpenGLES
     class openglesExport OpenGLESBase
     {
     public:
-        OpenGLESBase(int width, int height, String name);
+        OpenGLESBase(String name);
         virtual ~OpenGLESBase();
 
     public:
         static FLogManager* ms_pLogManager;
-
-    public:
-        int versionGL_Major;
-        int versionGL_Minor;
-        const char* versionGLSL;    
 
     public:
         int width;
@@ -66,7 +61,7 @@ namespace LostPeterOpenGLES
 
     public:
         // Common
-        virtual void OnInit() = 0;
+        virtual void OnInit(int w, int h) = 0;
         virtual void OnLoad() = 0;
         virtual bool OnIsInit() = 0;
         virtual void OnResize(int w, int h, bool force) = 0;

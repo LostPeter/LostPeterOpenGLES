@@ -18,7 +18,7 @@ using namespace LostPeterOpenGLES;
 class OpenGLES_003_Texture : public OpenGLESWindow
 {
 public:
-    OpenGLES_003_Texture(int width, int height, String name);
+    OpenGLES_003_Texture(String name);
 
 public:
 

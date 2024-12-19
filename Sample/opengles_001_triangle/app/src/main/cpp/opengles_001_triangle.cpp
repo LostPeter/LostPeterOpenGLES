@@ -13,8 +13,8 @@
 #include "opengles_001_triangle.h"
 
 
-OpenGLES_001_Triangle::OpenGLES_001_Triangle(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_001_Triangle::OpenGLES_001_Triangle(String name)
+    : OpenGLESWindow(name)
 {
     
 }

@@ -43,9 +43,11 @@ namespace LostPeterOpenGLES
                             size_t bufSize, 
                             uint8* pBuf);
 
-        virtual void* MapBuffer(GLenum access);
+        virtual void* MapBuffer(size_t offset, size_t bufSize, GLenum access);
         virtual void UnMapBuffer();
-        virtual void UpdateBuffer(size_t bufSize, 
+
+        virtual void UpdateBuffer(size_t offset,
+                                  size_t bufSize, 
                                   uint8* pBuf,
                                   GLenum access);
 

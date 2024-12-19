@@ -13,8 +13,8 @@
 #include "opengles_000_window.h"
 
 
-OpenGLES_000_Window::OpenGLES_000_Window(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_000_Window::OpenGLES_000_Window(String name)
+    : OpenGLESWindow(name)
 {
     
 }

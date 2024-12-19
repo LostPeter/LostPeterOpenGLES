@@ -13,8 +13,8 @@
 #include "opengles_002_imgui.h"
 
 
-OpenGLES_002_Imgui::OpenGLES_002_Imgui(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_002_Imgui::OpenGLES_002_Imgui(String name)
+    : OpenGLESWindow(name)
 {
     
 }

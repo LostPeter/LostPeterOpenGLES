@@ -13,8 +13,8 @@
 #include "opengles_005_camera.h"
 
 
-OpenGLES_005_Camera::OpenGLES_005_Camera(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_005_Camera::OpenGLES_005_Camera(String name)
+    : OpenGLESWindow(name)
 {
     
 }

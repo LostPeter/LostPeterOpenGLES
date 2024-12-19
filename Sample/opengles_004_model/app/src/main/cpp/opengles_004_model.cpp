@@ -13,8 +13,8 @@
 #include "opengles_004_model.h"
 
 
-OpenGLES_004_Model::OpenGLES_004_Model(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_004_Model::OpenGLES_004_Model(String name)
+    : OpenGLESWindow(name)
 {
     
 }

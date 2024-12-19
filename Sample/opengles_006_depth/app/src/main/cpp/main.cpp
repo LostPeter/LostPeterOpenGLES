@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_006_Depth sample(1280, 720, "LostPeter - OpenGLES_006_Depth");
+    OpenGLES_006_Depth sample("LostPeter - OpenGLES_006_Depth");
     App::Run(app, &sample);
 }

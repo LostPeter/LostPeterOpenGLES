@@ -77,8 +77,8 @@ namespace LostPeterOpenGLES
     }
 
     void GLESBufferUniform::Update(size_t offset,
-                                 size_t bufSize, 
-                                 uint8* pBuf)
+                                   size_t bufSize, 
+                                   uint8* pBuf)
     {
         Base::GetWindowPtr()->updateGLBufferUniform(offset,
                                                     bufSize, 
@@ -86,22 +86,29 @@ namespace LostPeterOpenGLES
                                                     this->nBufferUniformID);
     }                        
 
-    void* GLESBufferUniform::MapBuffer(GLenum access)
+    void* GLESBufferUniform::MapBuffer(size_t offset, size_t bufSize, GLenum access)
     {
-        return Base::GetWindowPtr()->mapGLBuffer(this->nBufferUniformID, GL_UNIFORM_BUFFER, access);
+        return Base::GetWindowPtr()->mapGLBufferRange(this->nBufferUniformID, GL_UNIFORM_BUFFER, offset, bufSize, access);
     }
     void GLESBufferUniform::UnMapBuffer()
     {
-        Base::GetWindowPtr()->unMapGLBuffer(GL_UNIFORM_BUFFER);
+        Base::GetWindowPtr()->unMapGLBufferRange(GL_UNIFORM_BUFFER);
     }
-    void GLESBufferUniform::UpdateBuffer(size_t bufSize, 
-                                       uint8* pBuf,
-                                       GLenum access)
+    void GLESBufferUniform::UpdateBuffer(size_t offset,
+                                         size_t bufSize, 
+                                         uint8* pBuf,
+                                         GLenum access)
     {
-        void* pData = MapBuffer(access);
-        F_Assert(pData && "GLESBufferUniform::UpdateBuffer")
-        memcpy(pData, pBuf, bufSize);
-        UnMapBuffer();
+        Update(offset, bufSize, pBuf);
+
+        // void* pData = MapBuffer(offset, bufSize, access);
+        // if (pData == nullptr)
+        // {
+        //     F_LogError("*********************** GLESBufferUniform::UpdateBuffer: Failed to MapBuffer uniform: [%s] !", GetName().c_str());
+        //     F_Assert(pData && "GLESBufferUniform::UpdateBuffer")
+        // }
+        // memcpy(pData, pBuf, bufSize);
+        // UnMapBuffer();
     }
 
     void GLESBufferUniform::BindBufferUniform()

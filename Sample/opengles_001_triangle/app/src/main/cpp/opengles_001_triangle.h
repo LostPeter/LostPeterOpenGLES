@@ -18,7 +18,7 @@ using namespace LostPeterOpenGLES;
 class OpenGLES_001_Triangle : public OpenGLESWindow
 {
 public:
-    OpenGLES_001_Triangle(int width, int height, String name);
+    OpenGLES_001_Triangle(String name);
 
 public:
 

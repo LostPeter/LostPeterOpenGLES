@@ -18,7 +18,7 @@ using namespace LostPeterOpenGLES;
 class OpenGLES_002_Imgui : public OpenGLESWindow
 {
 public:
-    OpenGLES_002_Imgui(int width, int height, String name);
+    OpenGLES_002_Imgui(String name);
 
 public:
 

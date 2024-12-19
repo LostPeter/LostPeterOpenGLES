@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_002_Imgui sample(1280, 720, "LostPeter - OpenGLES_002_Imgui");
+    OpenGLES_002_Imgui sample("LostPeter - OpenGLES_002_Imgui");
     App::Run(app, &sample);
 }

@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_003_Texture sample(1280, 720, "LostPeter - OpenGLES_003_Texture");
+    OpenGLES_003_Texture sample("LostPeter - OpenGLES_003_Texture");
     App::Run(app, &sample);
 }

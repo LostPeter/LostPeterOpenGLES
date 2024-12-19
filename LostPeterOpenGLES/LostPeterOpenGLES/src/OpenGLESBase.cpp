@@ -15,17 +15,9 @@
 namespace LostPeterOpenGLES
 {
     FLogManager* OpenGLESBase::ms_pLogManager = FLogManager::GetInstance();
-    OpenGLESBase::OpenGLESBase(int width, int height, String name)
-        : versionGL_Major(4)
-    #if F_PLATFORM == F_PLATFORM_MAC
-        , versionGL_Minor(1)
-        , versionGLSL("#version 410")
-    #else
-        , versionGL_Minor(6)
-        , versionGLSL("#version 460")
-    #endif
-        , width(width)
-        , height(height)
+    OpenGLESBase::OpenGLESBase(String name)
+        : width(0)
+        , height(0)
         , pWindow(nullptr)
 
         , isAppPaused(false)
@@ -47,8 +39,7 @@ namespace LostPeterOpenGLES
     {
         this->pathBin = FUtil::GetPathBin();
         F_LogInfo("Path Bin: [%s] !", this->pathBin.c_str());
-
-        RefreshAspectRatio();
+        
         fTimeLastFPS = pTimer->GetTimeSinceStart();
     }
 

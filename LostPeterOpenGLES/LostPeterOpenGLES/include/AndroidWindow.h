@@ -81,6 +81,10 @@ namespace LostPeterOpenGLES
     
         GLint GetContextRenderableType(EGLDisplay eglDisplay);
 
+    public:
+        int GetWindowWidth();
+        int GetWindowHeight();
+
     };
 
 }; //LostPeterOpenGLES

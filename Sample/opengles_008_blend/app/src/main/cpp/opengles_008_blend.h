@@ -18,7 +18,7 @@ using namespace LostPeterOpenGLES;
 class OpenGLES_008_Blend : public OpenGLESWindow
 {
 public:
-    OpenGLES_008_Blend(int width, int height, String name);
+    OpenGLES_008_Blend(String name);
 
 public:
 

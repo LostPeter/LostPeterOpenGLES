@@ -13,8 +13,8 @@
 #include "opengles_007_stencil.h"
 
 
-OpenGLES_007_Stencil::OpenGLES_007_Stencil(int width, int height, String name)
-    : OpenGLESWindow(width, height, name)
+OpenGLES_007_Stencil::OpenGLES_007_Stencil(String name)
+    : OpenGLESWindow(name)
 {
     
 }

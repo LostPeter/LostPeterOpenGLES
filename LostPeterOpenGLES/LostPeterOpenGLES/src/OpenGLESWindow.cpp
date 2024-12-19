@@ -858,8 +858,8 @@ namespace LostPeterOpenGLES
     /////////////////////////// OpenGLESWindow //////////////////////
     const String OpenGLESWindow::c_strShaderProgram = "ShaderProgram";
     FDynamicLib* OpenGLESWindow::s_poDynLoader_EGL = nullptr;
-    OpenGLESWindow::OpenGLESWindow(int width, int height, String name)
-        : OpenGLESBase(width, height, name)
+    OpenGLESWindow::OpenGLESWindow(String name)
+        : OpenGLESBase(name)
 
         , poDebug(nullptr)
         , poShaderInclude(nullptr)
@@ -983,8 +983,9 @@ namespace LostPeterOpenGLES
         s_poDynLoader_EGL = nullptr;
     }
 
-    void OpenGLESWindow::OnInit()
+    void OpenGLESWindow::OnInit(int w, int h)
     {
+        resizeWindow(w, h, true);
         createPipeline();
     }
 
@@ -1673,16 +1674,16 @@ namespace LostPeterOpenGLES
             //glGetIntegerv(GL_DEPTH_STENCIL_ATTACHMENT, &this->poDepthImageFormat);
 
             //2> Framebuffer
-            // int w, h;
-            // glfwGetFramebufferSize(this->pWindow, &w, &h);
-            // this->poFramebufferSize.x = (float)w;
-            // this->poFramebufferSize.y = (float)h;
-            // float scaleX, scaleY;
-            // glfwGetWindowContentScale(this->pWindow, &scaleX, &scaleY);
-            // this->poWindowContentScale.x = scaleX;
-            // this->poWindowContentScale.y = scaleY;
-            // F_LogInfo("<1-5-1> OpenGLESWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d], scale: [%f, %f], format color: [%d], format depth: [%d] !", 
-            //           w, h, this->width, this->height, scaleX, scaleY, this->poSwapChainImageFormat, this->poDepthImageFormat);
+            int w = this->width;
+            int h = this->height;
+            this->poFramebufferSize.x = (float)this->width;
+            this->poFramebufferSize.y = (float)this->height;
+            float scaleX = 1.0f;
+            float scaleY = 1.0f;
+            this->poWindowContentScale.x = scaleX;
+            this->poWindowContentScale.y = scaleY;
+            F_LogInfo("<1-5-1> OpenGLESWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d], scale: [%f, %f], format color: [%d], format depth: [%d] !", 
+                      w, h, this->width, this->height, scaleX, scaleY, this->poSwapChainImageFormat, this->poDepthImageFormat);
             
             createViewport();
         }
@@ -1718,24 +1719,24 @@ namespace LostPeterOpenGLES
             {
                 String nameSwapChain = "Texture-SwapChain-" + FUtilString::SaveInt(i);
                 GLESTexture* pTexture = createTexture(nameSwapChain,
-                                                    aPathTexture,
-                                                    nullptr,
-                                                    4,
-                                                    w,
-                                                    h,
-                                                    0,
-                                                    F_Texture_2D,
-                                                    F_TexturePixelFormat_R8G8B8A8_SRGB,
-                                                    F_TextureAddressing_Wrap,
-                                                    F_TextureFilter_Bilinear,
-                                                    F_TextureFilter_Bilinear,
-                                                    F_MSAASampleCount_1_Bit,
-                                                    FColor(0, 0, 0, 1),
-                                                    true,
-                                                    true,
-                                                    false,
-                                                    true,
-                                                    false);
+                                                      aPathTexture,
+                                                      nullptr,
+                                                      4,
+                                                      w,
+                                                      h,
+                                                      0,
+                                                      F_Texture_2D,
+                                                      F_TexturePixelFormat_R8G8B8A8_SRGB,
+                                                      F_TextureAddressing_Wrap,
+                                                      F_TextureFilter_Bilinear,
+                                                      F_TextureFilter_Bilinear,
+                                                      F_MSAASampleCount_1_Bit,
+                                                      FColor(0, 0, 0, 1),
+                                                      true,
+                                                      true,
+                                                      false,
+                                                      true,
+                                                      false);
                 if (pTexture == nullptr)
                 {
                     F_LogError("*********************** OpenGLESWindow::createSwapChainImageViews: Failed to create texture, name: [%s] !", nameSwapChain.c_str());
@@ -2467,9 +2468,9 @@ namespace LostPeterOpenGLES
                     return true;
                 }
                 void OpenGLESWindow::updateGLBufferUniform(size_t offset,
-                                                         size_t bufSize,
-                                                         uint8* pBuf,
-                                                         uint32 nBufferUniformID)
+                                                           size_t bufSize,
+                                                           uint8* pBuf,
+                                                           uint32 nBufferUniformID)
                 {
                     glBindBuffer(GL_UNIFORM_BUFFER, nBufferUniformID);
                     glBufferSubData(GL_UNIFORM_BUFFER, offset, bufSize, pBuf);
@@ -2493,43 +2494,30 @@ namespace LostPeterOpenGLES
                     }
                 }
 
-                void* OpenGLESWindow::mapGLBuffer(uint32 nBufferID, GLenum target, GLenum access)
+                void* OpenGLESWindow::mapGLBufferRange(uint32 nBufferID, GLenum target, size_t offset, size_t bufSize, GLbitfield access)
                 {
                     if (nBufferID <= 0)
                         return nullptr;
 
                     glBindBuffer(target, nBufferID);
-                    void* pData = nullptr; //glMapBuffer(target, access);
-                    if (pData == nullptr)
-                    {
-                        F_LogError("*********************** OpenGLESWindow::mapGLBuffer: Map buffer data failed, GL error: [%u] !", glGetError());
-                    }
-                    return pData;
-                }
-                void OpenGLESWindow::unMapGLBuffer(GLenum target)
-                {
-                    if (!glUnmapBuffer(target))
-                    {
-                        F_LogError("*********************** OpenGLESWindow::unMapGLBuffer: UnMap buffer data failed, GL error: [%u] !", glGetError());
-                    }
-                    glBindBuffer(target, 0);
-                }
-
-                void* OpenGLESWindow::mapGLBufferRange(uint32 nBufferID, size_t offset, size_t bufSize, GLbitfield access)
-                {
-                    if (nBufferID <= 0)
-                        return nullptr;
-
-                    void* pData = glMapBufferRange(nBufferID, offset, bufSize, access);
+                    void* pData = glMapBufferRange(target, offset, bufSize, access);
                     if (pData == nullptr)
                     {
                         F_LogError("*********************** OpenGLESWindow::mapGLBufferRange: GL error: [%u] !", glGetError());
                     }
                     return pData;
                 }
-                void OpenGLESWindow::flushGLMappedBufferRange(uint32 nBufferID, size_t offset, size_t bufSize)
+                    void OpenGLESWindow::flushGLMappedBufferRange(uint32 nBufferID, size_t offset, size_t bufSize)
+                    {
+                        glFlushMappedBufferRange(nBufferID, offset, bufSize);
+                    }
+                void OpenGLESWindow::unMapGLBufferRange(GLenum target)
                 {
-                    glFlushMappedBufferRange(nBufferID, offset, bufSize);
+                    if (!glUnmapBuffer(target))
+                    {
+                        F_LogError("*********************** OpenGLESWindow::unMapGLBufferRange: UnMap buffer data failed, GL error: [%u] !", glGetError());
+                    }
+                    glBindBuffer(target, 0);
                 }
 
 
@@ -3564,7 +3552,7 @@ namespace LostPeterOpenGLES
 
                 //3> Init OpenGL
                 // ImGui_ImplGlfw_InitForOpenGL(this->pWindow, true);
-                // ImGui_ImplOpenGL3_Init(this->versionGLSL);
+                // ImGui_ImplOpenGL3_Init();
 
 
                 F_LogInfo("<2-2-1> OpenGLESWindow::createImgui_Init finish !");
@@ -3712,7 +3700,8 @@ namespace LostPeterOpenGLES
 
                     //Update Buffer
                     GLESBufferUniform* pBufferUniform = this->poBuffers_PassCB[this->poCurrentFrame];
-                    pBufferUniform->UpdateBuffer(sizeof(PassConstants),
+                    pBufferUniform->UpdateBuffer(0,
+                                                 sizeof(PassConstants),
                                                  (uint8*)(&this->passCB),
                                                  GL_WRITE_ONLY);
                 }

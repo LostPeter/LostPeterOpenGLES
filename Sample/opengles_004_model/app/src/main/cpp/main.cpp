@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_004_Model sample(1280, 720, "LostPeter - OpenGLES_004_Model");
+    OpenGLES_004_Model sample("LostPeter - OpenGLES_004_Model");
     App::Run(app, &sample);
 }

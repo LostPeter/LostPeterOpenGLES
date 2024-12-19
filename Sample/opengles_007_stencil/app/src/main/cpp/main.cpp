@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_007_Stencil sample(1280, 720, "LostPeter - OpenGLES_007_Stencil");
+    OpenGLES_007_Stencil sample("LostPeter - OpenGLES_007_Stencil");
     App::Run(app, &sample);
 }

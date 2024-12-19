@@ -18,7 +18,7 @@ using namespace LostPeterOpenGLES;
 class OpenGLES_007_Stencil : public OpenGLESWindow
 {
 public:
-    OpenGLES_007_Stencil(int width, int height, String name);
+    OpenGLES_007_Stencil(String name);
 
 public:
 

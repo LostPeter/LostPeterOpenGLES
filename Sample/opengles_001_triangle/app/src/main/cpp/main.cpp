@@ -15,6 +15,6 @@
 
 void android_main(struct android_app* app)
 {
-    OpenGLES_001_Triangle sample(1280, 720, "LostPeter - OpenGLES_001_Triangle");
+    OpenGLES_001_Triangle sample("LostPeter - OpenGLES_001_Triangle");
     App::Run(app, &sample);
 }

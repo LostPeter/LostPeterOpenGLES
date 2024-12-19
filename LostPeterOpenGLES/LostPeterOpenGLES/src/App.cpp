@@ -422,7 +422,7 @@ namespace LostPeterOpenGLES
 
     void App::onInit(AndroidWindow* pWindow)
     {
-        s_pBase->OnInit();
+        s_pBase->OnInit(pWindow->GetWindowWidth(), pWindow->GetWindowHeight());
         s_pBase->OnLoad();
     }
     void App::onUpdate(AndroidWindow* pWindow)

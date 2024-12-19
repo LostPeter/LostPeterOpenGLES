@@ -198,5 +198,15 @@ namespace LostPeterOpenGLES
         return EGL_OPENGL_ES2_BIT;
     }
 
+    int AndroidWindow::GetWindowWidth()
+    {
+        this->m_Width = ANativeWindow_getWidth(this->m_eglNativeWindow);
+        return this->m_Width;
+    }
+    int AndroidWindow::GetWindowHeight()
+    {
+        this->m_Height = ANativeWindow_getHeight(this->m_eglNativeWindow);
+        return this->m_Height;
+    }
 
 }; //LostPeterOpenGLES
