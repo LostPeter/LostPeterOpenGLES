@@ -896,7 +896,7 @@ namespace LostPeterOpenGLES
         , isFrameBufferResized(false)
 
 
-        , cfg_colorBackground(0.0f, 0.2f, 0.4f, 1.0f)
+        , cfg_colorBackground(FMath::ToLinear(FColor(0.0f, 0.2f, 0.4f, 1.0f)))
 
         , cfg_isRenderPassDefaultCustom(false)
 

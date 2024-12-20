@@ -21,12 +21,17 @@ public:
     OpenGLES_001_Triangle(String name);
 
 public:
+    std::vector<FVertex_Pos2Color4> vertices;
 
 protected:
+    //Create Pipeline
+
+    //Load Assets
+        //Geometry
+            virtual void loadModel_Custom();
 
 public:
     
-
 
 };
 
