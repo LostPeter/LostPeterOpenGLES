@@ -254,6 +254,7 @@ namespace LostPeterOpenGLES
     static int32_t s_AppInputProc(struct android_app* app, AInputEvent* event)
     {
         AndroidWindow* pAndroidWindow = App::GetWindow();
+        OpenGLESBase* pBase = App::GetOpenGLESBase();
 
         switch (AInputEvent_getType(event))
         {
@@ -292,6 +293,9 @@ namespace LostPeterOpenGLES
         default:
             break;
         }
+
+        if (pBase->IsEnable_Imgui())
+            return ImGui_ImplAndroid_HandleInputEvent(event);
         return 0;
     }
 
@@ -319,7 +323,7 @@ namespace LostPeterOpenGLES
                                                                           LOOPER_ID_USER,
                                                                           nullptr, 
                                                                           nullptr);
-        if (!s_pWindow->Init())
+        if (!s_pWindow->Init(app))
         {
             F_LogError("*********************** App::Run: CreateWindow error !");
             return 0;

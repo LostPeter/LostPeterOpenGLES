@@ -21,12 +21,27 @@ public:
     OpenGLES_004_Model(String name);
 
 public:
+    std::vector<FVertex_Pos3Color4Tex2> vertices;
+    std::vector<uint32_t> indices;
 
 protected:
+    //Create Pipeline
 
-public:
-    
+    //Load Assets
+        //Geometry
+            virtual void loadModel_Default();
 
+        virtual void buildObjectCB();
+
+    //Render/Update
+        virtual bool beginRenderImgui();
+            virtual void modelConfig();
+            
+        virtual void endRenderImgui();
+
+private:
+    void resetSetting(int index);
+    void changeModel(int index);
 
 };
 

@@ -3550,10 +3550,17 @@ namespace LostPeterOpenGLES
                 ImGui::StyleColorsDark();
                 //ImGui::StyleColorsClassic();
 
-                //3> Init OpenGL
-                // ImGui_ImplGlfw_InitForOpenGL(this->pWindow, true);
-                // ImGui_ImplOpenGL3_Init();
+                //3> Setup Platform/Renderer backends
+                ImGui_ImplAndroid_Init(App::GetAndroidApp()->window);
+                ImGui_ImplOpenGL3_Init("#version 300 es");
 
+                //4> Imgui Font
+                ImFontConfig font_cfg;
+                font_cfg.SizePixels = 22.0f;
+                io.Fonts->AddFontDefault(&font_cfg);
+
+                //5> Arbitrary scale-up
+                ImGui::GetStyle().ScaleAllSizes(3.0f);
 
                 F_LogInfo("<2-2-1> OpenGLESWindow::createImgui_Init finish !");
             }
@@ -4353,8 +4360,7 @@ namespace LostPeterOpenGLES
                         pRenderPass->pFrameBuffer != nullptr)
                     {   
                         bindGLFrameBuffer(0);
-
-                        // setEnable(GL_FRAMEBUFFER_SRGB, true);
+                        
                         setEnableDepthTest(false);
                         //setPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                         setClearColor(this->cfg_colorBackground);
@@ -4429,7 +4435,7 @@ namespace LostPeterOpenGLES
             if (HasConfig_Imgui())
             {
                 ImGui_ImplOpenGL3_Shutdown();
-                // ImGui_ImplGlfw_Shutdown();
+                ImGui_ImplAndroid_Shutdown();
                 ImGui::DestroyContext();
             }
         }

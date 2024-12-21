@@ -23,6 +23,7 @@ namespace LostPeterOpenGLES
         virtual ~AndroidWindow();
 
     public:
+        android_app* m_pApp;
         ANativeActivity* m_pActivity;
         void* m_pSavedState;
         AConfiguration* m_pConfig;
@@ -74,7 +75,7 @@ namespace LostPeterOpenGLES
     public:
         void Clear();
         void Destroy();
-        bool Init();
+        bool Init(android_app* app);
 
     public:
         GLboolean CreateWindow(GLuint flags);

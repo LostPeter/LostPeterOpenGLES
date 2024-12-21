@@ -19,5 +19,31 @@ public class MainActivity extends NativeActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
-    
+    // void showSoftInput() {
+    //     InputMethodManager inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE);
+    //     inputMethodManager.showSoftInput(this.window.decorView, 0);
+    // }
+
+    // void hideSoftInput() {
+    //     InputMethodManager inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE);
+    //     inputMethodManager.hideSoftInputFromWindow(this.window.decorView.windowToken, 0);
+    // }
+
+    // // Queue for the Unicode characters to be polled from native code (via pollUnicodeChar())
+    // private LinkedBlockingQueue<Int> unicodeCharacterQueue = new LinkedBlockingQueue<int>();
+
+    // // We assume dispatchKeyEvent() of the NativeActivity is actually called for every
+    // // KeyEvent and not consumed by any View before it reaches here
+    // @Override
+    // Boolean dispatchKeyEvent(KeyEvent event) {
+    //     if (event.action == KeyEvent.ACTION_DOWN) {
+    //         unicodeCharacterQueue.offer(event.getUnicodeChar(event.metaState));
+    //     }
+    //     return super.dispatchKeyEvent(event);
+    // }
+
+    // int pollUnicodeChar() {
+    //     return unicodeCharacterQueue.poll() ?: 0;
+    // }
+
 }

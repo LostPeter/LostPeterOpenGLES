@@ -29,6 +29,7 @@ namespace LostPeterOpenGLES
         static App* GetApp();
         static android_app* GetAndroidApp() { return s_pAndroidApp; }
         static AndroidWindow* GetWindow() { return s_pWindow; }
+        static OpenGLESBase* GetOpenGLESBase() { return s_pBase; }
 
     public:
     protected:

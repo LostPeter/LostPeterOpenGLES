@@ -24,6 +24,7 @@ namespace LostPeterOpenGLES
 
     AndroidWindow::AndroidWindow(const String& nameWindow)
         : Base(nameWindow)
+        , m_pApp(nullptr)
     {
         Clear();
     }
@@ -81,11 +82,33 @@ namespace LostPeterOpenGLES
 
     void AndroidWindow::Destroy()
     {
+        if (!m_bIsEGLInit)
+            return;
 
+        if (m_eglDisplay != EGL_NO_DISPLAY)
+        {
+            eglMakeCurrent(m_eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+
+            if (m_eglContext != EGL_NO_CONTEXT)
+                eglDestroyContext(m_eglDisplay, m_eglContext);
+
+            if (m_eglSurface != EGL_NO_SURFACE)
+                eglDestroySurface(m_eglDisplay, m_eglSurface);
+
+            eglTerminate(m_eglDisplay);
+        }
+
+        m_eglDisplay = EGL_NO_DISPLAY;
+        m_eglSurface = EGL_NO_SURFACE;
+        m_eglContext = EGL_NO_CONTEXT;
+        ANativeWindow_release(this->m_pApp->window);
+
+        m_bIsEGLInit = false;
     }
 
-    bool AndroidWindow::Init()
+    bool AndroidWindow::Init(android_app* app)
     {
+        this->m_pApp = app;
 
         return true;
     }

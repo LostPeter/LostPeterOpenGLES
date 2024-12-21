@@ -21,12 +21,20 @@ public:
     OpenGLES_003_Texture(String name);
 
 public:
+    std::vector<FVertex_Pos2Color4Tex2> vertices;
 
 protected:
+    //Create Pipeline
+
+    //Load Assets
+        //Geometry
+            virtual void loadModel_Custom();
+
+    //Render/Update
+        virtual bool beginRenderImgui();
+        virtual void endRenderImgui();
 
 public:
-    
-
 
 };
 

@@ -41,19 +41,19 @@ void OpenGLES_002_Imgui::loadModel_Custom()
 
 bool OpenGLES_002_Imgui::beginRenderImgui()
 {
-    // ImGui_ImplOpenGL3_NewFrame();
-    // ImGui_ImplGlfw_NewFrame();
-    // ImGui::NewFrame();
-    // static bool windowOpened = true;
-    // static bool showDemoWindow = false;
-    // ImGui::Begin("OpenGLES_002_Imgui", &windowOpened, 0);
-    // ImGui::Text("Frametime: %f", this->fFPS);
-    // ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
-    // ImGui::End();
-    // if (showDemoWindow) 
-    // {
-    //     ImGui::ShowDemoWindow();
-    // }
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplAndroid_NewFrame();
+    ImGui::NewFrame();
+    static bool windowOpened = true;
+    static bool showDemoWindow = false;
+    ImGui::Begin("OpenGLES_002_Imgui", &windowOpened, 0);
+    ImGui::Text("Frametime: %f", this->fFPS);
+    ImGui::Checkbox("Show ImGui demo window", &showDemoWindow);
+    ImGui::End();
+    if (showDemoWindow) 
+    {
+        ImGui::ShowDemoWindow();
+    }
 
     return true;
 }

@@ -112,6 +112,9 @@ namespace LostPeterOpenGLES
         virtual void OnEditorCoordinateMouseLeftUp(double x, double y) { }
         virtual void OnEditorCoordinateMouseHover(double x, double y) { }
 
+        // Imgui
+        virtual bool IsEnable_Imgui() = 0;
+
     public:
         virtual void CalculateFrameStats(AndroidWindow* s_pWindow);
 
