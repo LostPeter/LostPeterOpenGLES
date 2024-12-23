@@ -475,19 +475,19 @@ namespace LostPeterOpenGLES
 
             StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
             GLESTexture* pTexture = new GLESTexture(nameTexture,
-                                                aPathTexture,
-                                                typeTexture,
-                                                g_TextureFormats_Internal[i],
-                                                g_TextureAddressings_Internal[i],
-                                                g_TextureFilters_Internal[2 * i + 0],
-                                                g_TextureFilters_Internal[2 * i + 1],
-                                                F_MSAASampleCount_1_Bit,
-                                                g_TextureBorderColors_Internal[i],
-                                                true,
-                                                true,
-                                                false,
-                                                isRenderTarget,
-                                                isGraphicsComputeShared);
+                                                    aPathTexture,
+                                                    typeTexture,
+                                                    g_TextureFormats_Internal[i],
+                                                    g_TextureAddressings_Internal[i],
+                                                    g_TextureFilters_Internal[2 * i + 0],
+                                                    g_TextureFilters_Internal[2 * i + 1],
+                                                    F_MSAASampleCount_1_Bit,
+                                                    g_TextureBorderColors_Internal[i],
+                                                    true,
+                                                    true,
+                                                    false,
+                                                    isRenderTarget,
+                                                    isGraphicsComputeShared);
             pTexture->texChunkMaxX = 0;
             pTexture->texChunkMaxY = 0; 
             if (pTexture->texChunkMaxX > 0 && 
@@ -693,11 +693,11 @@ namespace LostPeterOpenGLES
             {
                 String nameBuffer = "PassConstants-" + FUtilString::SaveSizeT(i);
                 GLESBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
-                                                                      DescriptorSet_PassConstants,
-                                                                      GL_DYNAMIC_DRAW,
-                                                                      bufferSize,
-                                                                      (uint8*)(&this->passCB),
-                                                                      false);
+                                                                        DescriptorSet_PassConstants,
+                                                                        GL_DYNAMIC_DRAW,
+                                                                        bufferSize,
+                                                                        (uint8*)(&this->passCB),
+                                                                        false);
                 if (!pBufferUniform)
                 {
                     String msg = "*********************** OpenGLESWindow::createUniform_PassCB: create buffer uniform: [" + nameBuffer + "] failed !";
@@ -1944,12 +1944,12 @@ namespace LostPeterOpenGLES
                             aColorTexture.push_back(poColor); 
                         String nameFrameBuffer = "FrameBuffer-" + FUtilString::SaveSizeT(i);
                         GLESFrameBuffer* pFrameBuffer = createFrameBuffer(nameFrameBuffer,
-                                                                        w,
-                                                                        h,
-                                                                        aColorTexture,
-                                                                        this->poDepthStencil,
-                                                                        false,
-                                                                        false);
+                                                                          w,
+                                                                          h,
+                                                                          aColorTexture,
+                                                                          this->poDepthStencil,
+                                                                          false,
+                                                                          false);
                         if (pFrameBuffer == nullptr)
                         {
                             String msg = "*********************** OpenGLESWindow::createFramebuffer_Default: Failed to create framebuffer: " + nameFrameBuffer;
@@ -1972,11 +1972,11 @@ namespace LostPeterOpenGLES
                 }
 
             GLESRenderBuffer* OpenGLESWindow::createRenderBuffer(const String& nameRenderBuffer,
-                                                             int width,
-                                                             int height,
-                                                             GLenum format,
-                                                             GLenum attachment, 
-                                                             GLenum renderbuffertarget)
+                                                                 int width,
+                                                                 int height,
+                                                                 GLenum format,
+                                                                 GLenum attachment, 
+                                                                 GLenum renderbuffertarget)
             {
                 GLESRenderBuffer* pGLRenderBuffer = new GLESRenderBuffer(nameRenderBuffer);
                 if (!pGLRenderBuffer->Init(width, 
@@ -1994,10 +1994,10 @@ namespace LostPeterOpenGLES
             }
 
             bool OpenGLESWindow::createGLRenderBuffer(const String& nameRenderBuffer,
-                                                    int width,
-                                                    int height,
-                                                    GLenum format,
-                                                    uint32& nRenderBufferID)
+                                                      int width,
+                                                      int height,
+                                                      GLenum format,
+                                                      uint32& nRenderBufferID)
             {
                 nRenderBufferID = 0;
                 glGenRenderbuffers(1, &nRenderBufferID);
@@ -2030,12 +2030,12 @@ namespace LostPeterOpenGLES
 
 
             GLESFrameBuffer* OpenGLESWindow::createFrameBuffer(const String& nameFrameBuffer,
-                                                           int width,
-                                                           int height,
-                                                           const GLESTexturePtrVector& aColorTexture,
-                                                           GLESRenderBuffer* pDepthStencil,
-                                                           bool isDeleteColors /*= false*/,
-                                                           bool isDeleteDepthStencil /*= false*/)
+                                                               int width,
+                                                               int height,
+                                                               const GLESTexturePtrVector& aColorTexture,
+                                                               GLESRenderBuffer* pDepthStencil,
+                                                               bool isDeleteColors /*= false*/,
+                                                               bool isDeleteDepthStencil /*= false*/)
             {
                 GLESFrameBuffer* pGLFrameBuffer = new GLESFrameBuffer(nameFrameBuffer);
                 if (!pGLFrameBuffer->Init(width, 
@@ -2053,9 +2053,9 @@ namespace LostPeterOpenGLES
                 return pGLFrameBuffer;
             }
             bool OpenGLESWindow::createGLFrameBuffer(const String& nameFrameBuffer, 
-                                                   const UintType2UintIDMap& mapType2IDs,
-                                                   uint32 nDepthStencilID,
-                                                   uint32& nFrameBufferID)
+                                                     const UintType2UintIDMap& mapType2IDs,
+                                                     uint32 nDepthStencilID,
+                                                     uint32& nFrameBufferID)
             {
                 nFrameBufferID = 0;
                 glGenFramebuffers(1, &nFrameBufferID);
@@ -2068,7 +2068,7 @@ namespace LostPeterOpenGLES
                 {
                     //Color Attachment
                     for (UintType2UintIDMap::const_iterator it = mapType2IDs.begin();
-                        it != mapType2IDs.end(); ++it)
+                         it != mapType2IDs.end(); ++it)
                     {
                         glFramebufferTexture2D(GL_FRAMEBUFFER, it->first, GL_TEXTURE_2D, it->second, 0);
                     }
@@ -2215,10 +2215,10 @@ namespace LostPeterOpenGLES
 
                     }
                 GLESBufferVertex* OpenGLESWindow::createBufferVertex(const String& nameBuffer,
-                                                                 FMeshVertexType type,
-                                                                 size_t bufSize, 
-                                                                 uint8* pBuf,
-                                                                 bool isDelete)
+                                                                     FMeshVertexType type,
+                                                                     size_t bufSize, 
+                                                                     uint8* pBuf,
+                                                                     bool isDelete)
                 {
                     GLESBufferVertex* pBufferVertex = new GLESBufferVertex(nameBuffer);
                     if (!pBufferVertex->Init(type, 
@@ -2233,10 +2233,10 @@ namespace LostPeterOpenGLES
                     return pBufferVertex;
                 }
                 void OpenGLESWindow::updateBufferVertex(GLESBufferVertex* pBufferVertex,
-                                                      FMeshVertexType type,
-                                                      size_t bufSize, 
-                                                      uint8* pBuf,
-                                                      bool isDelete)
+                                                        FMeshVertexType type,
+                                                        size_t bufSize, 
+                                                        uint8* pBuf,
+                                                        bool isDelete)
                 {
                     if (pBufferVertex == nullptr)
                         return;
@@ -2248,13 +2248,13 @@ namespace LostPeterOpenGLES
                 }
 
                 GLESBufferVertexIndex* OpenGLESWindow::createBufferVertexIndex(const String& nameBuffer,
-                                                                           FMeshVertexType type,
-                                                                           size_t bufSize_Vertex, 
-                                                                           uint8* pBuf_Vertex,
-                                                                           bool isDelete_Vertex,
-                                                                           size_t bufSize_Index, 
-                                                                           uint8* pBuf_Index,
-                                                                           bool isDelete_Index)
+                                                                               FMeshVertexType type,
+                                                                               size_t bufSize_Vertex, 
+                                                                               uint8* pBuf_Vertex,
+                                                                               bool isDelete_Vertex,
+                                                                               size_t bufSize_Index, 
+                                                                               uint8* pBuf_Index,
+                                                                               bool isDelete_Index)
                 {
                     GLESBufferVertexIndex* pBufferVertexIndex = new GLESBufferVertexIndex(nameBuffer);
                     if (!pBufferVertexIndex->Init(type,
@@ -2272,13 +2272,13 @@ namespace LostPeterOpenGLES
                     return pBufferVertexIndex;
                 }
                 void OpenGLESWindow::updateBufferVertexIndex(GLESBufferVertexIndex* pBufferVertexIndex,
-                                                           FMeshVertexType type,
-                                                           size_t bufSize_Vertex, 
-                                                           uint8* pBuf_Vertex,
-                                                           bool isDelete_Vertex,
-                                                           size_t bufSize_Index, 
-                                                           uint8* pBuf_Index,
-                                                           bool isDelete_Index)
+                                                             FMeshVertexType type,
+                                                             size_t bufSize_Vertex, 
+                                                             uint8* pBuf_Vertex,
+                                                             bool isDelete_Vertex,
+                                                             size_t bufSize_Index, 
+                                                             uint8* pBuf_Index,
+                                                             bool isDelete_Index)
                 {
                     if (pBufferVertexIndex == nullptr)
                         return;
@@ -2293,11 +2293,11 @@ namespace LostPeterOpenGLES
                 }   
 
                 GLESBufferUniform* OpenGLESWindow::createBufferUniform(const String& nameBuffer,
-                                                                   uint32 bindingIndex,
-                                                                   GLenum usage,
-                                                                   size_t bufSize, 
-                                                                   uint8* pBuf,
-                                                                   bool isDelete)
+                                                                       uint32 bindingIndex,
+                                                                       GLenum usage,
+                                                                       size_t bufSize, 
+                                                                       uint8* pBuf,
+                                                                       bool isDelete)
                 {
                     GLESBufferUniform* pBufferUniform = new GLESBufferUniform(nameBuffer);
                     if (!pBufferUniform->Init(bindingIndex,
@@ -2313,9 +2313,9 @@ namespace LostPeterOpenGLES
                     return pBufferUniform;
                 }   
                 void OpenGLESWindow::updateBufferUniform(GLESBufferUniform* pBufferUniform,
-                                                       size_t offset,
-                                                       size_t bufSize, 
-                                                       uint8* pBuf)
+                                                         size_t offset,
+                                                         size_t bufSize, 
+                                                         uint8* pBuf)
                 {
                     if (pBufferUniform == nullptr)
                         return;
@@ -2326,11 +2326,11 @@ namespace LostPeterOpenGLES
                 }
 
                 bool OpenGLESWindow::createGLBufferVertex(const String& nameBuffer,
-                                                        FMeshVertexType type,
-                                                        size_t bufSize,
-                                                        uint8* pBuf,
-                                                        uint32& nVAO,
-                                                        uint32& nVBO)
+                                                          FMeshVertexType type,
+                                                          size_t bufSize,
+                                                          uint8* pBuf,
+                                                          uint32& nVAO,
+                                                          uint32& nVBO)
                 {
                     glGenVertexArrays(1, &nVAO);
                     glGenBuffers(1, &nVBO);
@@ -2346,10 +2346,10 @@ namespace LostPeterOpenGLES
                     return true;
                 }
                 void OpenGLESWindow::updateGLBufferVertex(FMeshVertexType type,
-                                                        size_t bufSize,
-                                                        uint8* pBuf,
-                                                        uint32 nVAO,
-                                                        uint32 nVBO)
+                                                          size_t bufSize,
+                                                          uint8* pBuf,
+                                                          uint32 nVAO,
+                                                          uint32 nVBO)
                 {
                     glBindVertexArray(nVAO);
 
@@ -2374,14 +2374,14 @@ namespace LostPeterOpenGLES
                 }
 
                 bool OpenGLESWindow::createGLBufferVertexIndex(const String& nameBuffer,
-                                                             FMeshVertexType type,
-                                                             size_t bufSize_Vertex,
-                                                             uint8* pBuf_Vertex,
-                                                             size_t bufSize_Index,
-                                                             uint8* pBuf_Index,
-                                                             uint32& nVAO,
-                                                             uint32& nVBO,
-                                                             uint32& nVEO)
+                                                               FMeshVertexType type,
+                                                               size_t bufSize_Vertex,
+                                                               uint8* pBuf_Vertex,
+                                                               size_t bufSize_Index,
+                                                               uint8* pBuf_Index,
+                                                               uint32& nVAO,
+                                                               uint32& nVBO,
+                                                               uint32& nVEO)
                 {
                     glGenVertexArrays(1, &nVAO);
                     glGenBuffers(1, &nVBO);
@@ -2402,13 +2402,13 @@ namespace LostPeterOpenGLES
                     return true;
                 }
                 void OpenGLESWindow::updateGLBufferVertexIndex(FMeshVertexType type,
-                                                             size_t bufSize_Vertex,
-                                                             uint8* pBuf_Vertex,
-                                                             size_t bufSize_Index,
-                                                             uint8* pBuf_Index,
-                                                             uint32 nVAO,
-                                                             uint32 nVBO,
-                                                             uint32 nVEO)
+                                                               size_t bufSize_Vertex,
+                                                               uint8* pBuf_Vertex,
+                                                               size_t bufSize_Index,
+                                                               uint8* pBuf_Index,
+                                                               uint32 nVAO,
+                                                               uint32 nVBO,
+                                                               uint32 nVEO)
                 {
                     glBindVertexArray(nVAO);
 
@@ -2447,11 +2447,11 @@ namespace LostPeterOpenGLES
                 }
 
                 bool OpenGLESWindow::createGLBufferUniform(const String& nameBuffer,
-                                                         uint32 bindingIndex,
-                                                         GLenum usage,
-                                                         size_t bufSize, 
-                                                         uint8* pBuf,
-                                                         uint32& nBufferUniformID)
+                                                           uint32 bindingIndex,
+                                                           GLenum usage,
+                                                           size_t bufSize, 
+                                                           uint8* pBuf,
+                                                           uint32& nBufferUniformID)
                 {
                     glGenBuffers(1, &nBufferUniformID);
                     glBindBuffer(GL_UNIFORM_BUFFER, nBufferUniformID);
@@ -2576,39 +2576,39 @@ namespace LostPeterOpenGLES
                 }
 
                 GLESTexture* OpenGLESWindow::createTexture(const String& nameTexture,
-                                                       const StringVector& aPathTexture,
-                                                       uint8* pData,
-                                                       int channel,
-                                                       int width, 
-                                                       int height,
-                                                       int depth,
-                                                       FTextureType typeTexture,
-                                                       FTexturePixelFormatType typePixelFormat,
-                                                       FTextureAddressingType typeAddressing,
-                                                       FTextureFilterType typeFilterSizeMin,
-                                                       FTextureFilterType typeFilterSizeMag,
-                                                       FMSAASampleCountType numSamples,
-                                                       const FColor& borderColor,
-                                                       bool isUseBorderColor,
-                                                       bool isAutoMipmap,
-                                                       bool isCubeMap,
-                                                       bool isRenderTarget,
-                                                       bool isGraphicsComputeShared)
+                                                           const StringVector& aPathTexture,
+                                                           uint8* pData,
+                                                           int channel,
+                                                           int width, 
+                                                           int height,
+                                                           int depth,
+                                                           FTextureType typeTexture,
+                                                           FTexturePixelFormatType typePixelFormat,
+                                                           FTextureAddressingType typeAddressing,
+                                                           FTextureFilterType typeFilterSizeMin,
+                                                           FTextureFilterType typeFilterSizeMag,
+                                                           FMSAASampleCountType numSamples,
+                                                           const FColor& borderColor,
+                                                           bool isUseBorderColor,
+                                                           bool isAutoMipmap,
+                                                           bool isCubeMap,
+                                                           bool isRenderTarget,
+                                                           bool isGraphicsComputeShared)
                 {
                     GLESTexture* pTexture = new GLESTexture(nameTexture,
-                                                        aPathTexture,
-                                                        typeTexture,
-                                                        typePixelFormat,
-                                                        typeAddressing,
-                                                        typeFilterSizeMin,
-                                                        typeFilterSizeMag,
-                                                        numSamples,
-                                                        borderColor,
-                                                        isUseBorderColor,
-                                                        isAutoMipmap,
-                                                        isCubeMap,
-                                                        isRenderTarget,
-                                                        isGraphicsComputeShared);
+                                                            aPathTexture,
+                                                            typeTexture,
+                                                            typePixelFormat,
+                                                            typeAddressing,
+                                                            typeFilterSizeMin,
+                                                            typeFilterSizeMag,
+                                                            numSamples,
+                                                            borderColor,
+                                                            isUseBorderColor,
+                                                            isAutoMipmap,
+                                                            isCubeMap,
+                                                            isRenderTarget,
+                                                            isGraphicsComputeShared);
                     if (!pTexture->LoadTexture(width, 
                                                height,
                                                depth,
@@ -2624,20 +2624,20 @@ namespace LostPeterOpenGLES
                 }   
 
                 bool OpenGLESWindow::createTexture2D(const String& nameTexture,
-                                                   const String& pathAsset_Tex,
-                                                   int& mipMapCount, 
-                                                   bool isAutoMipmap,
-                                                   FTextureType typeTexture, 
-                                                   bool isCubeMap,
-                                                   FTexturePixelFormatType typePixelFormat,
-                                                   FTextureAddressingType typeAddressing,
-                                                   FTextureFilterType typeFilterSizeMin,
-                                                   FTextureFilterType typeFilterSizeMag,
-                                                   FMSAASampleCountType numSamples, 
-                                                   const FColor& borderColor,
-                                                   bool isUseBorderColor,
-                                                   bool isGraphicsComputeShared,
-                                                   uint32& nTextureID)
+                                                     const String& pathAsset_Tex,
+                                                     int& mipMapCount, 
+                                                     bool isAutoMipmap,
+                                                     FTextureType typeTexture, 
+                                                     bool isCubeMap,
+                                                     FTexturePixelFormatType typePixelFormat,
+                                                     FTextureAddressingType typeAddressing,
+                                                     FTextureFilterType typeFilterSizeMin,
+                                                     FTextureFilterType typeFilterSizeMag,
+                                                     FMSAASampleCountType numSamples, 
+                                                     const FColor& borderColor,
+                                                     bool isUseBorderColor,
+                                                     bool isGraphicsComputeShared,
+                                                     uint32& nTextureID)
                 {
                     //1> Load Texture From File
                     String pathTexture = GetAssetFullPath(pathAsset_Tex);
@@ -2691,24 +2691,24 @@ namespace LostPeterOpenGLES
                 }
 
                 bool OpenGLESWindow::createTextureRenderTarget2D(const String& nameTexture,
-                                                               const FVector4& clDefault,
-                                                               bool isSetColor,
-                                                               int channel,
-                                                               int width, 
-                                                               int height,
-                                                               int& mipMapCount, 
-                                                               bool isAutoMipmap,
-                                                               FTextureType typeTexture, 
-                                                               bool isCubeMap,
-                                                               FTexturePixelFormatType typePixelFormat,
-                                                               FTextureAddressingType typeAddressing,
-                                                               FTextureFilterType typeFilterSizeMin,
-                                                               FTextureFilterType typeFilterSizeMag,
-                                                               FMSAASampleCountType numSamples, 
-                                                               const FColor& borderColor,
-                                                               bool isUseBorderColor,
-                                                               bool isGraphicsComputeShared,
-                                                               uint32& nTextureID)
+                                                                 const FVector4& clDefault,
+                                                                 bool isSetColor,
+                                                                 int channel,
+                                                                 int width, 
+                                                                 int height,
+                                                                 int& mipMapCount, 
+                                                                 bool isAutoMipmap,
+                                                                 FTextureType typeTexture, 
+                                                                 bool isCubeMap,
+                                                                 FTexturePixelFormatType typePixelFormat,
+                                                                 FTextureAddressingType typeAddressing,
+                                                                 FTextureFilterType typeFilterSizeMin,
+                                                                 FTextureFilterType typeFilterSizeMag,
+                                                                 FMSAASampleCountType numSamples, 
+                                                                 const FColor& borderColor,
+                                                                 bool isUseBorderColor,
+                                                                 bool isGraphicsComputeShared,
+                                                                 uint32& nTextureID)
                 {
                     int imageSize = width * height * channel;
                     uint8* pData = nullptr;
@@ -2761,23 +2761,23 @@ namespace LostPeterOpenGLES
                     return true;
                 }
                 bool OpenGLESWindow::createTextureRenderTarget2D(const String& nameTexture,
-                                                               uint8* pData,
-                                                               int channel,
-                                                               int width, 
-                                                               int height,
-                                                               int& mipMapCount, 
-                                                               bool isAutoMipmap,
-                                                               FTextureType typeTexture, 
-                                                               bool isCubeMap,
-                                                               FTexturePixelFormatType typePixelFormat,
-                                                               FTextureAddressingType typeAddressing,
-                                                               FTextureFilterType typeFilterSizeMin,
-                                                               FTextureFilterType typeFilterSizeMag,
-                                                               FMSAASampleCountType numSamples, 
-                                                               const FColor& borderColor,
-                                                               bool isUseBorderColor,
-                                                               bool isGraphicsComputeShared,
-                                                               uint32& nTextureID)
+                                                                 uint8* pData,
+                                                                 int channel,
+                                                                 int width, 
+                                                                 int height,
+                                                                 int& mipMapCount, 
+                                                                 bool isAutoMipmap,
+                                                                 FTextureType typeTexture, 
+                                                                 bool isCubeMap,
+                                                                 FTexturePixelFormatType typePixelFormat,
+                                                                 FTextureAddressingType typeAddressing,
+                                                                 FTextureFilterType typeFilterSizeMin,
+                                                                 FTextureFilterType typeFilterSizeMag,
+                                                                 FMSAASampleCountType numSamples, 
+                                                                 const FColor& borderColor,
+                                                                 bool isUseBorderColor,
+                                                                 bool isGraphicsComputeShared,
+                                                                 uint32& nTextureID)
                 {
                     if (!createGLTexture(nameTexture,
                                          pData,
@@ -2809,25 +2809,25 @@ namespace LostPeterOpenGLES
                 }
 
                 bool OpenGLESWindow::createGLTexture(const String& nameTexture,
-                                                   uint8* pData,
-                                                   int channel,
-                                                   int width, 
-                                                   int height, 
-                                                   int depth, 
-                                                   int numArray,
-                                                   int mipMapCount, 
-                                                   bool isAutoMipmap,
-                                                   FTextureType typeTexture, 
-                                                   bool isCubeMap,
-                                                   FTexturePixelFormatType typePixelFormat,
-                                                   FTextureAddressingType typeAddressing,
-                                                   FTextureFilterType typeFilterSizeMin,
-                                                   FTextureFilterType typeFilterSizeMag,
-                                                   FMSAASampleCountType numSamples, 
-                                                   const FColor& borderColor,
-                                                   bool isUseBorderColor,
-                                                   bool isGraphicsComputeShared,
-                                                   uint32& nTextureID)
+                                                     uint8* pData,
+                                                     int channel,
+                                                     int width, 
+                                                     int height, 
+                                                     int depth, 
+                                                     int numArray,
+                                                     int mipMapCount, 
+                                                     bool isAutoMipmap,
+                                                     FTextureType typeTexture, 
+                                                     bool isCubeMap,
+                                                     FTexturePixelFormatType typePixelFormat,
+                                                     FTextureAddressingType typeAddressing,
+                                                     FTextureFilterType typeFilterSizeMin,
+                                                     FTextureFilterType typeFilterSizeMag,
+                                                     FMSAASampleCountType numSamples, 
+                                                     const FColor& borderColor,
+                                                     bool isUseBorderColor,
+                                                     bool isGraphicsComputeShared,
+                                                     uint32& nTextureID)
                 {
                     glGenTextures(1, &nTextureID);
                     
@@ -2938,11 +2938,11 @@ namespace LostPeterOpenGLES
                     {
                         String nameBuffer = "Object-" + FUtilString::SaveSizeT(i);
                         GLESBufferUniform* pBufferUniform = createBufferUniform(nameBuffer,
-                                                                              DescriptorSet_ObjectConstants,
-                                                                              GL_DYNAMIC_DRAW,
-                                                                              bufferSize,
-                                                                              (uint8*)(this->objectCBs.data()),
-                                                                              false);
+                                                                                DescriptorSet_ObjectConstants,
+                                                                                GL_DYNAMIC_DRAW,
+                                                                                bufferSize,
+                                                                                (uint8*)(this->objectCBs.data()),
+                                                                                false);
                         if (!pBufferUniform)
                         {
                             String msg = "*********************** OpenGLESWindow::createObjectCB: create buffer uniform: [" + nameBuffer + "] failed !";
@@ -3048,11 +3048,11 @@ namespace LostPeterOpenGLES
             }
 
             GLESShaderProgram* OpenGLESWindow::createShaderProgram(const String& nameShaderProgram,
-                                                               GLESShader* pShaderVertex,
-                                                               GLESShader* pShaderTessellationControl,
-                                                               GLESShader* pShaderTessellationEvaluation,
-                                                               GLESShader* pShaderGeometry,
-                                                               GLESShader* pShaderFragment)
+                                                                   GLESShader* pShaderVertex,
+                                                                   GLESShader* pShaderTessellationControl,
+                                                                   GLESShader* pShaderTessellationEvaluation,
+                                                                   GLESShader* pShaderGeometry,
+                                                                   GLESShader* pShaderFragment)
             {
                 GLESShaderProgram* pShaderProgram = new GLESShaderProgram(nameShaderProgram);
                 if (!pShaderProgram->Init(pShaderVertex, 
@@ -3093,12 +3093,12 @@ namespace LostPeterOpenGLES
                 return nShaderComputeID;
             }
             bool OpenGLESWindow::createGLShaderProgram(const String& nameShaderProgram,
-                                                     uint32 nShaderVertexID,
-                                                     uint32 nShaderTessellationControlID,
-                                                     uint32 nShaderTessellationEvaluationID,
-                                                     uint32 nShaderGeometryID,
-                                                     uint32 nShaderFragmentID,
-                                                     uint32& nShaderProgramID)
+                                                       uint32 nShaderVertexID,
+                                                       uint32 nShaderTessellationControlID,
+                                                       uint32 nShaderTessellationEvaluationID,
+                                                       uint32 nShaderGeometryID,
+                                                       uint32 nShaderFragmentID,
+                                                       uint32& nShaderProgramID)
             {
                 if (nShaderVertexID <= 0 && nShaderFragmentID <= 0)
                     return false;
@@ -3142,8 +3142,8 @@ namespace LostPeterOpenGLES
                 return true;
             }
             bool OpenGLESWindow::createGLShaderProgram(const String& nameShaderProgram,
-                                                     uint32 nShaderComputeID,
-                                                     uint32& nShaderProgramID)
+                                                       uint32 nShaderComputeID,
+                                                       uint32& nShaderProgramID)
             {
                 if (nShaderComputeID <= 0)
                     return false;
@@ -3710,7 +3710,7 @@ namespace LostPeterOpenGLES
                     pBufferUniform->UpdateBuffer(0,
                                                  sizeof(PassConstants),
                                                  (uint8*)(&this->passCB),
-                                                 GL_WRITE_ONLY);
+                                                 GL_MAP_WRITE_BIT);
                 }
                     void OpenGLESWindow::updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex)
                     {
@@ -3745,9 +3745,10 @@ namespace LostPeterOpenGLES
 
                     //Update Buffer
                     GLESBufferUniform* pBufferUniform = this->poBuffers_ObjectCB[this->poCurrentFrame];
-                    pBufferUniform->Update(0, 
-                                           sizeof(ObjectConstants) * count,
-                                           (uint8*)this->objectCBs.data());
+                    pBufferUniform->UpdateBuffer(0, 
+                                                 sizeof(ObjectConstants) * count,
+                                                 (uint8*)this->objectCBs.data(),
+                                                 GL_MAP_WRITE_BIT);
                 }
                     void OpenGLESWindow::updateCBs_ObjectsContent()
                     {
@@ -4265,13 +4266,13 @@ namespace LostPeterOpenGLES
 
 
                 void OpenGLESWindow::beginRenderPass(const String& nameRenderPass,
-                                                   GLESRenderPass* pRenderPass,
-                                                   const FSizeI& offset,
-                                                   const FSizeI& extent,
-                                                   const FVector4& clBg,
-                                                   float depth,
-                                                   int stencil)
-                {
+                                                     GLESRenderPass* pRenderPass,
+                                                     const FSizeI& offset,
+                                                     const FSizeI& extent,
+                                                     const FVector4& clBg,
+                                                     float depth,
+                                                     int stencil)
+                { 
                     this->poDebug->BeginRegion(nameRenderPass.c_str(), GL_DEBUG_SOURCE_APPLICATION);
 
                     if (pRenderPass != nullptr &&
@@ -4308,7 +4309,7 @@ namespace LostPeterOpenGLES
                     }
                     void OpenGLESWindow::setClearDepth(float depth)
                     {
-                        // glClearDepth(depth);
+                        glClearDepthf(depth);
                     }
                     void OpenGLESWindow::setClearStencil(int stencil)
                     {

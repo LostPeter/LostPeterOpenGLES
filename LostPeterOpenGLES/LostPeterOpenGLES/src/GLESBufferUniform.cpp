@@ -51,10 +51,10 @@ namespace LostPeterOpenGLES
     }
 
     bool GLESBufferUniform::Init(uint32 bindingIndex,
-                               GLenum usage,
-                               size_t bufSize, 
-                               uint8* pBuf,
-                               bool isDelete)
+                                 GLenum usage,
+                                 size_t bufSize, 
+                                 uint8* pBuf,
+                                 bool isDelete)
     {
         this->nBufferSize = bufSize;
         this->pBuffer = pBuf;
@@ -99,16 +99,18 @@ namespace LostPeterOpenGLES
                                          uint8* pBuf,
                                          GLenum access)
     {
-        Update(offset, bufSize, pBuf);
+        //Update(offset, bufSize, pBuf);
 
-        // void* pData = MapBuffer(offset, bufSize, access);
-        // if (pData == nullptr)
-        // {
-        //     F_LogError("*********************** GLESBufferUniform::UpdateBuffer: Failed to MapBuffer uniform: [%s] !", GetName().c_str());
-        //     F_Assert(pData && "GLESBufferUniform::UpdateBuffer")
-        // }
-        // memcpy(pData, pBuf, bufSize);
-        // UnMapBuffer();
+        F_LogInfo("$$$$$ 1: [%s] !", this->name.c_str());
+        void* pData = MapBuffer(offset, bufSize, access);
+        if (pData == nullptr)
+        {
+            F_LogError("*********************** GLESBufferUniform::UpdateBuffer: Failed to MapBuffer uniform: [%s] !", GetName().c_str());
+            return;
+        }
+        memcpy(pData, pBuf, bufSize);
+        UnMapBuffer();
+        F_LogInfo("$$$$$ 2: [%s] !", this->name.c_str());
     }
 
     void GLESBufferUniform::BindBufferUniform()
