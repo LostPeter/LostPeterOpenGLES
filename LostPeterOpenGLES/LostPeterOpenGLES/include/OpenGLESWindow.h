@@ -525,7 +525,7 @@ namespace LostPeterOpenGLES
                     virtual void bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 nUniformBlockIndex);
                     virtual void destroyGLBufferUniform(uint32 nBufferUniformID);
 
-                    virtual void* mapGLBufferRange(uint32 nBufferID, GLenum target, size_t offset, size_t bufSize, GLbitfield access);
+                    virtual void* mapGLBufferRange(uint32 nBufferID, uint32 nBlockIndex, GLenum target, size_t offset, size_t bufSize, GLbitfield access);
                         virtual void flushGLMappedBufferRange(uint32 nBufferID, size_t offset, size_t bufSize);
                     virtual void unMapGLBufferRange(GLenum target);
 

@@ -2494,12 +2494,13 @@ namespace LostPeterOpenGLES
                     }
                 }
 
-                void* OpenGLESWindow::mapGLBufferRange(uint32 nBufferID, GLenum target, size_t offset, size_t bufSize, GLbitfield access)
+                void* OpenGLESWindow::mapGLBufferRange(uint32 nBufferID, uint32 nBlockIndex, GLenum target, size_t offset, size_t bufSize, GLbitfield access)
                 {
                     if (nBufferID <= 0)
                         return nullptr;
 
-                    UTIL_GLES_CHECK(glBindBuffer(target, nBufferID));
+                    //UTIL_GLES_CHECK(glBindBuffer(target, nBufferID));
+                    UTIL_GLES_CHECK(glBindBufferRange(target, nBlockIndex, nBufferID, offset, bufSize));
                     UTIL_GLES_CHECK(void* pData = glMapBufferRange(target, offset, bufSize, access));
                     if (pData == nullptr)
                     {

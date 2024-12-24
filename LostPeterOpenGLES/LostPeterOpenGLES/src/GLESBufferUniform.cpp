@@ -24,6 +24,7 @@ namespace LostPeterOpenGLES
 
         , nBindingIndex(0)
         , nBufferUniformID(0)
+        , nUniformBlockIndex(0)
     {
 
     }
@@ -48,6 +49,9 @@ namespace LostPeterOpenGLES
             Base::GetWindowPtr()->destroyGLBufferUniform(this->nBufferUniformID);
         }
         this->nBufferUniformID = 0;
+
+        this->nBindingIndex = 0;
+        this->nUniformBlockIndex = 0;
     }
 
     bool GLESBufferUniform::Init(uint32 bindingIndex,
@@ -88,7 +92,7 @@ namespace LostPeterOpenGLES
 
     void* GLESBufferUniform::MapBuffer(size_t offset, size_t bufSize, GLenum access)
     {
-        return Base::GetWindowPtr()->mapGLBufferRange(this->nBufferUniformID, GL_UNIFORM_BUFFER, offset, bufSize, access);
+        return Base::GetWindowPtr()->mapGLBufferRange(this->nBufferUniformID, this->nUniformBlockIndex, GL_UNIFORM_BUFFER, offset, bufSize, access);
     }
     void GLESBufferUniform::UnMapBuffer()
     {
@@ -115,9 +119,10 @@ namespace LostPeterOpenGLES
     {
         Base::GetWindowPtr()->bindGLBufferUniform(this->nBufferUniformID);
     }
-    void GLESBufferUniform::BindBufferUniformBlockIndex(uint32 nUniformBlockIndex)
+    void GLESBufferUniform::BindBufferUniformBlockIndex(uint32 nBlockIndex)
     {
-        Base::GetWindowPtr()->bindGLBufferUniformBlockIndex(this->nBufferUniformID, nUniformBlockIndex);
+        this->nUniformBlockIndex = nBlockIndex;
+        Base::GetWindowPtr()->bindGLBufferUniformBlockIndex(this->nBufferUniformID, nBlockIndex);
     }
 
 }; //LostPeterOpenGLES
