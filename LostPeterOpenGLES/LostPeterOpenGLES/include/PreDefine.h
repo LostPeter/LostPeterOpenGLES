@@ -83,7 +83,14 @@ namespace LostPeterOpenGLES
     #define ES_WINDOW_MULTISAMPLE 8
 
 ////////////////////////////// Typedef /////////////////////////////
-    
+    #define UTIL_GLES_CHECK(x) \
+    x; \
+    { \
+        GLenum glError = glGetError(); \
+        if(glError != GL_NO_ERROR) { \
+            F_LogError("*********************** UTIL_GLES_CHECK: glGetError() = [%i] (0x%.8x) at [%s]: [%i] !", glError, glError, __FILE__, __LINE__); \
+        } \
+    }
 
     
 

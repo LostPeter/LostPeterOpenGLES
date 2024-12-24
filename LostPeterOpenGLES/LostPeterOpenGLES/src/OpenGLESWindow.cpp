@@ -2499,8 +2499,8 @@ namespace LostPeterOpenGLES
                     if (nBufferID <= 0)
                         return nullptr;
 
-                    glBindBuffer(target, nBufferID);
-                    void* pData = glMapBufferRange(target, offset, bufSize, access);
+                    UTIL_GLES_CHECK(glBindBuffer(target, nBufferID));
+                    UTIL_GLES_CHECK(void* pData = glMapBufferRange(target, offset, bufSize, access));
                     if (pData == nullptr)
                     {
                         F_LogError("*********************** OpenGLESWindow::mapGLBufferRange: GL error: [%u] !", glGetError());
@@ -2513,7 +2513,8 @@ namespace LostPeterOpenGLES
                     }
                 void OpenGLESWindow::unMapGLBufferRange(GLenum target)
                 {
-                    if (!glUnmapBuffer(target))
+                    UTIL_GLES_CHECK(GLboolean result = glUnmapBuffer(target));
+                    if (!result)
                     {
                         F_LogError("*********************** OpenGLESWindow::unMapGLBufferRange: UnMap buffer data failed, GL error: [%u] !", glGetError());
                     }
@@ -3710,7 +3711,7 @@ namespace LostPeterOpenGLES
                     pBufferUniform->UpdateBuffer(0,
                                                  sizeof(PassConstants),
                                                  (uint8*)(&this->passCB),
-                                                 GL_MAP_WRITE_BIT);
+                                                 GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
                 }
                     void OpenGLESWindow::updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex)
                     {
@@ -3748,7 +3749,7 @@ namespace LostPeterOpenGLES
                     pBufferUniform->UpdateBuffer(0, 
                                                  sizeof(ObjectConstants) * count,
                                                  (uint8*)this->objectCBs.data(),
-                                                 GL_MAP_WRITE_BIT);
+                                                 GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
                 }
                     void OpenGLESWindow::updateCBs_ObjectsContent()
                     {

@@ -99,8 +99,6 @@ namespace LostPeterOpenGLES
                                          uint8* pBuf,
                                          GLenum access)
     {
-        //Update(offset, bufSize, pBuf);
-
         F_LogInfo("$$$$$ 1: [%s] !", this->name.c_str());
         void* pData = MapBuffer(offset, bufSize, access);
         if (pData == nullptr)
