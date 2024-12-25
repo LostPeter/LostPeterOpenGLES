@@ -2499,7 +2499,6 @@ namespace LostPeterOpenGLES
                     if (nBufferID <= 0)
                         return nullptr;
 
-                    //UTIL_GLES_CHECK(glBindBuffer(target, nBufferID));
                     UTIL_GLES_CHECK(glBindBufferRange(target, nBlockIndex, nBufferID, offset, bufSize));
                     UTIL_GLES_CHECK(void* pData = glMapBufferRange(target, offset, bufSize, access));
                     if (pData == nullptr)
@@ -3178,14 +3177,10 @@ namespace LostPeterOpenGLES
 
                 uint32 OpenGLESWindow::getUniformBlockIndex(uint32 nShaderProgramID, const String& name)
                 {
-                    uint32 index = 0;
-                    if (nShaderProgramID > 0)
+                    uint32 index = glGetUniformBlockIndex(nShaderProgramID, name.c_str()); 
+                    if (GL_INVALID_INDEX == index)
                     {
-                        index = glGetUniformBlockIndex(nShaderProgramID, name.c_str()); 
-                        if (GL_INVALID_INDEX == index)
-                        {
-                            F_LogError("*********************** OpenGLESWindow::getUniformBlockIndex: Failed to get uniform block index from shader program: [%u], name: [%s] !", nShaderProgramID, name.c_str());
-                        }
+                        F_LogError("*********************** OpenGLESWindow::getUniformBlockIndex: Failed to get uniform block index from shader program: [%u], name: [%s] !", nShaderProgramID, name.c_str());
                     }
                     return index;
                 }
@@ -3490,6 +3485,7 @@ namespace LostPeterOpenGLES
                     {
                         F_Assert(pDSL && pSP && "OpenGLESWindow::updateDescriptorSets")
                         
+                        pSP->BindProgram();
                         uint32 count_fb = (uint32)this->poSwapChains.size();
                         uint32 count_ds = (uint32)pDSL->aLayouts.size();
                         for (uint32 i = 0; i < count_ds; i++)

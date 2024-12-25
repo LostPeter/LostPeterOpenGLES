@@ -92,7 +92,7 @@ namespace LostPeterOpenGLES
 
     void* GLESBufferUniform::MapBuffer(size_t offset, size_t bufSize, GLenum access)
     {
-        return Base::GetWindowPtr()->mapGLBufferRange(this->nBufferUniformID, this->nUniformBlockIndex, GL_UNIFORM_BUFFER, offset, bufSize, access);
+        return Base::GetWindowPtr()->mapGLBufferRange(this->nBufferUniformID, this->nBindingIndex, GL_UNIFORM_BUFFER, offset, bufSize, access);
     }
     void GLESBufferUniform::UnMapBuffer()
     {
@@ -103,16 +103,14 @@ namespace LostPeterOpenGLES
                                          uint8* pBuf,
                                          GLenum access)
     {
-        F_LogInfo("$$$$$ 1: [%s] !", this->name.c_str());
         void* pData = MapBuffer(offset, bufSize, access);
         if (pData == nullptr)
         {
             F_LogError("*********************** GLESBufferUniform::UpdateBuffer: Failed to MapBuffer uniform: [%s] !", GetName().c_str());
             return;
         }
-        memcpy(pData, pBuf, bufSize);
+        memcpy(pData, (void*)pBuf, bufSize);
         UnMapBuffer();
-        F_LogInfo("$$$$$ 2: [%s] !", this->name.c_str());
     }
 
     void GLESBufferUniform::BindBufferUniform()
