@@ -84,7 +84,7 @@ License:
 
 
 ### <000> opengles_000_window
-[OpenGLES学习例子000: opengles_000_window 基础窗口显示](https://zhuanlan.zhihu.com/p/19289601385)
+[OpenGLES学习例子000: opengles_000_window 基础窗口显示](https://zhuanlan.zhihu.com/p/19289843075)
 * sample000：Setup a framework, compile all sort of dependencies libraries, show an Android Window 
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_000_window.png)
