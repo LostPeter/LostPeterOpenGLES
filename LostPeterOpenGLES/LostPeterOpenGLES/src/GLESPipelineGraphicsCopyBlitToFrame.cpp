@@ -14,6 +14,7 @@
 #include "../include/GLESBufferUniform.h"
 #include "../include/GLESShader.h"
 #include "../include/GLESShaderProgram.h"
+#include "../include/GLESStatePipelineGraphics.h"
 #include "../include/Mesh.h"
 
 namespace LostPeterOpenGLES
@@ -26,7 +27,7 @@ namespace LostPeterOpenGLES
 
         , pBuffer_CopyBlit(nullptr)
         
-        , pShaderProgram(nullptr)
+        , pStatePipelineGraphics(nullptr)
         , pMeshBlit(nullptr)
     {
 
@@ -49,10 +50,10 @@ namespace LostPeterOpenGLES
 
 
     bool GLESPipelineGraphicsCopyBlitToFrame::Init(GLESShader* pShaderVertex,
-                                                 GLESShader* pShaderFrag,
-                                                 Mesh* pMesh,
-                                                 const String& descriptorSetLayout,
-                                                 StringVector* pDescriptorSetLayoutNames)
+                                                   GLESShader* pShaderFragment,
+                                                   Mesh* pMesh,
+                                                   const String& descriptorSetLayout,
+                                                   StringVector* pDescriptorSetLayoutNames)
     {
         this->pMeshBlit = pMesh;
         this->nameDescriptorSetLayout = descriptorSetLayout;
@@ -68,20 +69,49 @@ namespace LostPeterOpenGLES
             }
         }
 
-        //2> GLESShaderProgram
+        //2> GLESStatePipelineGraphics
         {
-            String nameShaderProgram = "ShaderProgram-" + GetName();
-            this->pShaderProgram = Base::GetWindowPtr()->createShaderProgram(nameShaderProgram,
-                                                                             pShaderVertex,
-                                                                             nullptr,
-                                                                             nullptr,
-                                                                             nullptr,
-                                                                             pShaderFrag);
-            if (this->pShaderProgram == nullptr)
-            {
-                F_LogError("*********************** GLESPipelineGraphicsCopyBlitToFrame::Init: createShaderProgram failed, name: [%s] !", nameShaderProgram.c_str());
-                return false;
-            }
+			OpenGLESWindow* pWindow = Base::GetWindowPtr();
+            String nameStatePipelineGraphics = "StatePipelineGraphics-" + GetName();
+			this->pStatePipelineGraphics = pWindow->createStatePipelineGraphics(nameStatePipelineGraphics,
+																				pShaderVertex,
+																				nullptr,
+																				nullptr,
+																				nullptr,
+																				pShaderFragment,
+																				F_MeshVertex_Pos2Color4Tex2,
+																				GL_TRIANGLES,
+																			    true,
+																			    GL_CW,
+																			    GL_BACK,
+																			    0,
+																				false,
+																				GL_LEQUAL,
+																				false,
+																				false,
+																				false,
+																				GL_LEQUAL,
+																				GL_KEEP,
+																				GL_KEEP,
+																				GL_KEEP,
+																				0,
+																				0,
+																				false,
+																				GL_ONE,
+																				GL_ZERO,
+																				GL_FUNC_ADD,
+																				GL_ONE,
+																				GL_ZERO,
+																				GL_FUNC_ADD,
+																				true,
+																				true,
+																				true,
+																				true);
+			if (this->pStatePipelineGraphics == nullptr)
+			{
+				F_LogError("*********************** GLESPipelineGraphicsCopyBlitToFrame::Init: StatePipelineGraphics failed, name: [%s] !", nameStatePipelineGraphics.c_str());
+				return false;
+			}
         }
 
         //3> Binding
@@ -95,25 +125,27 @@ namespace LostPeterOpenGLES
             this->objectCB_CopyBlit.offsetY = 0.0f;
             this->objectCB_CopyBlit.scaleX = 2.0f;
             this->objectCB_CopyBlit.scaleY = 2.0f;
-            Base::GetWindowPtr()->createBufferUniform("CopyBlitObjectConstants-" + this->name, 
-                                                      DescriptorSet_ObjectCopyBlit,
-                                                      GL_DYNAMIC_DRAW,
-                                                      sizeof(CopyBlitObjectConstants), 
-                                                      (uint8*)(&this->objectCB_CopyBlit), 
-                                                      false);
+            this->pBuffer_CopyBlit = Base::GetWindowPtr()->createBufferUniform("CopyBlitObjectConstants-" + this->name, 
+																			   DescriptorSet_CopyBlitObjectConstants,
+																			   GL_DYNAMIC_DRAW,
+																			   sizeof(CopyBlitObjectConstants), 
+																			   (uint8*)(&this->objectCB_CopyBlit), 
+																			   false);
             return true;
         }
 
     void GLESPipelineGraphicsCopyBlitToFrame::CleanupSwapChain()
     {
         this->poDescriptorSetLayoutNames = nullptr;
-        F_DELETE(this->pShaderProgram)
+        F_DELETE(this->pStatePipelineGraphics)
     }  
 
     void GLESPipelineGraphicsCopyBlitToFrame::UpdateDescriptorSets()
     {
         String nameCopyBlit = (*this->poDescriptorSetLayoutNames)[0];
-        this->pShaderProgram->SetUniformBlockBinding(nameCopyBlit, DescriptorSet_ObjectCopyBlit);
+		uint32 nUniformBlockIndex = this->pStatePipelineGraphics->GetUniformBlockIndex(nameCopyBlit);
+        this->pStatePipelineGraphics->BindUniformBlockBinding(nUniformBlockIndex, DescriptorSet_CopyBlitObjectConstants);
+		this->pStatePipelineGraphics->BindBufferUniform(this->pBuffer_CopyBlit, this->pBuffer_CopyBlit->GetBindingIndex());
     }
 
     void GLESPipelineGraphicsCopyBlitToFrame::UpdateBuffer()

@@ -76,44 +76,45 @@ namespace LostPeterOpenGLES
     {
         "PassConstants",                    //0:   PassConstants
         "ObjectConstants",                  //1:   ObjectConstants
-        "ObjectTerrain",                    //2:   ObjectTerrain
-        "ObjectGrid",                       //3:   ObjectGrid
-        "ObjectCameraAxis",                 //4:   ObjectCameraAxis
-        "ObjectCoordinateAxis",             //5:   ObjectCoordinateAxis
-        "ObjectLineFlat2D",                 //6:   ObjectLineFlat2D
-        "ObjectLineFlat3D",                 //7:   ObjectLineFlat3D
-        "ObjectCopyBlit",                   //8:   ObjectCopyBlit
-        "ObjectCull",                       //9:   ObjectCull
-        "Material",                         //10:  Material
-        "Instance",                         //11:  Instance
-        "TextureCopy",                      //12:  TextureCopy
-        "Tessellation",                     //13:  Tessellation
-        "Geometry",                         //14:  Geometry
-        "TextureVS",                        //15:  TextureVS
-        "TextureTESC",                      //16:  TextureTESC
-        "TextureTESE",                      //17:  TextureTESE
-        "TextureFS",                        //18:  TextureFS
-        "TextureFrameColor",                //19:  TextureFrameColor
-        "TextureFrameDepth",                //20:  TextureFrameDepth
-        "TextureCSR",                       //21:  TextureCSR
-        "TextureCSRW",                      //22:  TextureCSRW
-        "TextureCSRWSrc",                   //23:  TextureCSRWSrc
-        "TextureCSRWDst",                   //24:  TextureCSRWDst
-        "TextureDepthShadow",               //25:  TextureDepthShadow
-        "InputAttachRed",                   //26:  InputAttachRed
-        "InputAttachGreen",                 //27:  InputAttachGreen
-        "InputAttachBlue",                  //28:  InputAttachBlue
-        "Terrain",                          //29:  Terrain
-        "Cull",                             //30:  Cull
-        "HizDepth",                         //31:  HizDepth
-        "BufferRWArgsCB",                   //32:  BufferRWArgsCB
-        "BufferRWLodCB",                    //33:  BufferRWLodCB
-        "BufferRWResultCB",                 //34:  BufferRWResultCB
-        "BufferRWClipCB",                   //35:  BufferRWClipCB
-        "BufferRWObjectCullInstance",       //36:  BufferRWObjectCullInstance
-        "CullInstance",                     //37:  CullInstance
-        "BufferObjectLineFlat2D",           //38:  BufferObjectLineFlat2D
-        "BufferObjectLineFlat3D",           //39:  BufferObjectLineFlat3D
+        "OutlineObjectConstants",           //2:   OutlineObjectConstants
+        "GridObjectConstants",              //3:   GridObjectConstants
+        "CameraAxisObjectConstants",        //4:   CameraAxisObjectConstants
+        "CoordinateAxisObjectConstants",    //5:   CoordinateAxisObjectConstants
+        "LineFlat2DObjectConstants",        //6:   LineFlat2DObjectConstants
+        "LineFlat3DObjectConstants",        //7:   LineFlat3DObjectConstants
+        "CopyBlitObjectConstants",          //8:   CopyBlitObjectConstants
+		"TerrainObjectConstants",           //9:   TerrainObjectConstants
+        "CullObjectConstants",              //10:  CullObjectConstants
+        "MaterialConstants",                //11:  MaterialConstants
+        "InstanceConstants",                //12:  InstanceConstants
+        "TextureCopy",                      //13:  TextureCopy
+        "Tessellation",                     //14:  Tessellation
+        "Geometry",                         //15:  Geometry
+        "TextureVS",                        //16:  TextureVS
+        "TextureTESC",                      //17:  TextureTESC
+        "TextureTESE",                      //18:  TextureTESE
+        "TextureFS",                        //19:  TextureFS
+        "TextureFrameColor",                //20:  TextureFrameColor
+        "TextureFrameDepth",                //21:  TextureFrameDepth
+        "TextureCSR",                       //22:  TextureCSR
+        "TextureCSRW",                      //23:  TextureCSRW
+        "TextureCSRWSrc",                   //24:  TextureCSRWSrc
+        "TextureCSRWDst",                   //25:  TextureCSRWDst
+        "TextureDepthShadow",               //26:  TextureDepthShadow
+        "InputAttachRed",                   //27:  InputAttachRed
+        "InputAttachGreen",                 //28:  InputAttachGreen
+        "InputAttachBlue",                  //29:  InputAttachBlue
+        "Terrain",                          //30:  Terrain
+        "Cull",                             //31:  Cull
+        "HizDepth",                         //32:  HizDepth
+        "BufferRWArgsCB",                   //33:  BufferRWArgsCB
+        "BufferRWLodCB",                    //34:  BufferRWLodCB
+        "BufferRWResultCB",                 //35:  BufferRWResultCB
+        "BufferRWClipCB",                   //36:  BufferRWClipCB
+        "BufferRWObjectCullInstance",       //37:  BufferRWObjectCullInstance
+        "CullInstance",                     //38:  CullInstance
+        "BufferObjectLineFlat2D",           //39:  BufferObjectLineFlat2D
+        "BufferObjectLineFlat3D",           //40:  BufferObjectLineFlat3D
     };
     const String& Util_GetDescriptorSetTypeName(DescriptorSetType type)
     {
@@ -136,62 +137,62 @@ namespace LostPeterOpenGLES
 
 
 ////////////////////////////// OpenGL //////////////////////////////   
-    void Util_CreateAttributeDescriptions(FMeshVertexType type)
+    void Util_BindAttributeDescriptions(FMeshVertexType type)
     {
         switch ((int)type)
         {
             case F_MeshVertex_Pos2Color4: 
                 {
-                    Vertex_Pos2Color4::createAttributeDescriptions(); 
+                    Vertex_Pos2Color4::bindAttributeDescriptions(); 
                     return;
                 }
             case F_MeshVertex_Pos3Color4:
                 {
-                    Vertex_Pos3Color4::createAttributeDescriptions();
+                    Vertex_Pos3Color4::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Normal3:
                 {
-                    Vertex_Pos3Normal3::createAttributeDescriptions();
+                    Vertex_Pos3Normal3::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Normal3Tex2:
                 {
-                    Vertex_Pos3Normal3Tex2::createAttributeDescriptions();
+                    Vertex_Pos3Normal3Tex2::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos2Color4Tex2:
                 {
-                    Vertex_Pos2Color4Tex2::createAttributeDescriptions();
+                    Vertex_Pos2Color4Tex2::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Color4Tex2:
                 {
-                    Vertex_Pos3Color4Tex2::createAttributeDescriptions();
+                    Vertex_Pos3Color4Tex2::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Color4Normal3Tex2:
                 {
-                    Vertex_Pos3Color4Normal3Tex2::createAttributeDescriptions();
+                    Vertex_Pos3Color4Normal3Tex2::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Color4Normal3Tex4:
                 {
-                    Vertex_Pos3Color4Normal3Tex4::createAttributeDescriptions();
+                    Vertex_Pos3Color4Normal3Tex4::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Color4Normal3Tangent3Tex2:
                 {
-                    Vertex_Pos3Color4Normal3Tangent3Tex2::createAttributeDescriptions();
+                    Vertex_Pos3Color4Normal3Tangent3Tex2::bindAttributeDescriptions();
                     return;
                 }
             case F_MeshVertex_Pos3Color4Normal3Tangent3Tex4:
                 {
-                    Vertex_Pos3Color4Normal3Tangent3Tex4::createAttributeDescriptions();
+                    Vertex_Pos3Color4Normal3Tangent3Tex4::bindAttributeDescriptions();
                     return;
                 }
         }
-        F_Assert(false && "Util_CreateAttributeDescriptions: Wrong type !")
+        F_Assert(false && "Util_BindAttributeDescriptions: Wrong type !")
     }
     void Util_EnableAttributeDescriptions(FMeshVertexType type, bool enable)
     {

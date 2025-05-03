@@ -54,6 +54,8 @@ namespace LostPeterOpenGLES
         GLESShaderPtrVector m_aShaders_Internal;
         GLESShaderPtrMap m_mapShaders_Internal;
 
+	public:
+		virtual GLESBufferUniform* GetUniform_PassCB();
 
     public:
         //Mesh
@@ -134,8 +136,19 @@ namespace LostPeterOpenGLES
         
     ///////////////////////// Internal /////////////////////////
 
+	public:
+		//Mesh
+		virtual Mesh* CreateMesh(const MeshInfo* pMI);
+		virtual void CreateMeshes(const MeshInfoPtrVector& aMIs, MeshPtrVector& aMeshes, MeshPtrMap& mapMeshes);
 
-    public:
+		//Shader
+		virtual GLESShader* CreateShader(const ShaderModuleInfo& si);
+		virtual void CreateShaders(const ShaderModuleInfoVector& aSIs, GLESShaderPtrVector& aShaders, GLESShaderPtrMap& mapShaders);
+
+
+
+    
+	public:
         static const String c_strShaderProgram;
 
     public:
@@ -159,9 +172,9 @@ namespace LostPeterOpenGLES
         FVector2 poWindowContentScale;
 
         GLESTexturePtrVector poSwapChains;
-        GLESTexture* poColor;
-        GLESRenderBuffer* poDepthStencil;
-        GLESTexturePtrVector poColorLists;
+        GLESTexture* poTextureColor;
+        GLESRenderBuffer* poRenderBufferDepthStencil;
+        GLESTexturePtrVector poTextureColorLists;
         GLESRenderPass* poRenderPass;
         GLESFrameBufferPtrVector poFrameBuffers;
         size_t poCurrentFrame;
@@ -177,36 +190,61 @@ namespace LostPeterOpenGLES
         GLESBufferVertexIndex* pBufferVertexIndex;
         FMatrix4 poMatWorld;
 
-        FMeshVertexType poTypeVertex;
+		GLenum poTypePrimitive;
+        bool poIsCull;
+        GLenum poTypeFrontFace;
+        GLenum poTypeCulling;
+        GLenum poTypePolygonMode;
+
+		bool poDepthEnabled;
+		GLenum poDepthFuncCompare;
+		bool poDepthTestEnabled;
+		bool poDepthWriteEnabled;
+
+		bool poStencilEnabled;
+		GLenum poStencil_CompareFunction;
+		GLenum poStencil_StencilFailureOp;
+		GLenum poStencil_DepthFailureOp;
+		GLenum poStencil_DepthStencilPassOp;
+		uint32_t poStencil_Ref;
+		uint32_t poStencil_Mask;
+
+		bool poBlendEnabled;
+		GLenum poBlendColorFactorSrc; 
+		GLenum poBlendColorFactorDst;
+		GLenum poBlendColorOp;
+		GLenum poBlendAlphaFactorSrc; 
+		GLenum poBlendAlphaFactorDst;
+		GLenum poBlendAlphaOp;
+
+		GLboolean poColorWriteMask_Red;
+		GLboolean poColorWriteMask_Green;
+		GLboolean poColorWriteMask_Blue;
+		GLboolean poColorWriteMask_Alpha;
+
+		GLESStatePipelineGraphics* poStatePipelineGraphics;
+        FMeshVertexType poTypeVertex;	
         GLESShader* poShaderVertex;
         GLESShader* poShaderFragment;
-        GLESShaderProgram* poShaderProgram;
 
         String poDescriptorSetLayoutName;
         DescriptorSetLayout* pDescriptorSetLayout;
 
         GLESTexture* poTexture;
 
-        bool isFrameBufferResized;
 
         //Config
         FVector4 cfg_colorBackground;
         FVector4Vector cfg_colorValues;
 
         bool cfg_isRenderPassDefaultCustom;
-
+		bool cfg_isDepthStencil;
         bool cfg_isMSAA;
         bool cfg_isImgui;
         bool cfg_isWireFrame;
         bool cfg_isRotate;
         
-        GLenum cfg_glPrimitiveTopology;
-        bool cfg_isCull;
-        GLenum cfg_glFrontFace;
-        GLenum cfg_glCulling;
-        GLenum cfg_glPolygonMode;
-
-
+    
         FVector3 cfg_cameraPos;
         FVector3 cfg_cameraLookTarget;
         FVector3 cfg_cameraUp;
@@ -277,6 +315,8 @@ namespace LostPeterOpenGLES
 
     public:
         // Common
+		virtual float GetWindowContentScaleX() { return this->poWindowContentScale.x; }
+		virtual float GetWindowContentScaleY() { return this->poWindowContentScale.y; }
         virtual void OnInit(int w, int h);
         virtual void OnLoad();
         virtual bool OnIsInit();
@@ -330,6 +370,7 @@ namespace LostPeterOpenGLES
 
     public:
         virtual bool HasConfig_RenderPassDefaultCustom();
+		virtual bool HasConfig_DepthStencil();
         virtual bool HasConfig_MASS();
         virtual bool HasConfig_Imgui();
 
@@ -366,9 +407,13 @@ namespace LostPeterOpenGLES
             virtual void createSwapChainObjects();
                 virtual void createSwapChain();
                     virtual void createViewport();
+					virtual void createViewport(uint32_t width,
+												uint32_t height,
+												FRectI& poViewport, 
+												FRectI& poScissor);
                 virtual void createSwapChainImageViews();
                     virtual void createColorResources();
-                    virtual void createDepthResources();
+                    virtual void createDepthStencilResources();
                 virtual void createColorResourceLists();
 
             virtual void createDescriptorSetLayouts();
@@ -386,6 +431,8 @@ namespace LostPeterOpenGLES
                         virtual GLESRenderPass* createRenderPass_KhrDepth(int formatSwapChain, int formatDepth);
                         virtual GLESRenderPass* createRenderPass_ColorDepthMSAA(int formatColor, int formatDepth, int formatSwapChain, int samples);
 
+						virtual GLESRenderPass* createRenderPass(String nameRenderPass,
+															     GLESFrameBuffer* pFrameBuffer);
 
 
                 virtual void createFramebuffers();
@@ -522,7 +569,7 @@ namespace LostPeterOpenGLES
                                                        uint8* pBuf,
                                                        uint32 nBufferUniformID);
                     virtual void bindGLBufferUniform(uint32 nBufferUniformID);
-                    virtual void bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 nUniformBlockIndex);
+                    virtual void bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 bindingIndex, size_t offset, size_t bufSize);
                     virtual void destroyGLBufferUniform(uint32 nBufferUniformID);
 
                     virtual void* mapGLBufferRange(uint32 nBufferID, uint32 nBlockIndex, GLenum target, size_t offset, size_t bufSize, GLbitfield access);
@@ -642,7 +689,8 @@ namespace LostPeterOpenGLES
                     virtual void createInstanceCB();
                         virtual void buildInstanceCB();
                     virtual void createCustomCB();
-
+				
+				virtual GLESShader* createShader(const String& nameShader, const String& pathFile, const String& nameShaderType);
                 virtual GLESShader* createShader(const String& nameShader, const String& pathFile, FShaderType typeShader);
                 virtual String getShaderPathRelative(const String& nameShader);
                 virtual String getShaderPath(const String& nameShader);
@@ -719,6 +767,72 @@ namespace LostPeterOpenGLES
                     virtual void createGraphicsPipeline_Default();
                     virtual void createGraphicsPipeline_Custom();    
 
+					virtual GLESStatePipelineGraphics* createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																				   GLESShaderProgram* pShaderProgram,
+																				   bool deleteShaderProgram,
+																				   FMeshVertexType typeVertex,
+																				   GLenum typePrimitive,
+																				   bool isCull,
+																				   GLenum typeFrontFace,
+																				   GLenum typeCulling,
+																				   GLenum typePolygonMode,
+																				   bool depthEnabled,
+																				   GLenum depthFuncCompare,
+																				   bool depthTestEnabled,
+																				   bool depthWriteEnabled,
+																				   bool stencilEnabled,
+																				   GLenum stencil_CompareFunction,
+																				   GLenum stencil_StencilFailureOp,
+																				   GLenum stencil_DepthFailureOp,
+																				   GLenum stencil_DepthStencilPassOp,
+																				   uint32_t stencil_Ref,
+																				   uint32_t stencil_Mask,
+																				   bool blendEnabled,
+																				   GLenum blendColorFactorSrc, 
+																				   GLenum blendColorFactorDst,
+																				   GLenum blendColorOp,
+																				   GLenum blendAlphaFactorSrc, 
+																				   GLenum blendAlphaFactorDst,
+																				   GLenum blendAlphaOp,
+																				   GLboolean colorWriteMask_Red,
+																				   GLboolean colorWriteMask_Green,
+																				   GLboolean colorWriteMask_Blue,
+																				   GLboolean colorWriteMask_Alpha);
+					virtual GLESStatePipelineGraphics* createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																				   GLESShader* pShaderVertex,
+																				   GLESShader* pShaderTessellationControl,
+																				   GLESShader* pShaderTessellationEvaluation,
+																				   GLESShader* pShaderGeometry,
+																				   GLESShader* pShaderFragment,
+																				   FMeshVertexType typeVertex,
+																				   GLenum typePrimitive,
+																				   bool isCull,
+																				   GLenum typeFrontFace,
+																				   GLenum typeCulling,
+																				   GLenum typePolygonMode,
+																				   bool depthEnabled,
+																				   GLenum depthFuncCompare,
+																				   bool depthTestEnabled,
+																				   bool depthWriteEnabled,
+																				   bool stencilEnabled,
+																				   GLenum stencil_CompareFunction,
+																				   GLenum stencil_StencilFailureOp,
+																				   GLenum stencil_DepthFailureOp,
+																				   GLenum stencil_DepthStencilPassOp,
+																				   uint32_t stencil_Ref,
+																				   uint32_t stencil_Mask,
+																				   bool blendEnabled,
+																				   GLenum blendColorFactorSrc, 
+																				   GLenum blendColorFactorDst,
+																				   GLenum blendColorOp,
+																				   GLenum blendAlphaFactorSrc, 
+																				   GLenum blendAlphaFactorDst,
+																				   GLenum blendAlphaOp,
+																				   GLboolean colorWriteMask_Red,
+																				   GLboolean colorWriteMask_Green,
+																				   GLboolean colorWriteMask_Blue,
+																				   GLboolean colorWriteMask_Alpha);
+
 
                 virtual void createComputePipeline();
                     virtual void createComputePipeline_Default();
@@ -729,7 +843,7 @@ namespace LostPeterOpenGLES
                     virtual void createDescriptorSets_Default();
                     virtual void createDescriptorSets_Terrain();
                     virtual void createDescriptorSets_Custom();
-                        virtual void updateDescriptorSets(DescriptorSetLayout* pDSL, GLESShaderProgram* pSP); 
+                        virtual void updateDescriptorSets(DescriptorSetLayout* pDSL, GLESStatePipelineGraphics* pStatePipelineGraphics); 
 
 
 
@@ -749,7 +863,7 @@ namespace LostPeterOpenGLES
 
         //Resize
         virtual void resizeWindow(int w, int h, bool force);
-
+		virtual void refreshFramebufferSize(int w, int h);
 
         //Compute Before Render
 
@@ -807,6 +921,8 @@ namespace LostPeterOpenGLES
                 virtual void updateRenderCommandBuffers_CustomBeforeDefault();
                 virtual void updateRenderCommandBuffers_Default();
 
+					virtual void updateRenderPass_EditorCameraAxis();
+
                     virtual void updateRenderPass_CustomBeforeDefault();
                     virtual void updateRenderPass_Default();
                         virtual void updateMeshDefault_Before();
@@ -818,7 +934,8 @@ namespace LostPeterOpenGLES
                             virtual void drawMeshDefault_Imgui();
                         virtual void updateMeshDefault_After();
                     virtual void updateRenderPass_CustomAfterDefault();
-
+					
+					virtual void updateRenderPass_BlitFromFrame();
 
                     virtual void beginRenderPass(const String& nameRenderPass,
                                                  GLESRenderPass* pRenderPass,
@@ -840,10 +957,25 @@ namespace LostPeterOpenGLES
                         virtual void setFrontFace(GLenum mode);
                         virtual void setCullFace(GLenum mode);
                         virtual void setPolygonMode(GLenum face, GLenum mode);
+						virtual void setDepthWrite(GLboolean flag);
+						virtual void setDepthFunc(GLenum func);
+						virtual void setStencilFunc(GLenum func, GLint ref, GLuint mask);
+						virtual void setStencilOp(GLenum fail, GLenum zfail, GLenum zpass);
+						virtual void setStencilMask(GLuint mask);
                         virtual void setBlendFunc(GLenum sfactor, GLenum dfactor);
-                    
+						virtual void setBlendFunci(GLuint buf, GLenum src, GLenum dst);
+						virtual void setBlendEquation(GLenum mode);
+						virtual void setColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
+						
+						virtual void setViewport(GLint x, GLint y, GLsizei width, GLsizei height);
+						virtual void setScissorRect(GLint x, GLint y, GLsizei width, GLsizei height);
+						virtual void setViewportScissorRect(const FRectI& poViewport, const FRectI& poScissor);
+
                         virtual void draw(GLenum mode, GLint first, GLsizei count);
+						virtual void drawInstance(GLenum mode, GLint first, GLsizei count, GLsizei instancecount);
                         virtual void drawIndexed(GLenum mode, GLsizei count, GLenum type, const void* indices);
+						virtual void drawIndexedInstance(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount);
+						virtual void drawIndexedInstancedBaseInstance(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLuint baseinstance);
 
                     virtual void endRenderPass(GLESRenderPass* pRenderPass);
 

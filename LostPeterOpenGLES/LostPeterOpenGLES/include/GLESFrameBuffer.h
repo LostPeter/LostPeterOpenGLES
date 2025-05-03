@@ -30,7 +30,7 @@ namespace LostPeterOpenGLES
         int nHeight;
         GLESTexturePtrVector aColorTexture;
         UintType2UintIDMap mapType2IDs;
-        GLESRenderBuffer* pDepthStencil;
+        GLESRenderBuffer* pRenderBufferDepthStencil;
         bool bIsDeleteColors;
         bool bIsDeleteDepthStencil;
 
@@ -44,6 +44,9 @@ namespace LostPeterOpenGLES
                   GLESRenderBuffer* pDS,
                   bool isDeleteColors = false,
                   bool isDeleteDepthStencil = false);
+
+	public:
+		bool HasDepthStencil() const { return this->pRenderBufferDepthStencil != nullptr; }
 
     public:
         void BindFrameBuffer();

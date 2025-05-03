@@ -115,7 +115,7 @@ OpenGLES_004_Model::OpenGLES_004_Model(String name)
     this->cfg_shaderVertex_Path = getShaderPathRelative("pos3_color4_tex2_ubo.vert.spv");
     this->cfg_shaderFragment_Path = getShaderPathRelative("pos3_color4_tex2_ubo.frag.spv");
 
-    this->poDescriptorSetLayoutName = "PassConstants-ObjectConstants";
+    this->poDescriptorSetLayoutName = "PassConstants-ObjectConstants-TextureFS";
 
     resetSetting(0);
 }
@@ -148,7 +148,7 @@ void OpenGLES_004_Model::changeModel(int index)
     //2> Texture
     cleanupTexture();
     loadTexture();
-    updateDescriptorSets(this->pDescriptorSetLayout, this->poShaderProgram);
+    updateDescriptorSets(this->pDescriptorSetLayout, this->poStatePipelineGraphics);
 }
 
 

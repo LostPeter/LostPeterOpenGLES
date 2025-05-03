@@ -41,10 +41,10 @@ namespace LostPeterOpenGLES
     }
 
     bool GLESRenderBuffer::Init(int width,
-                              int height,
-                              GLenum format,
-                              GLenum attachment, 
-                              GLenum renderbuffertarget)
+                                int height,
+                                GLenum format,
+                                GLenum attachment, 
+                                GLenum renderbuffertarget)
     {
         this->nWidth = width;
         this->nHeight = height;

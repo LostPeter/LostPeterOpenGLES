@@ -62,12 +62,12 @@ namespace LostPeterOpenGLES
         }
 
     bool GLESBufferVertexIndex::Init(FMeshVertexType type,
-                                   size_t bufSize_Vertex, 
-                                   uint8* pBuf_Vertex,
-                                   bool isDelete_Vertex,
-                                   size_t bufSize_Index, 
-                                   uint8* pBuf_Index,
-                                   bool isDelete_Index)
+									 size_t bufSize_Vertex, 
+									 uint8* pBuf_Vertex,
+									 bool isDelete_Vertex,
+									 size_t bufSize_Index, 
+									 uint8* pBuf_Index,
+									 bool isDelete_Index)
     {
         this->typeVertex = type;
         this->nBufferSize_Vertex = bufSize_Vertex;
@@ -94,12 +94,12 @@ namespace LostPeterOpenGLES
     }
 
     void GLESBufferVertexIndex::Update(FMeshVertexType type,
-                                     size_t bufSize_Vertex,
-                                     uint8* pBuf_Vertex,
-                                     bool isDelete_Vertex,
-                                     size_t bufSize_Index,
-                                     uint8* pBuf_Index,
-                                     bool isDelete_Index)
+                                       size_t bufSize_Vertex,
+                                       uint8* pBuf_Vertex,
+                                       bool isDelete_Vertex,
+                                       size_t bufSize_Index,
+                                       uint8* pBuf_Index,
+                                       bool isDelete_Index)
     {
         destroyBuffer();
 

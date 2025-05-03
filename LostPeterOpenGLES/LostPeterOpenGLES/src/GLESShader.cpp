@@ -37,7 +37,7 @@ namespace LostPeterOpenGLES
     }
 
     bool GLESShader::Init(const String& path,
-                        FShaderType type)
+                          FShaderType type)
     {   
         this->typeShader = type;
         this->pathFile = path;

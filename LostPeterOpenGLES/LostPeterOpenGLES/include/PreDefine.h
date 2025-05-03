@@ -268,44 +268,45 @@ namespace LostPeterOpenGLES
     {
         DescriptorSet_PassConstants = 0,             //0:  PassConstants
         DescriptorSet_ObjectConstants,               //1:  ObjectConstants
-        DescriptorSet_ObjectTerrain,                 //2:  ObjectTerrain
-        DescriptorSet_ObjectGrid,                    //3:  ObjectGrid
-        DescriptorSet_ObjectCameraAxis,              //4:  ObjectCameraAxis
-        DescriptorSet_ObjectCoordinateAxis,          //5:  ObjectCoordinateAxis
-        DescriptorSet_ObjectLineFlat2D,              //6:  ObjectLineFlat2D
-        DescriptorSet_ObjectLineFlat3D,              //7:  ObjectLineFlat3D
-        DescriptorSet_ObjectCopyBlit,                //8:  ObjectCopyBlit
-        DescriptorSet_ObjectCull,                    //9:  ObjectCull
-        DescriptorSet_Material,                      //10: Material
-        DescriptorSet_Instance,                      //11: Instance
-        DescriptorSet_TextureCopy,                   //12: TextureCopy
-        DescriptorSet_Tessellation,                  //13: Tessellation
-        DescriptorSet_Geometry,                      //14: Geometry
-        DescriptorSet_TextureVS,                     //15: TextureVS
-        DescriptorSet_TextureTESC,                   //16: TextureTESC
-        DescriptorSet_TextureTESE,                   //17: TextureTESE
-        DescriptorSet_TextureFS,                     //18: TextureFS
-        DescriptorSet_TextureFrameColor,             //19: TextureFrameColor
-        DescriptorSet_TextureFrameDepth,             //20: TextureFrameDepth
-        DescriptorSet_TextureCSR,                    //21: TextureCSR
-        DescriptorSet_TextureCSRW,                   //22: TextureCSRW
-        DescriptorSet_TextureCSRWSrc,                //23: TextureCSRWSrc
-        DescriptorSet_TextureCSRWDst,                //24: TextureCSRWDst
-        DescriptorSet_TextureDepthShadow,            //25: TextureDepthShadow
-        DescriptorSet_InputAttachRed,                //26: InputAttachRed
-        DescriptorSet_InputAttachGreen,              //27: InputAttachGreen
-        DescriptorSet_InputAttachBlue,               //28: InputAttachBlue
-        DescriptorSet_Terrain,                       //29: Terrain
-        DescriptorSet_Cull,                          //30: Cull
-        DescriptorSet_HizDepth,                      //31: HizDepth
-        DescriptorSet_BufferRWArgsCB,                //32: BufferRWArgsCB
-        DescriptorSet_BufferRWLodCB,                 //33: BufferRWLodCB
-        DescriptorSet_BufferRWResultCB,              //34: BufferRWResultCB
-        DescriptorSet_BufferRWClipCB,                //35: BufferRWClipCB
-        DescriptorSet_BufferRWObjectCullInstance,    //36: BufferRWObjectCullInstance
-        DescriptorSet_CullInstance,                  //37: CullInstance
-        DescriptorSet_BufferObjectLineFlat2D,        //38: BufferObjectLineFlat2D
-        DescriptorSet_BufferObjectLineFlat3D,        //39: BufferObjectLineFlat3D
+		DescriptorSet_OutlineObjectConstants,        //2:  OutlineObjectConstants
+        DescriptorSet_GridObjectConstants,           //3:  GridObjectConstants
+        DescriptorSet_CameraAxisObjectConstants,     //4:  CameraAxisObjectConstants
+        DescriptorSet_CoordinateAxisObjectConstants, //5:  CoordinateAxisObjectConstants
+        DescriptorSet_LineFlat2DObjectConstants,     //6:  LineFlat2DObjectConstants
+        DescriptorSet_LineFlat3DObjectConstants,     //7:  LineFlat3DObjectConstants
+        DescriptorSet_CopyBlitObjectConstants,       //8:  CopyBlitObjectConstants
+		DescriptorSet_TerrainObjectConstants,        //9:  TerrainObjectConstants
+        DescriptorSet_CullObjectConstants,           //10: CullObjectConstants
+        DescriptorSet_MaterialConstants,             //11: MaterialConstants
+        DescriptorSet_InstanceConstants,             //12: InstanceConstants
+        DescriptorSet_TextureCopy,                   //13: TextureCopy
+        DescriptorSet_Tessellation,                  //14: Tessellation
+        DescriptorSet_Geometry,                      //15: Geometry
+        DescriptorSet_TextureVS,                     //16: TextureVS
+        DescriptorSet_TextureTESC,                   //17: TextureTESC
+        DescriptorSet_TextureTESE,                   //18: TextureTESE
+        DescriptorSet_TextureFS,                     //19: TextureFS
+        DescriptorSet_TextureFrameColor,             //20: TextureFrameColor
+        DescriptorSet_TextureFrameDepth,             //21: TextureFrameDepth
+        DescriptorSet_TextureCSR,                    //22: TextureCSR
+        DescriptorSet_TextureCSRW,                   //23: TextureCSRW
+        DescriptorSet_TextureCSRWSrc,                //24: TextureCSRWSrc
+        DescriptorSet_TextureCSRWDst,                //25: TextureCSRWDst
+        DescriptorSet_TextureDepthShadow,            //26: TextureDepthShadow
+        DescriptorSet_InputAttachRed,                //27: InputAttachRed
+        DescriptorSet_InputAttachGreen,              //28: InputAttachGreen
+        DescriptorSet_InputAttachBlue,               //29: InputAttachBlue
+        DescriptorSet_Terrain,                       //30: Terrain
+        DescriptorSet_Cull,                          //31: Cull
+        DescriptorSet_HizDepth,                      //32: HizDepth
+        DescriptorSet_BufferRWArgsCB,                //33: BufferRWArgsCB
+        DescriptorSet_BufferRWLodCB,                 //34: BufferRWLodCB
+        DescriptorSet_BufferRWResultCB,              //35: BufferRWResultCB
+        DescriptorSet_BufferRWClipCB,                //36: BufferRWClipCB
+        DescriptorSet_BufferRWObjectCullInstance,    //37: BufferRWObjectCullInstance
+        DescriptorSet_CullInstance,                  //38: CullInstance
+        DescriptorSet_BufferObjectLineFlat2D,        //39: BufferObjectLineFlat2D
+        DescriptorSet_BufferObjectLineFlat3D,        //40: BufferObjectLineFlat3D
 
         DescriptorSet_Count,
     };
@@ -316,7 +317,7 @@ namespace LostPeterOpenGLES
 
 ////////////////////////////// OpenGL //////////////////////////////
 
-    openglesExport void Util_CreateAttributeDescriptions(FMeshVertexType type);
+    openglesExport void Util_BindAttributeDescriptions(FMeshVertexType type);
     openglesExport void Util_EnableAttributeDescriptions(FMeshVertexType type, bool enable);
 
     openglesExport GLenum Util_Transform2GLShaderType(FShaderType type);
@@ -417,8 +418,11 @@ namespace LostPeterOpenGLES
     class GLESShader;
     class GLESShaderInclude;
     class GLESShaderProgram;
+	class GLESStatePipelineCompute;
+	class GLESStatePipelineGraphics;
     class GLESTexture;
 
+	typedef std::map<uint32, uint32> Uint2UintMap;
     typedef std::map<uint32, uint32> UintID2UintTypeMap;
     typedef std::map<uint32, uint32> UintType2UintIDMap;
 
@@ -428,6 +432,7 @@ namespace LostPeterOpenGLES
     typedef std::map<String, GLESBufferStorage*> GLESBufferStoragePtrMap;
     typedef std::vector<GLESBufferUniform*> GLESBufferUniformPtrVector;
     typedef std::map<String, GLESBufferUniform*> GLESBufferUniformPtrMap;
+	typedef std::map<uint32, GLESBufferUniform*> GLESBufferUniformPtrIDMap;
     typedef std::vector<GLESBufferVertex*> GLESBufferVertexPtrVector;
     typedef std::map<String, GLESBufferVertex*> GLESBufferVertexPtrMap;
     typedef std::vector<GLESBufferVertexIndex*> GLESBufferVertexIndexPtrVector;
@@ -449,8 +454,14 @@ namespace LostPeterOpenGLES
     typedef std::map<String, GLESShaderProgram*> GLESShaderProgramPtrMap;
     typedef std::map<int32, GLESShaderProgram*> GLESShaderProgramPtrIDMap;
 
+	typedef std::vector<GLESStatePipelineCompute*> GLESStatePipelineComputePtrVector;
+    typedef std::map<String, GLESStatePipelineCompute*> GLESStatePipelineComputePtrMap;
+	typedef std::vector<GLESStatePipelineGraphics*> GLESStatePipelineGraphicsPtrVector;
+    typedef std::map<String, GLESStatePipelineGraphics*> GLESStatePipelineGraphicsPtrMap;
+
     typedef std::vector<GLESTexture*> GLESTexturePtrVector;
     typedef std::map<String, GLESTexture*> GLESTexturePtrMap;
+	typedef std::map<uint32, GLESTexture*> GLESTexturePtrIDMap;
 
 
     class Base;

@@ -30,7 +30,6 @@ namespace LostPeterOpenGLES
         
         uint32 nBindingIndex;
         uint32 nBufferUniformID;
-        uint32 nUniformBlockIndex;
 
     public:
         virtual void Destroy();
@@ -47,14 +46,16 @@ namespace LostPeterOpenGLES
         virtual void* MapBuffer(size_t offset, size_t bufSize, GLenum access);
         virtual void UnMapBuffer();
 
-        virtual void UpdateBuffer(size_t offset,
-                                  size_t bufSize, 
+        virtual void UpdateBuffer(size_t bufSize, 
                                   uint8* pBuf,
                                   GLenum access);
 
+	public:
+		uint32 GetBindingIndex() const { return this->nBindingIndex; }
+
     public:
         void BindBufferUniform();
-        void BindBufferUniformBlockIndex(uint32 nBlockIndex);
+        void BindBufferUniformBlockIndex();
 
     protected:
         virtual void destroyBuffer();

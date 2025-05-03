@@ -24,7 +24,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos2Color4 : FVertex_Pos2Color4
     {
 
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos2
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(FVertex_Pos2Color4), (void*)offsetof(FVertex_Pos2Color4, pos));
@@ -55,7 +55,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Color4 : FVertex_Pos3Color4
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4), (void*)offsetof(Vertex_Pos3Color4, pos));
@@ -86,7 +86,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Normal3 : FVertex_Pos3Normal3
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Normal3), (void*)offsetof(Vertex_Pos3Normal3, pos));
@@ -117,7 +117,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Normal3Tex2 : FVertex_Pos3Normal3Tex2
     {
        
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Normal3Tex2), (void*)offsetof(Vertex_Pos3Normal3Tex2, pos));
@@ -153,7 +153,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos2Color4Tex2 : FVertex_Pos2Color4Tex2
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos2
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos2Color4Tex2), (void*)offsetof(Vertex_Pos2Color4Tex2, pos));
@@ -189,7 +189,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Color4Tex2 : FVertex_Pos3Color4Tex2
     {
        
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4Tex2), (void*)offsetof(Vertex_Pos3Color4Tex2, pos));
@@ -225,7 +225,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Color4Normal3Tex2 : FVertex_Pos3Color4Normal3Tex2
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4Normal3Tex2), (void*)offsetof(Vertex_Pos3Color4Normal3Tex2, pos));
@@ -266,7 +266,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Color4Normal3Tex4 : FVertex_Pos3Color4Normal3Tex4
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4Normal3Tex4), (void*)offsetof(Vertex_Pos3Color4Normal3Tex4, pos));
@@ -307,7 +307,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Color4Normal3Tangent3Tex2 : FVertex_Pos3Color4Normal3Tangent3Tex2
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4Normal3Tangent3Tex2), (void*)offsetof(Vertex_Pos3Color4Normal3Tangent3Tex2, pos));
@@ -353,7 +353,7 @@ namespace LostPeterOpenGLES
     struct openglesExport Vertex_Pos3Color4Normal3Tangent3Tex4 : FVertex_Pos3Color4Normal3Tangent3Tex4
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4Normal3Tangent3Tex4), (void*)offsetof(Vertex_Pos3Color4Normal3Tangent3Tex4, pos));
@@ -399,7 +399,7 @@ namespace LostPeterOpenGLES
     struct Vertex_Pos3Normal3Tangent3BlendWI8Tex2 : FVertex_Pos3Normal3Tangent3BlendWI8Tex2
     {
         
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2), (void*)offsetof(Vertex_Pos3Normal3Tangent3BlendWI8Tex2, pos));
@@ -450,7 +450,7 @@ namespace LostPeterOpenGLES
     struct Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2 : FVertex_Pos3Color4Normal3Tangent3BlendWI8Tex2
     {
        
-        static void createAttributeDescriptions()
+        static void bindAttributeDescriptions()
         {
             //Pos3
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2), (void*)offsetof(Vertex_Pos3Color4Normal3Tangent3BlendWI8Tex2, pos));
@@ -650,6 +650,20 @@ namespace LostPeterOpenGLES
 
         }
     };
+	struct openglesExport OutlineObjectConstants
+	{
+		FMatrix4 g_MatWorld;
+		FVector4 g_OutlineColor;
+		float g_OutlineWidth;
+
+		OutlineObjectConstants()
+			: g_MatWorld(FMath::Identity4x4())
+			, g_OutlineColor(1, 1, 1, 1)
+			, g_OutlineWidth(0.02f)
+		{
+
+		}
+	};
     struct openglesExport GridObjectConstants
     {
         FMatrix4 g_MatWorld;
@@ -937,7 +951,7 @@ namespace LostPeterOpenGLES
             , textureZ_Inverse(1.0f / 1024)
             , heightStart(0)
             , heightMax(200)
-            , terrainSizeX(1024)
+			, terrainSizeX(1024)
             , terrainSizeZ(1024)
         {
 

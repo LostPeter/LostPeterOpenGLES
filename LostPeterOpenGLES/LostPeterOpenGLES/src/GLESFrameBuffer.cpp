@@ -23,7 +23,7 @@ namespace LostPeterOpenGLES
         , nWidth(0)
         , nHeight(0)
 
-        , pDepthStencil(nullptr)
+        , pRenderBufferDepthStencil(nullptr)
         , bIsDeleteColors(false)
         , bIsDeleteDepthStencil(false)
 
@@ -69,7 +69,7 @@ namespace LostPeterOpenGLES
         this->mapType2IDs.clear();
         if (this->bIsDeleteDepthStencil)
         {
-            F_DELETE(this->pDepthStencil)
+            F_DELETE(this->pRenderBufferDepthStencil)
         }
 
         if (this->nFrameBufferID > 0)
@@ -80,11 +80,11 @@ namespace LostPeterOpenGLES
     }
 
     bool GLESFrameBuffer::Init(int width,
-                             int height,
-                             const GLESTexturePtrVector& aColors,
-                             GLESRenderBuffer* pDS,
-                             bool isDeleteColors /*= false*/,
-                             bool isDeleteDepthStencil /*= false*/)
+                               int height,
+                               const GLESTexturePtrVector& aColors,
+                               GLESRenderBuffer* pDS,
+                               bool isDeleteColors /*= false*/,
+                               bool isDeleteDepthStencil /*= false*/)
     {
         this->nWidth = width;
         this->nHeight = height;
@@ -98,13 +98,18 @@ namespace LostPeterOpenGLES
             uint32 type = s_mapID2Types[(uint32)i];
             this->mapType2IDs[type] = pGLTexture->nTextureID;
         }
-        this->pDepthStencil = pDS;
+        this->pRenderBufferDepthStencil = pDS;
         this->bIsDeleteColors = isDeleteColors;
         this->bIsDeleteDepthStencil = isDeleteDepthStencil;
+		uint32 nDepthStencilID = 0;
+		if (pDS != nullptr)
+		{
+			nDepthStencilID = pDS->nRenderBufferID;
+		}
 
         if (!Base::GetWindowPtr()->createGLFrameBuffer(GetName(),
                                                        this->mapType2IDs,
-                                                       pDS->nRenderBufferID,
+                                                       nDepthStencilID,
                                                        this->nFrameBufferID))
         {
             return false;

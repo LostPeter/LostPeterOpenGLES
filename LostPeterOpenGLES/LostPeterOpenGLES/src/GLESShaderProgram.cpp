@@ -50,10 +50,10 @@ namespace LostPeterOpenGLES
     }
 
     bool GLESShaderProgram::Init(GLESShader* pShaderVertex,
-                               GLESShader* pShaderTessellationControl,
-                               GLESShader* pShaderTessellationEvaluation,
-                               GLESShader* pShaderGeometry,
-                               GLESShader* pShaderFragment)
+                                 GLESShader* pShaderTessellationControl,
+                                 GLESShader* pShaderTessellationEvaluation,
+                                 GLESShader* pShaderGeometry,
+                                 GLESShader* pShaderFragment)
     {
         this->pShaderVertex = pShaderVertex;
         this->pShaderTessellationControl = pShaderTessellationControl;

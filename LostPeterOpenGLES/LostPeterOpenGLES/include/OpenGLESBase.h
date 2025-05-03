@@ -61,6 +61,8 @@ namespace LostPeterOpenGLES
 
     public:
         // Common
+		virtual float GetWindowContentScaleX() = 0;
+		virtual float GetWindowContentScaleY() = 0;
         virtual void OnInit(int w, int h) = 0;
         virtual void OnLoad() = 0;
         virtual bool OnIsInit() = 0;

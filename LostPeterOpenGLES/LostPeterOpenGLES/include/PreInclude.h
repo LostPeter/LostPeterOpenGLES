@@ -35,6 +35,8 @@
 #include "GLESShader.h"
 #include "GLESShaderInclude.h"
 #include "GLESShaderProgram.h"
+#include "GLESStatePipelineCompute.h"
+#include "GLESStatePipelineGraphics.h"
 #include "GLESTexture.h"
 
 #include "Base.h"

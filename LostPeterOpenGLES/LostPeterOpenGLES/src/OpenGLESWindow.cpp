@@ -541,13 +541,13 @@ namespace LostPeterOpenGLES
         "CopyBlitObjectConstants-TextureFrameColor",
         "CopyBlitObjectConstants-TextureFrameDepth",
         "Cull-BufferRWArgsCB",
-        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
-        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
-        "Cull-ObjectCull-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
+        "Cull-CullObjectConstants-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB",
+        "Cull-CullObjectConstants-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-TextureCSR",
+        "Cull-CullObjectConstants-BufferRWArgsCB-BufferRWLodCB-BufferRWResultCB-BufferRWClipCB-TextureCSR",
         "HizDepth-TextureFS",
         "HizDepth-TextureCSRWSrc-TextureCSRWDst",
         "TextureCopy-TextureCSR-TextureCSRW",
-        "PassConstants-ObjectTerrain-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
+        "PassConstants-TerrainObjectConstants-Material-Instance-Terrain-TextureVS-TextureVS-TextureFS-TextureFS-TextureFS",
     };
     void OpenGLESWindow::destroyDescriptorSetLayouts_Internal()
     {
@@ -709,6 +709,10 @@ namespace LostPeterOpenGLES
 
             F_LogInfo("OpenGLESWindow::createUniform_PassCB: Create Uniform Pass constant buffer success !");
         }
+	GLESBufferUniform* OpenGLESWindow::GetUniform_PassCB()
+	{
+		return this->poBuffers_PassCB[this->poCurrentFrame];
+	}
 
     //PipelineCompute
     void OpenGLESWindow::destroyPipelineCompute_Internal()
@@ -828,15 +832,17 @@ namespace LostPeterOpenGLES
         if (pFrameBuffer == nullptr)
             return;
 
-        Mesh* pMesh = this->m_pPipelineGraphics_CopyBlitToFrame->pMeshBlit;
-        MeshSub* pMeshSub = pMesh->aMeshSubs[0];
-        GLESTexture* pTexture = pFrameBuffer->GetColorTexture(0);
-        if (pTexture != nullptr)
-            pTexture->BindTexture();
-        //UpdateBuffer_Graphics_CopyBlitToFrame();
-        this->m_pPipelineGraphics_CopyBlitToFrame->pShaderProgram->BindProgram();
-        pMeshSub->pBufferVertexIndex->BindVertexArray();
-        drawIndexed(GL_TRIANGLES, (int)pMeshSub->poIndexCount, GL_UNSIGNED_INT, 0);
+		this->m_pPipelineGraphics_CopyBlitToFrame->pStatePipelineGraphics->BindState();
+		this->m_pPipelineGraphics_CopyBlitToFrame->pStatePipelineGraphics->BindShader();
+		this->m_pPipelineGraphics_CopyBlitToFrame->pStatePipelineGraphics->BindBufferUniforms();
+		GLESTexture* pTexture = pFrameBuffer->GetColorTexture(0);
+		pTexture->BindTexture();
+		
+		Mesh* pMesh = this->m_pPipelineGraphics_CopyBlitToFrame->pMeshBlit;
+		MeshSub* pMeshSub = pMesh->aMeshSubs[0];
+		pMeshSub->pBufferVertexIndex->BindVertexArray();
+		drawIndexed(GL_TRIANGLES, (int)pMeshSub->poIndexCount, GL_UNSIGNED_INT, 0);
+		this->m_pPipelineGraphics_CopyBlitToFrame->pStatePipelineGraphics->UnBindState();
     }
 
         void OpenGLESWindow::createPipelineGraphics_DepthShadowMap()
@@ -855,6 +861,69 @@ namespace LostPeterOpenGLES
         }
 
 
+	Mesh* OpenGLESWindow::CreateMesh(const MeshInfo* pMI)
+	{
+		Mesh* pMesh = new Mesh(0,
+							   pMI->nameMesh,
+							   pMI->pathMesh,
+							   pMI->typeMesh,
+							   pMI->typeVertex,
+							   pMI->typeGeometryType,
+							   pMI->pMeshCreateParam);
+		if (!pMesh->LoadMesh(pMI->isFlipY, pMI->isTransformLocal, pMI->matTransformLocal))
+		{
+			String msg = "*********************** OpenGLESWindow::CreateMesh: create mesh: name: [" + pMI->nameMesh + "], path: [" + pMI->pathMesh + "] failed !";	
+			F_LogError("%s", msg.c_str());
+			throw std::runtime_error(msg);
+		}
+
+		F_LogInfo("OpenGLESWindow::CreateMesh: create mesh, name: [%s], path: [%s] success !", 
+				  pMI->nameMesh.c_str(), pMI->pathMesh.c_str());
+		return pMesh;
+	}
+	void OpenGLESWindow::CreateMeshes(const MeshInfoPtrVector& aMIs, MeshPtrVector& aMeshes, MeshPtrMap& mapMeshes)
+	{
+		size_t count = aMIs.size();
+		for (size_t i = 0; i < count; i++)
+		{
+			Mesh* pMesh = CreateMesh(aMIs[i]);
+			if (pMesh != nullptr)
+			{
+				aMeshes.push_back(pMesh);
+				mapMeshes[pMesh->GetName()] = pMesh;
+			}
+		}
+	}
+
+	GLESShader* OpenGLESWindow::CreateShader(const ShaderModuleInfo& si)
+	{ 
+		GLESShader* pShader = createShader(si.nameShader, si.pathShader, si.nameShaderType);
+		if (pShader == nullptr)
+		{
+			String msg = "*********************** OpenGLESWindow::CreateShader: create shader: name: [" + si.nameShader + "], path: [" + si.pathShader + "], type: [" + si.nameShaderType + "] failed !";
+			F_LogError("%s", msg.c_str());
+			throw std::runtime_error(msg);
+		}
+		
+		F_LogInfo("OpenGLESWindow::CreateShader: create shader: name: [%s], path: [%s], type: [%s] success !", 
+				  si.nameShader.c_str(), si.pathShader.c_str(), si.nameShaderType.c_str());
+		return pShader;
+	}
+	void OpenGLESWindow::CreateShaders(const ShaderModuleInfoVector& aSIs, GLESShaderPtrVector& aShaders, GLESShaderPtrMap& mapShaders)
+	{
+		size_t count = aSIs.size();
+		for (size_t i = 0; i < count; i++)
+		{
+			const ShaderModuleInfo& si = aSIs[i];
+			GLESShader* pShader = CreateShader(si);
+			if (pShader != nullptr)
+			{
+				aShaders.push_back(pShader);
+				mapShaders[si.nameShader] = pShader;
+			}
+		}
+	}
+
     /////////////////////////// OpenGLESWindow //////////////////////
     const String OpenGLESWindow::c_strShaderProgram = "ShaderProgram";
     FDynamicLib* OpenGLESWindow::s_poDynLoader_EGL = nullptr;
@@ -868,8 +937,10 @@ namespace LostPeterOpenGLES
         , poSwapChainImageFormat(GL_RGBA)
         , poDepthImageFormat(GL_DEPTH24_STENCIL8)
 
-        , poColor(nullptr)
-        , poDepthStencil(nullptr)
+		, poWindowContentScale(1.0f, 1.0f)
+
+        , poTextureColor(nullptr)
+        , poRenderBufferDepthStencil(nullptr)
         , poRenderPass(nullptr)
         , poCurrentFrame(0)
         , poSwapChainImageIndex(0)
@@ -883,33 +954,57 @@ namespace LostPeterOpenGLES
         , pBufferVertex(nullptr)
         , pBufferVertexIndex(nullptr)
 
+		, poTypePrimitive(GL_TRIANGLES)
+		, poIsCull(true)
+        , poTypeFrontFace(GL_CW)
+        , poTypeCulling(GL_BACK)
+        , poTypePolygonMode(0)
+
+		, poDepthEnabled(false)
+		, poDepthFuncCompare(GL_LEQUAL)
+		, poDepthTestEnabled(false)
+		, poDepthWriteEnabled(false)
+
+		, poStencilEnabled(false)
+		, poStencil_CompareFunction(GL_LEQUAL)
+		, poStencil_StencilFailureOp(GL_KEEP)
+		, poStencil_DepthFailureOp(GL_KEEP)
+		, poStencil_DepthStencilPassOp(GL_KEEP)
+		, poStencil_Ref(0)
+		, poStencil_Mask(0)
+		
+		, poBlendEnabled(false)
+		, poBlendColorFactorSrc(GL_ONE)
+		, poBlendColorFactorDst(GL_ZERO)
+		, poBlendColorOp(GL_FUNC_ADD)
+		, poBlendAlphaFactorSrc(GL_ONE)
+		, poBlendAlphaFactorDst(GL_ZERO)
+		, poBlendAlphaOp(GL_FUNC_ADD)
+
+		, poColorWriteMask_Red(true)
+		, poColorWriteMask_Green(true)
+		, poColorWriteMask_Blue(true)
+		, poColorWriteMask_Alpha(true)
+
+		, poStatePipelineGraphics(nullptr)
         , poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
         , poShaderVertex(nullptr)
         , poShaderFragment(nullptr)
-        , poShaderProgram(nullptr)
 
         , poDescriptorSetLayoutName("")
         , pDescriptorSetLayout(nullptr)
 
         , poTexture(nullptr)
         
-        , isFrameBufferResized(false)
-
 
         , cfg_colorBackground(FMath::ToLinear(FColor(0.0f, 0.2f, 0.4f, 1.0f)))
 
         , cfg_isRenderPassDefaultCustom(false)
-
+		, cfg_isDepthStencil(false)
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
         , cfg_isRotate(false)
-
-        , cfg_glPrimitiveTopology(GL_TRIANGLES)
-        , cfg_isCull(true)
-        , cfg_glFrontFace(GL_CW)
-        , cfg_glCulling(GL_BACK)
-        //, cfg_glPolygonMode(GL_FILL)
 
         , cfg_cameraPos(0.0f, 0.0f, -5.0f)
         , cfg_cameraLookTarget(0.0f, 0.0f, 0.0f)
@@ -1002,11 +1097,16 @@ namespace LostPeterOpenGLES
 
     void OpenGLESWindow::OnResize(int w, int h, bool force)
     {
+		if (this->width != w || this->height != h)
+		{
+			recreateSwapChain();
+		}
         resizeWindow(w, h, force);
+		createViewport();
 
         if (this->pCamera != nullptr)
         {
-            this->pCamera->PerspectiveLH(glm::radians(this->cfg_cameraFov), this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
+            this->pCamera->PerspectiveLH(this->cfg_cameraFov, this->aspectRatio, this->cfg_cameraNear, this->cfg_cameraFar);
         }
     }
 
@@ -1335,6 +1435,10 @@ namespace LostPeterOpenGLES
     {
         return this->cfg_isRenderPassDefaultCustom;
     }
+	bool OpenGLESWindow::HasConfig_DepthStencil()
+	{
+		return this->cfg_isDepthStencil;
+	}
     bool OpenGLESWindow::HasConfig_MASS()
     {
         return this->cfg_isMSAA;
@@ -1659,8 +1763,11 @@ namespace LostPeterOpenGLES
                 createColorResources();
             }
 
-            //4> createDepthResources
-            createDepthResources();
+            //4> createDepthStencilResources
+			if (HasConfig_DepthStencil())
+			{
+				createDepthStencilResources();
+			}
 
             //5> createColorResourceLists
             createColorResourceLists();
@@ -1670,22 +1777,19 @@ namespace LostPeterOpenGLES
         void OpenGLESWindow::createSwapChain()
         {
             //1> Default Framebuffer Color/Depth format
-            //glGetIntegerv(GL_COLOR_ATTACHMENT0, &this->poSwapChainImageFormat);
-            //glGetIntegerv(GL_DEPTH_STENCIL_ATTACHMENT, &this->poDepthImageFormat);
 
             //2> Framebuffer
-            int w = this->width;
-            int h = this->height;
-            this->poFramebufferSize.x = (float)this->width;
-            this->poFramebufferSize.y = (float)this->height;
-            float scaleX = 1.0f;
-            float scaleY = 1.0f;
-            this->poWindowContentScale.x = scaleX;
-            this->poWindowContentScale.y = scaleY;
-            F_LogInfo("<1-5-1> OpenGLESWindow::createSwapChain finish, Swapchain size: [%d,%d], window size: [%d,%d], scale: [%f, %f], format color: [%d], format depth: [%d] !", 
-                      w, h, this->width, this->height, scaleX, scaleY, this->poSwapChainImageFormat, this->poDepthImageFormat);
+			refreshFramebufferSize(this->width, this->height);
+
+			//3> createViewport
+			createViewport();
+
             
-            createViewport();
+            F_LogInfo("<1-5-1> OpenGLESWindow::createSwapChain finish, Swapchain size: [%f, %f], window size: [%d, %d], scale: [%f, %f], format color: [%d], format depth stencil: [%d] !", 
+					  this->poFramebufferSize.x, this->poFramebufferSize.y, 
+					  this->width, this->height, 
+					  this->poWindowContentScale.x, this->poWindowContentScale.y, 
+					  this->poSwapChainImageFormat, this->poDepthImageFormat);
         }
             void OpenGLESWindow::createViewport()
             {
@@ -1706,7 +1810,26 @@ namespace LostPeterOpenGLES
                 this->poScissor.top = 0;
                 this->poScissor.right = w;
                 this->poScissor.bottom = h;
+
+				F_LogInfo("OpenGLESWindow::createViewport: Viewport change to: WidthHeight: [%d - %d], FrameBuffer: [%f - %f] !", 
+						  this->width, this->height,
+						  this->poFramebufferSize.x, this->poFramebufferSize.y);
             }
+			void OpenGLESWindow::createViewport(uint32_t width,
+												uint32_t height,
+												FRectI& poViewport, 
+												FRectI& poScissor)
+			{
+				poViewport.left = 0;
+				poViewport.top = 0;
+				poViewport.right = (int)width;
+				poViewport.bottom = (int)height;
+
+				poScissor.left = 0;
+				poScissor.top = 0;
+				poScissor.right = (int)width;
+				poScissor.bottom = (int)height;
+			}
         void OpenGLESWindow::createSwapChainImageViews()
         {
             int count_swapchain = s_maxFramesInFight;
@@ -1752,48 +1875,46 @@ namespace LostPeterOpenGLES
                 int w = (int)this->poFramebufferSize.x;
                 int h = (int)this->poFramebufferSize.y;
                 String nameColor = "Texture-Color";
-                this->poColor = createTexture(nameColor,
-                                              aPathTexture,
-                                              nullptr,
-                                              4,
-                                              w,
-                                              h,
-                                              0,
-                                              F_Texture_2D,
-                                              F_TexturePixelFormat_R8G8B8A8_SRGB,
-                                              F_TextureAddressing_Wrap,
-                                              F_TextureFilter_Bilinear,
-                                              F_TextureFilter_Bilinear,
-                                              F_MSAASampleCount_1_Bit,
-                                              FColor(0, 0, 0, 1),
-                                              true,
-                                              true,
-                                              false,
-                                              true,
-                                              false);
-                if (this->poColor == nullptr)
+                this->poTextureColor = createTexture(nameColor,
+													 aPathTexture,
+													 nullptr,
+													 4,
+													 w,
+													 h,
+													 0,
+													 F_Texture_2D,
+													 F_TexturePixelFormat_R8G8B8A8_SRGB,
+													 F_TextureAddressing_Wrap,
+													 F_TextureFilter_Bilinear,
+													 F_TextureFilter_Bilinear,
+													 F_MSAASampleCount_1_Bit,
+													 FColor(0, 0, 0, 1),
+													 true,
+													 true,
+													 false,
+													 true,
+													 false);
+                if (this->poTextureColor == nullptr)
                 {
                     F_LogError("*********************** OpenGLESWindow::createColorResources: Failed to create texture, name: [%s] !", nameColor.c_str());
-                    F_DELETE(this->poColor)
                     return;
                 }
             }
-            void OpenGLESWindow::createDepthResources()
+            void OpenGLESWindow::createDepthStencilResources()
             {
                 StringVector aPathTexture;
                 int w = (int)this->poFramebufferSize.x;
                 int h = (int)this->poFramebufferSize.y;
                 String nameDepthStencil = "Texture-DepthStencil";
-                this->poDepthStencil = createRenderBuffer(nameDepthStencil,
-                                                          w,
-                                                          h,
-                                                          GL_DEPTH24_STENCIL8,
-                                                          GL_DEPTH_STENCIL_ATTACHMENT,
-                                                          0);
-                if (this->poDepthStencil == nullptr)
+                this->poRenderBufferDepthStencil = createRenderBuffer(nameDepthStencil,
+																	  w,
+																	  h,
+																	  GL_DEPTH24_STENCIL8,
+																	  GL_DEPTH_STENCIL_ATTACHMENT,
+																	  0);
+                if (this->poRenderBufferDepthStencil == nullptr)
                 {
-                    F_LogError("*********************** OpenGLESWindow::createDepthResources: Failed to create texture, name: [%s] !", nameDepthStencil.c_str());
-                    F_DELETE(this->poDepthStencil)
+                    F_LogError("*********************** OpenGLESWindow::createDepthStencilResources: Failed to create texture, name: [%s] !", nameDepthStencil.c_str());
                     return;
                 }
             }
@@ -1915,6 +2036,19 @@ namespace LostPeterOpenGLES
                     return pRenderPass;
                 }
 
+				GLESRenderPass* OpenGLESWindow::createRenderPass(String nameRenderPass,
+															     GLESFrameBuffer* pFrameBuffer)
+				{
+					GLESRenderPass* pRenderPass = new GLESRenderPass(nameRenderPass);
+                    if (!pRenderPass->Init())
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createRenderPass: Failed to create RenderPass, name: [%s] !", nameRenderPass.c_str());
+                        return nullptr;
+                    }
+					pRenderPass->SetFrameBuffer(pFrameBuffer);
+
+                    return pRenderPass;
+				}
 
         void OpenGLESWindow::createFramebuffers()
         {
@@ -1940,14 +2074,14 @@ namespace LostPeterOpenGLES
                     {
                         GLESTexturePtrVector aColorTexture;
                         aColorTexture.push_back(this->poSwapChains[i]);
-                        if (poColor != nullptr)
-                            aColorTexture.push_back(poColor); 
+                        if (this->poTextureColor != nullptr)
+                            aColorTexture.push_back(this->poTextureColor); 
                         String nameFrameBuffer = "FrameBuffer-" + FUtilString::SaveSizeT(i);
                         GLESFrameBuffer* pFrameBuffer = createFrameBuffer(nameFrameBuffer,
                                                                           w,
                                                                           h,
                                                                           aColorTexture,
-                                                                          this->poDepthStencil,
+                                                                          this->poRenderBufferDepthStencil,
                                                                           false,
                                                                           false);
                         if (pFrameBuffer == nullptr)
@@ -2074,7 +2208,12 @@ namespace LostPeterOpenGLES
                     }
 
                     //Depth Stencil Attachment
-                    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, nDepthStencilID); 
+					if (nDepthStencilID > 0)
+					{
+						glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, nDepthStencilID); 
+					}
+
+					//Check
                     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
                     {
                         F_LogError("*********************** OpenGLESWindow::createGLFrameBuffer: FrameBuffer is not complete, id: [%d], name: [%s] !", nFrameBufferID, nameFrameBuffer.c_str());
@@ -2356,7 +2495,7 @@ namespace LostPeterOpenGLES
                     glBindBuffer(GL_ARRAY_BUFFER, nVBO);
                     glBufferData(GL_ARRAY_BUFFER, bufSize, pBuf, GL_STATIC_DRAW);
 
-                    Util_CreateAttributeDescriptions(type);
+                    Util_BindAttributeDescriptions(type);
 
                     glBindBuffer(GL_ARRAY_BUFFER, 0); 
                     glBindVertexArray(0); 
@@ -2418,7 +2557,7 @@ namespace LostPeterOpenGLES
                     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, nVEO);
                     glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufSize_Index, pBuf_Index, GL_STATIC_DRAW);
 
-                    Util_CreateAttributeDescriptions(type);
+                    Util_BindAttributeDescriptions(type);
 
                     glBindBuffer(GL_ARRAY_BUFFER, 0); 
                     glBindVertexArray(0); 
@@ -2456,8 +2595,8 @@ namespace LostPeterOpenGLES
                     glGenBuffers(1, &nBufferUniformID);
                     glBindBuffer(GL_UNIFORM_BUFFER, nBufferUniformID);
                     glBufferData(GL_UNIFORM_BUFFER, bufSize, pBuf, usage);
-                    glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, nBufferUniformID, 0, bufSize);
                     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+					glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, nBufferUniformID, 0, bufSize);
 
                     if (GL_NO_ERROR != glGetError())
                     {
@@ -2480,11 +2619,13 @@ namespace LostPeterOpenGLES
                 {
                     glBindBuffer(GL_UNIFORM_BUFFER, nBufferUniformID); 
                 }
-                void OpenGLESWindow::bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 nUniformBlockIndex)
+                void OpenGLESWindow::bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 bindingIndex, size_t offset, size_t bufSize)
                 {
                     glBindBuffer(GL_UNIFORM_BUFFER, nBufferUniformID);
-                    glBindBufferBase(GL_UNIFORM_BUFFER, nUniformBlockIndex, nBufferUniformID);
+                    glBindBufferBase(GL_UNIFORM_BUFFER, bindingIndex, nBufferUniformID);
                     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+					glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, nBufferUniformID, offset, bufSize);
                 }
                 void OpenGLESWindow::destroyGLBufferUniform(uint32 nBufferUniformID)
                 {
@@ -2650,7 +2791,7 @@ namespace LostPeterOpenGLES
                     }
                     int width, height, texChannels;
                     stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
-                    int imageSize = width * height * texChannels;
+                    //int imageSize = width * height * texChannels;
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -2844,7 +2985,7 @@ namespace LostPeterOpenGLES
                     }
                     else if (typeTexture == F_Texture_2D)
                     {
-                        GLenum format;
+                        GLenum format = GL_RGBA;
                         if (channel == 1)
                             format = GL_RED;
                         else if (channel == 3)
@@ -2979,6 +3120,11 @@ namespace LostPeterOpenGLES
 
                 }
 
+			GLESShader* OpenGLESWindow::createShader(const String& nameShader, const String& pathFile, const String& nameShaderType)
+			{
+				FShaderType typeShader = F_ParseShaderType(nameShaderType);
+				return createShader(nameShader, pathFile, typeShader);
+			}
             GLESShader* OpenGLESWindow::createShader(const String& nameShader, const String& pathFile, FShaderType typeShader)
             {
                 GLESShader* pShader = new GLESShader(nameShader);
@@ -3405,20 +3551,48 @@ namespace LostPeterOpenGLES
                         throw std::runtime_error(msg);
                     }
 
-                    //2> Shader Program
-                    String nameShaderProgram = "ShaderProgram-Default";
-                    this->poShaderProgram = createShaderProgram(nameShaderProgram,
-                                                                this->poShaderVertex,
-                                                                nullptr,
-                                                                nullptr,
-                                                                nullptr,
-                                                                this->poShaderFragment);
-                    if (this->poShaderProgram == nullptr)
-                    {
-                        String msg = "*********************** OpenGLESWindow::createGraphicsPipeline_Default: Failed to create shader program: " + nameShaderProgram;
-                        F_LogError("%s", msg.c_str());
-                        throw std::runtime_error(msg);
-                    }
+                    //2> Shader Pipeline Graphics
+                    String nameStatePipelineGraphics = "StatePipelineGraphics-Default";
+					this->poStatePipelineGraphics = createStatePipelineGraphics(nameStatePipelineGraphics,
+																				this->poShaderVertex,
+						                                            			nullptr,
+																				nullptr,
+																				nullptr,
+																				this->poShaderFragment,
+																				this->poTypeVertex,
+																				this->poTypePrimitive,
+																				this->poIsCull,
+																				this->poTypeFrontFace,
+																				this->poTypeCulling,
+																				this->poTypePolygonMode,
+																				this->poDepthEnabled,
+																				this->poDepthFuncCompare,
+																				this->poDepthTestEnabled,
+																				this->poDepthWriteEnabled,
+																				this->poStencilEnabled,
+																				this->poStencil_CompareFunction,
+																				this->poStencil_StencilFailureOp,
+																				this->poStencil_DepthFailureOp,
+																				this->poStencil_DepthStencilPassOp,
+																				this->poStencil_Ref,
+																				this->poStencil_Mask,
+																				this->poBlendEnabled,
+																				this->poBlendColorFactorSrc,
+																				this->poBlendColorFactorDst,
+																				this->poBlendColorOp,
+																				this->poBlendAlphaFactorSrc,
+																				this->poBlendAlphaFactorDst,
+																				this->poBlendAlphaOp,
+																				this->poColorWriteMask_Red,
+																				this->poColorWriteMask_Green,
+																				this->poColorWriteMask_Blue,
+																				this->poColorWriteMask_Alpha);
+					if (!this->poStatePipelineGraphics)
+					{
+						String msg = "*********************** OpenGLESWindow::createGraphicsPipeline_Default: Failed to create state pipeline graphics: " + nameStatePipelineGraphics;
+						F_LogError("%s", msg.c_str());
+						throw std::runtime_error(msg);
+					}
 
                 }
                 void OpenGLESWindow::createGraphicsPipeline_Custom()
@@ -3426,6 +3600,150 @@ namespace LostPeterOpenGLES
 
                 }
 
+				 	GLESStatePipelineGraphics* OpenGLESWindow::createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																						   GLESShaderProgram* pShaderProgram,
+																						   bool deleteShaderProgram,
+																						   FMeshVertexType typeVertex,
+																						   GLenum typePrimitive,
+																						   bool isCull,
+																						   GLenum typeFrontFace,
+																						   GLenum typeCulling,
+																						   GLenum typePolygonMode,
+																						   bool depthEnabled,
+																						   GLenum depthFuncCompare,
+																						   bool depthTestEnabled,
+																						   bool depthWriteEnabled,
+																						   bool stencilEnabled,
+																						   GLenum stencil_CompareFunction,
+																						   GLenum stencil_StencilFailureOp,
+																						   GLenum stencil_DepthFailureOp,
+																						   GLenum stencil_DepthStencilPassOp,
+																						   uint32_t stencil_Ref,
+																						   uint32_t stencil_Mask,
+																						   bool blendEnabled,
+																						   GLenum blendColorFactorSrc, 
+																						   GLenum blendColorFactorDst,
+																						   GLenum blendColorOp,
+																						   GLenum blendAlphaFactorSrc, 
+																						   GLenum blendAlphaFactorDst,
+																						   GLenum blendAlphaOp,
+																						   GLboolean colorWriteMask_Red,
+																						   GLboolean colorWriteMask_Green,
+																						   GLboolean colorWriteMask_Blue,
+																						   GLboolean colorWriteMask_Alpha)
+					{
+						GLESStatePipelineGraphics* pStatePipelineGraphics = new GLESStatePipelineGraphics(nameStatePipelineGraphics);
+						if (!pStatePipelineGraphics->Init(pShaderProgram,
+														  deleteShaderProgram,
+														  typeVertex,
+														  typePrimitive,
+														  isCull,
+														  typeFrontFace,
+														  typeCulling,
+														  typePolygonMode,
+														  depthEnabled,
+														  depthFuncCompare,
+														  depthTestEnabled,
+														  depthWriteEnabled,
+														  stencilEnabled,
+														  stencil_CompareFunction,
+														  stencil_StencilFailureOp,
+														  stencil_DepthFailureOp,
+														  stencil_DepthStencilPassOp,
+														  stencil_Ref,
+														  stencil_Mask,
+														  blendEnabled,
+														  blendColorFactorSrc, 
+														  blendColorFactorDst,
+														  blendColorOp,
+														  blendAlphaFactorSrc, 
+														  blendAlphaFactorDst,
+														  blendAlphaOp,
+														  colorWriteMask_Red,
+														  colorWriteMask_Green,
+														  colorWriteMask_Blue,
+														  colorWriteMask_Alpha))
+						{
+							F_DELETE(pStatePipelineGraphics)
+							return nullptr;
+						}
+						return pStatePipelineGraphics;
+					}
+ 					GLESStatePipelineGraphics* OpenGLESWindow::createStatePipelineGraphics(const String& nameStatePipelineGraphics,
+																						   GLESShader* pShaderVertex,
+																						   GLESShader* pShaderTessellationControl,
+																						   GLESShader* pShaderTessellationEvaluation,
+																						   GLESShader* pShaderGeometry,
+																						   GLESShader* pShaderFragment,
+																						   FMeshVertexType typeVertex,
+																						   GLenum typePrimitive,
+																						   bool isCull,
+																						   GLenum typeFrontFace,
+																						   GLenum typeCulling,
+																						   GLenum typePolygonMode,
+																						   bool depthEnabled,
+																						   GLenum depthFuncCompare,
+																						   bool depthTestEnabled,
+																						   bool depthWriteEnabled,
+																						   bool stencilEnabled,
+																						   GLenum stencil_CompareFunction,
+																						   GLenum stencil_StencilFailureOp,
+																						   GLenum stencil_DepthFailureOp,
+																						   GLenum stencil_DepthStencilPassOp,
+																						   uint32_t stencil_Ref,
+																						   uint32_t stencil_Mask,
+																						   bool blendEnabled,
+																						   GLenum blendColorFactorSrc, 
+																						   GLenum blendColorFactorDst,
+																						   GLenum blendColorOp,
+																						   GLenum blendAlphaFactorSrc, 
+																						   GLenum blendAlphaFactorDst,
+																						   GLenum blendAlphaOp,
+																						   GLboolean colorWriteMask_Red,
+																						   GLboolean colorWriteMask_Green,
+																						   GLboolean colorWriteMask_Blue,
+																						   GLboolean colorWriteMask_Alpha)
+					{
+						GLESStatePipelineGraphics* pStatePipelineGraphics = new GLESStatePipelineGraphics(nameStatePipelineGraphics);
+						if (!pStatePipelineGraphics->Init(pShaderVertex,
+														  pShaderTessellationControl,
+													   	  pShaderTessellationEvaluation,
+														  pShaderGeometry,
+														  pShaderFragment,
+														  typeVertex,
+														  typePrimitive,
+														  isCull,
+														  typeFrontFace,
+														  typeCulling,
+														  typePolygonMode,
+														  depthEnabled,
+														  depthFuncCompare,
+														  depthTestEnabled,
+														  depthWriteEnabled,
+														  stencilEnabled,
+														  stencil_CompareFunction,
+														  stencil_StencilFailureOp,
+														  stencil_DepthFailureOp,
+														  stencil_DepthStencilPassOp,
+														  stencil_Ref,
+														  stencil_Mask,
+														  blendEnabled,
+														  blendColorFactorSrc, 
+														  blendColorFactorDst,
+														  blendColorOp,
+														  blendAlphaFactorSrc, 
+														  blendAlphaFactorDst,
+														  blendAlphaOp,
+														  colorWriteMask_Red,
+														  colorWriteMask_Green,
+														  colorWriteMask_Blue,
+														  colorWriteMask_Alpha))
+						{
+							F_DELETE(pStatePipelineGraphics)
+							return nullptr;
+						}
+						return pStatePipelineGraphics;
+					}
             void OpenGLESWindow::createComputePipeline()
             {
                 F_LogInfo("**<2-1-6> OpenGLESWindow::createComputePipeline start **");
@@ -3469,9 +3787,15 @@ namespace LostPeterOpenGLES
                 void OpenGLESWindow::createDescriptorSets_Default()
                 {
                     if (this->pDescriptorSetLayout == nullptr)
-                        return;
+                    {
+						if (this->poTexture != nullptr)
+						{
+							this->poStatePipelineGraphics->BindTexture(this->poTexture, 0);
+						}
+						return;
+					}
 
-                    updateDescriptorSets(this->pDescriptorSetLayout, this->poShaderProgram);
+                    updateDescriptorSets(this->pDescriptorSetLayout, this->poStatePipelineGraphics);
                 }
                 void OpenGLESWindow::createDescriptorSets_Terrain()
                 {
@@ -3481,41 +3805,51 @@ namespace LostPeterOpenGLES
                 {
 
                 }
-                    void OpenGLESWindow::updateDescriptorSets(DescriptorSetLayout* pDSL, GLESShaderProgram* pSP)
+                    void OpenGLESWindow::updateDescriptorSets(DescriptorSetLayout* pDSL, GLESStatePipelineGraphics* pStatePipelineGraphics)
                     {
-                        F_Assert(pDSL && pSP && "OpenGLESWindow::updateDescriptorSets")
+                        F_Assert(pDSL && pStatePipelineGraphics && "OpenGLESWindow::updateDescriptorSets")
                         
-                        pSP->BindProgram();
                         uint32 count_fb = (uint32)this->poSwapChains.size();
                         uint32 count_ds = (uint32)pDSL->aLayouts.size();
+						uint32 nBindingTextureFragementIndex = 0;
                         for (uint32 i = 0; i < count_ds; i++)
                         {
                             const String& nameDS = pDSL->aLayouts[i];
-                            uint32 nUniformBlockIndex = pSP->GetUniformBlockIndex(nameDS);
 
                             if (nameDS == Util_GetDescriptorSetTypeName(DescriptorSet_PassConstants)) //PassConstants
                             {
-                                for (uint32 j = 0; j < count_fb; j++)
-                                {
-                                    GLESBufferUniform* pUBO_Pass = this->poBuffers_PassCB[j];
-                                    pUBO_Pass->BindBufferUniformBlockIndex(nUniformBlockIndex);
-                                }
+								uint32 nUniformBlockIndex = pStatePipelineGraphics->GetUniformBlockIndex(nameDS);
+								uint32 nBindingIndex = (uint32)DescriptorSet_PassConstants;
+								pStatePipelineGraphics->BindUniformBlockBinding(nUniformBlockIndex, nBindingIndex);
                             }
                             else if (nameDS == Util_GetDescriptorSetTypeName(DescriptorSet_ObjectConstants)) //ObjectConstants
                             {
-                                for (uint32 j = 0; j < count_fb; j++)
-                                {
-                                    GLESBufferUniform* pUBO_Object = this->poBuffers_ObjectCB[j];
-                                    pUBO_Object->BindBufferUniformBlockIndex(nUniformBlockIndex);
-                                }
+								uint32 nUniformBlockIndex = pStatePipelineGraphics->GetUniformBlockIndex(nameDS);
+								uint32 nBindingIndex = (uint32)DescriptorSet_ObjectConstants;
+								pStatePipelineGraphics->BindUniformBlockBinding(nUniformBlockIndex, nBindingIndex);
                             }
+							else if (nameDS == Util_GetDescriptorSetTypeName(DescriptorSet_MaterialConstants)) //MaterialConstants
+							{
+
+							}
+							else if (nameDS == Util_GetDescriptorSetTypeName(DescriptorSet_InstanceConstants)) //InstanceConstants
+							{
+
+							}
+							else if (nameDS == Util_GetDescriptorSetTypeName(DescriptorSet_TextureFS)) //TextureFS
+							{
+								if (this->poTexture != nullptr)
+								{
+									pStatePipelineGraphics->BindTexture(this->poTexture, nBindingTextureFragementIndex);
+									nBindingTextureFragementIndex ++;
+								}
+							}
                             else
                             {
                                 String msg = "*********************** OpenGLESWindow::updateDescriptorSets: Wrong DescriptorSet name: " + nameDS;
                                 F_LogError("%s", msg.c_str());
                                 throw std::runtime_error(msg.c_str());
                             }
-                            pSP->SetUniformBlockBinding(nUniformBlockIndex, i);
                         }
                     }
 
@@ -3566,15 +3900,38 @@ namespace LostPeterOpenGLES
 
         void OpenGLESWindow::createEditor()
         {
+			F_LogInfo("**********<2-3> OpenGLESWindow::createEditor start **********");
+			{
+				//1> createEditor_Grid
+				createEditor_Grid();
+				
+				//2> createEditor_CameraAxis
+				createEditor_CameraAxis();
 
+				//3> createEditor_CoordinateAxis
+				createEditor_CoordinateAxis();
+
+				//4> createEditor_LineFlat2DCollector
+				createEditor_LineFlat2DCollector();
+
+				//5> createEditor_LineFlat3DCollector
+				createEditor_LineFlat3DCollector();
+			}
+			F_LogInfo("**********<2-3> OpenGLESWindow::createEditor finish **********");
         }
             void OpenGLESWindow::createEditor_Grid()
             {
+				// this->pEditorGrid = new EditorGrid();
+				// this->pEditorGrid->Init();
 
+				F_LogInfo("<2-3-1> OpenGLESWindow::createEditor_Grid finish !");
             }
             void OpenGLESWindow::createEditor_CameraAxis()
             {
+				// this->pEditorCameraAxis = new EditorCameraAxis();
+				// this->pEditorCameraAxis->Init();
 
+				F_LogInfo("<2-3-2> OpenGLESWindow::createEditor_CameraAxis finish !");
             }
             void OpenGLESWindow::createEditor_CoordinateAxis()    
             {
@@ -3590,7 +3947,11 @@ namespace LostPeterOpenGLES
             }
         void OpenGLESWindow::destroyEditor()
         {
-
+			// F_DELETE(this->pEditorGrid)
+			// F_DELETE(this->pEditorCameraAxis)
+			// F_DELETE(this->pEditorCoordinateAxis)
+			// F_DELETE(this->pEditorLineFlat2DCollector)
+			// F_DELETE(this->pEditorLineFlat3DCollector)
         }
 
 
@@ -3604,9 +3965,24 @@ namespace LostPeterOpenGLES
         }
         this->width = w;
         this->height = h;
+
+		refreshFramebufferSize(w, h);
         RefreshAspectRatio();
     }
+	void OpenGLESWindow::refreshFramebufferSize(int w, int h)
+	{
+		float scaleX = 1.0f;
+		float scaleY = 1.0f;
+		//glfwGetWindowContentScale(this->pWindow, &scaleX, &scaleY);
+		this->poWindowContentScale.x = scaleX;
+		this->poWindowContentScale.y = scaleY;
 
+		int frameW = w;
+		int frameH = h;
+		//glfwGetFramebufferSize(this->pWindow, &frameW, &frameH);
+		this->poFramebufferSize.x = (float)frameW;
+		this->poFramebufferSize.y = (float)frameH;
+	}
     bool OpenGLESWindow::beginRender()
     {
         GLESFrameBuffer* pFrameBuffer = this->poFrameBuffers[this->poCurrentFrame];
@@ -3636,6 +4012,9 @@ namespace LostPeterOpenGLES
                 updateRenderCommandBuffers_Default();
             }
             updateRenderCommandBuffers_CustomAfterDefault();
+
+			//7> BlitToFrame
+			updateRenderPass_BlitFromFrame();
         }
             void OpenGLESWindow::updateCBs_Default()
             {
@@ -3705,10 +4084,13 @@ namespace LostPeterOpenGLES
 
                     //Update Buffer
                     GLESBufferUniform* pBufferUniform = this->poBuffers_PassCB[this->poCurrentFrame];
-                    pBufferUniform->UpdateBuffer(0,
-                                                 sizeof(PassConstants),
+                    pBufferUniform->UpdateBuffer(sizeof(PassConstants),
                                                  (uint8*)(&this->passCB),
                                                  GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+					if (this->poStatePipelineGraphics != nullptr)
+					{
+						this->poStatePipelineGraphics->BindBufferUniform(pBufferUniform, pBufferUniform->GetBindingIndex());
+					}
                 }
                     void OpenGLESWindow::updateCBs_PassTransformAndCamera(PassConstants& pass, FCamera* pCam, int nIndex)
                     {
@@ -3743,10 +4125,13 @@ namespace LostPeterOpenGLES
 
                     //Update Buffer
                     GLESBufferUniform* pBufferUniform = this->poBuffers_ObjectCB[this->poCurrentFrame];
-                    pBufferUniform->UpdateBuffer(0, 
-                                                 sizeof(ObjectConstants) * count,
+                    pBufferUniform->UpdateBuffer(sizeof(ObjectConstants) * count,
                                                  (uint8*)this->objectCBs.data(),
-                                                 GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+												 GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+					if (this->poStatePipelineGraphics != nullptr)
+					{
+						this->poStatePipelineGraphics->BindBufferUniform(pBufferUniform, pBufferUniform->GetBindingIndex());
+					}
                 }
                     void OpenGLESWindow::updateCBs_ObjectsContent()
                     {
@@ -3863,13 +4248,13 @@ namespace LostPeterOpenGLES
                                 if (ImGui::CollapsingHeader("EditorGrid Settings"))
                                 {
                                     ImGui::Checkbox("Is EditorGridShow", &cfg_isEditorGridShow);
-                                    if (this->pEditorGrid != nullptr)
-                                    {
-                                        if (ImGui::ColorEdit4("EditorGrid Color", (float*)&this->cfg_editorGrid_Color))
-                                        {
-                                            //this->pEditorGrid->SetColor(this->cfg_editorGrid_Color);
-                                        }
-                                    }
+                                    // if (this->pEditorGrid != nullptr)
+                                    // {
+                                    //     if (ImGui::ColorEdit4("EditorGrid Color", (float*)&this->cfg_editorGrid_Color))
+                                    //     {
+                                    //         this->pEditorGrid->SetColor(this->cfg_editorGrid_Color);
+                                    //     }
+                                    // }
                                 }
                                 if (ImGui::CollapsingHeader("EditorCameraAxis Settings"))
                                 {
@@ -4138,7 +4523,18 @@ namespace LostPeterOpenGLES
                 }
             void OpenGLESWindow::updateCBs_Editor()
             {
-
+				// if (this->pEditorGrid != nullptr)
+                // {
+                //     this->pEditorGrid->UpdateCBs();
+                // }
+                // if (this->pEditorCameraAxis != nullptr)
+                // {
+                //     this->pEditorCameraAxis->UpdateCBs();
+                // }
+                // if (this->pEditorCoordinateAxis != nullptr)
+                // {
+                //     this->pEditorCoordinateAxis->UpdateCBs();
+                // }
             }
             void OpenGLESWindow::updateCBs_Custom()
             {
@@ -4152,6 +4548,8 @@ namespace LostPeterOpenGLES
             void OpenGLESWindow::updateRenderCommandBuffers_Default()
             {
 
+				updateRenderPass_EditorCameraAxis();
+
                 {
                     updateRenderPass_CustomBeforeDefault();
                     {
@@ -4161,6 +4559,34 @@ namespace LostPeterOpenGLES
                 }
 
             }
+				void OpenGLESWindow::updateRenderPass_EditorCameraAxis()
+				{
+					// if (this->pEditorCameraAxis == nullptr ||
+					// 	!this->cfg_isEditorCameraAxisShow)
+					// {
+					// 	return;
+					// }
+
+					// GLESRenderPass* pRenderPass = this->pEditorCameraAxis->poRenderPassCameraAxis;
+					// if (pRenderPass == nullptr)
+					// 	return;
+
+					// beginRenderPass("[RenderPass-EditorCameraAxis]",
+					// 				pRenderPass,
+					// 				this->pEditorCameraAxis->poOffset,
+					// 				this->pEditorCameraAxis->poExtent,
+					// 				this->pEditorCameraAxis->poColorBackground,
+					// 				1.0f,
+					// 				0);
+					// {
+					// 	//1> Viewport
+					// 	setViewportScissorRect(this->pEditorCameraAxis->poViewport, this->pEditorCameraAxis->poScissor);
+
+					// 	//2> Render CameraAxis
+					// 	this->pEditorCameraAxis->Draw();
+					// }
+					// endRenderPass(pRenderPass);
+				}
                 void OpenGLESWindow::updateRenderPass_CustomBeforeDefault()
                 {
 
@@ -4178,7 +4604,7 @@ namespace LostPeterOpenGLES
                                         0);
                         {
                             //1> Viewport
-                            
+                            setViewportScissorRect(this->poViewport, this->poScissor);
 
                             //2> Default
                             drawMeshDefault();
@@ -4200,34 +4626,34 @@ namespace LostPeterOpenGLES
                     }
                         void OpenGLESWindow::drawMeshDefault()
                         {
-                            if (this->poShaderProgram == nullptr)
+                            if (this->poStatePipelineGraphics == nullptr)
                                 return;
 
-                            //State
-                            setFrontFace(this->cfg_glFrontFace);
-                            setEnable(GL_CULL_FACE, this->cfg_isCull);
-                            setCullFace(this->cfg_glCulling);
-                            setPolygonMode(GL_FRONT_AND_BACK, this->cfg_glPolygonMode);
+							//setPolygonMode(GL_FRONT_AND_BACK, this->poTypePolygonMode);
 
-                            //Texture
-                            if (this->poTexture != nullptr)
-                                this->poTexture->BindTexture();
-
-                            //Shader
-                            this->poShaderProgram->BindProgram();
+                            //State/Shader/BufferUniform/Texture
+							this->poStatePipelineGraphics->poTypePolygonMode = this->poTypePolygonMode;
+							this->poStatePipelineGraphics->BindState();
+							this->poStatePipelineGraphics->BindShader();
+							this->poStatePipelineGraphics->BindBufferUniforms();
+							this->poStatePipelineGraphics->BindTextures();
 
                             //Draw
-                            Util_EnableAttributeDescriptions(this->poTypeVertex, true);
                             if (this->pBufferVertex != nullptr)
                             {
                                 this->pBufferVertex->BindVertexArray();
-                                draw(this->cfg_glPrimitiveTopology, 0, this->poVertexCount);
+                                drawInstance(this->poStatePipelineGraphics->poTypePrimitive, 0, this->poVertexCount, 1);
                             }
                             else if (this->pBufferVertexIndex != nullptr)
                             {   
                                 this->pBufferVertexIndex->BindVertexArray();
-                                drawIndexed(this->cfg_glPrimitiveTopology, this->poIndexCount, GL_UNSIGNED_INT, 0);
+                                drawIndexedInstance(this->poStatePipelineGraphics->poTypePrimitive, this->poIndexCount, GL_UNSIGNED_INT, 0, 1);
                             }
+							else
+							{	
+								F_Assert(false && "OpenGLESWindow::drawMeshDefault")
+							}
+							this->poStatePipelineGraphics->UnBindState();
                         }
                         void OpenGLESWindow::drawMeshTerrain()
                         {
@@ -4239,7 +4665,35 @@ namespace LostPeterOpenGLES
                         }
                         void OpenGLESWindow::drawMeshDefault_Editor()
                         {
-
+							// if (this->pEditorGrid != nullptr)
+                            // {
+                            //     if (this->cfg_isEditorGridShow)
+                            //     {
+                            //         this->pEditorGrid->Draw();
+                            //     }
+                            // }
+                            // if (this->pEditorCameraAxis != nullptr)
+                            // {
+                            //     if (this->cfg_isEditorCameraAxisShow)
+                            //     {
+                            //         this->pEditorCameraAxis->DrawQuad();
+                            //     }
+                            // }
+                            // if (this->pEditorCoordinateAxis != nullptr)
+                            // {
+                            //     if (this->cfg_isEditorCoordinateAxisShow)
+                            //     {
+                            //         this->pEditorCoordinateAxis->Draw();
+                            //     }
+                            // }
+                            // if (this->pEditorLineFlat2DCollector != nullptr)
+                            // {
+                            //     this->pEditorLineFlat2DCollector->Draw();
+                            // }
+                            // if (this->pEditorLineFlat3DCollector != nullptr)
+                            // {
+                            //     this->pEditorLineFlat3DCollector->Draw();
+                            // }
                         }
                         void OpenGLESWindow::drawMeshDefault_CustomBeforeImgui()
                         {
@@ -4261,7 +4715,10 @@ namespace LostPeterOpenGLES
 
                 }
 
-
+				void OpenGLESWindow::updateRenderPass_BlitFromFrame()
+				{
+					Draw_Graphics_CopyBlitToFrame(this->poRenderPass->pFrameBuffer);
+				}
 
                 void OpenGLESWindow::beginRenderPass(const String& nameRenderPass,
                                                      GLESRenderPass* pRenderPass,
@@ -4273,14 +4730,17 @@ namespace LostPeterOpenGLES
                 { 
                     this->poDebug->BeginRegion(nameRenderPass.c_str(), GL_DEBUG_SOURCE_APPLICATION);
 
-                    if (pRenderPass != nullptr &&
-                        pRenderPass->pFrameBuffer != nullptr)
-                    {   
-                        pRenderPass->pFrameBuffer->BindFrameBuffer();
-                    }   
-
-                    setClearColorDepthStencil(clBg, depth, stencil);
-                    clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+                    pRenderPass->pFrameBuffer->BindFrameBuffer();
+					if (pRenderPass->pFrameBuffer->HasDepthStencil())
+					{
+						setClearColorDepthStencil(clBg, depth, stencil);
+						clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+					}
+					else
+					{
+						setClearColor(clBg);
+						clear(GL_COLOR_BUFFER_BIT);
+					}
                 }
 
                     void OpenGLESWindow::setEnable(GLenum cap, bool enable)
@@ -4339,34 +4799,84 @@ namespace LostPeterOpenGLES
                     {
                         // glPolygonMode(face, mode);
                     }
+					void OpenGLESWindow::setDepthWrite(GLboolean flag)
+					{
+						glDepthMask(flag);
+					}
+					void OpenGLESWindow::setDepthFunc(GLenum func)
+					{
+						glDepthFunc(func);
+					}
+					void OpenGLESWindow::setStencilFunc(GLenum func, GLint ref, GLuint mask)
+					{
+						glStencilFunc(func, ref, mask);
+					}
+					void OpenGLESWindow::setStencilOp(GLenum fail, GLenum zfail, GLenum zpass)
+					{
+						glStencilOp(fail, zfail, zpass);
+					}
+					void OpenGLESWindow::setStencilMask(GLuint mask)
+					{
+						glStencilMask(mask);
+					}
                     void OpenGLESWindow::setBlendFunc(GLenum sfactor, GLenum dfactor)
                     {
                         glBlendFunc(sfactor, dfactor);
                     }
+					void OpenGLESWindow::setBlendFunci(GLuint buf, GLenum src, GLenum dst)
+					{
+						glBlendFunci(buf, src, dst);
+					}
+					void OpenGLESWindow::setBlendEquation(GLenum mode)
+					{
+						glBlendEquation(mode);
+					}
+					void OpenGLESWindow::setColorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha)
+					{
+						glColorMask(red, green, blue, alpha);
+					}
 
+					void OpenGLESWindow::setViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+					{
+						glViewport(x, y, width, height);
+					}
+					void OpenGLESWindow::setScissorRect(GLint x, GLint y, GLsizei width, GLsizei height)
+					{
+						glScissor(x, y, width, height);
+					}
+					void OpenGLESWindow::setViewportScissorRect(const FRectI& poViewport, const FRectI& poScissor)
+					{
+						setViewport(poViewport.left, poViewport.top, poViewport.Width(), poViewport.Height());
+						setScissorRect(poScissor.left, poScissor.top, poScissor.Width(), poScissor.Height());
+					}
                     void OpenGLESWindow::draw(GLenum mode, GLint first, GLsizei count)
                     {
                         glDrawArrays(mode, first, count);
                     }
+					void OpenGLESWindow::drawInstance(GLenum mode, GLint first, GLsizei count, GLsizei instancecount)
+					{
+						glDrawArraysInstanced(mode, first, count, instancecount);
+					}
                     void OpenGLESWindow::drawIndexed(GLenum mode, GLsizei count, GLenum type, const void* indices)
                     {
                         glDrawElements(mode, count, type, indices);
                     }
-
+					void OpenGLESWindow::drawIndexedInstance(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount)
+					{
+						glDrawElementsInstanced(mode, count, type, indices, instancecount);
+					}
+					void OpenGLESWindow::drawIndexedInstancedBaseInstance(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLuint baseinstance)
+					{
+						glDrawElementsInstancedBaseInstanceEXT(mode, count, type, indices, instancecount, baseinstance);
+					}
                 void OpenGLESWindow::endRenderPass(GLESRenderPass* pRenderPass)
                 {
-                    if (pRenderPass != nullptr &&
-                        pRenderPass->pFrameBuffer != nullptr)
-                    {   
-                        bindGLFrameBuffer(0);
-                        
-                        setEnableDepthTest(false);
-                        //setPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                        setClearColor(this->cfg_colorBackground);
-                        clear(GL_COLOR_BUFFER_BIT);
-
-                        Draw_Graphics_CopyBlitToFrame(pRenderPass->pFrameBuffer);
-                    }   
+					bindGLFrameBuffer(0);
+					
+					setEnableDepthTest(false);
+					//setPolygonMode(GL_FRONT_AND_BACK, 0);
+					setClearColor(this->cfg_colorBackground);
+					clear(GL_COLOR_BUFFER_BIT);
 
                     this->poDebug->EndRegion(); 
                 }
@@ -4402,11 +4912,18 @@ namespace LostPeterOpenGLES
             cleanupInternal();
 
             
+			//2> Device
+			F_DELETE(this->poDebug)
+			F_DELETE(this->poShaderInclude)
+
+
         }
         F_LogInfo("---------- OpenGLESWindow::cleanup finish ----------");
     }
         void OpenGLESWindow::cleanupDefault()
         {
+			this->poDescriptorSetLayoutName = "";
+            F_DELETE(this->pDescriptorSetLayout)
             
             cleanupTexture();
             cleanupVertexIndexBuffer();
@@ -4460,36 +4977,37 @@ namespace LostPeterOpenGLES
                 destroyResourceInternal();
 
                 //1> DepthImage/ColorImage    
-                F_DELETE(poDepthStencil)
-                F_DELETE(poColor)
-                count = this->poColorLists.size();
+                F_DELETE(this->poTextureColor)
+				F_DELETE(this->poRenderBufferDepthStencil)
+                count = this->poTextureColorLists.size();
                 for (size_t i = 0; i < count; i++)
                 {
-                    F_DELETE(this->poColorLists[i])
+                    F_DELETE(this->poTextureColorLists[i])
                 }
-                this->poColorLists.clear();
-                count = this->poSwapChains.size();
-                for (size_t i = 0; i < count; i++)
-                {
-                    F_DELETE(this->poSwapChains[i])
-                }
-                this->poSwapChains.clear();
-
-                //2> SwapChainFrameBuffers
-                count = this->poFrameBuffers.size();
-                for (size_t i = 0; i < count; i++)
-                {
-                    F_DELETE(this->poFrameBuffers[i])
-                }
-                this->poFrameBuffers.clear();
-
-                //3> CommandBuffers
-
-
-                //4> RenderPass
-                F_DELETE(this->poRenderPass)
+                this->poTextureColorLists.clear();
                 
+				//2> SwapChainFrameBuffers
+				count = this->poFrameBuffers.size();
+				for (size_t i = 0; i < count; i++)
+				{
+					F_DELETE(this->poFrameBuffers[i])
+				}
+				this->poFrameBuffers.clear();
 
+				//3> CommandBuffers
+
+
+				//4> RenderPass
+				F_DELETE(this->poRenderPass)
+				
+				//5> SwapChainImageViews
+				count = this->poSwapChains.size();
+				for (size_t i = 0; i < count; i++)
+				{
+					F_DELETE(this->poSwapChains[i])
+				}
+				this->poSwapChains.clear();
+				 
             }
             F_LogInfo("----- OpenGLESWindow::cleanupSwapChain finish -----");
         }
@@ -4507,16 +5025,33 @@ namespace LostPeterOpenGLES
 
 
                 //2> Pipelines
-                this->poDescriptorSetLayoutName = "";
-                F_DELETE(this->pDescriptorSetLayout)
-                F_DELETE(this->poShaderProgram)
                 F_DELETE(this->poShaderVertex)
                 F_DELETE(this->poShaderFragment)
+				F_DELETE(this->poStatePipelineGraphics)
 
             }
             void OpenGLESWindow::cleanupSwapChain_Editor()
             {
-
+				// if (this->pEditorGrid != nullptr)
+                // {
+                //     this->pEditorGrid->CleanupSwapChain();
+                // }
+                // if (this->pEditorCameraAxis != nullptr)
+                // {
+                //     this->pEditorCameraAxis->CleanupSwapChain();
+                // }
+                // if (this->pEditorCoordinateAxis != nullptr)
+                // {
+                //     this->pEditorCoordinateAxis->CleanupSwapChain();
+                // }
+                // if (this->pEditorLineFlat2DCollector != nullptr)
+                // {
+                //     this->pEditorLineFlat2DCollector->CleanupSwapChain();
+                // }
+                // if (this->pEditorLineFlat3DCollector != nullptr)
+                // {
+                //     this->pEditorLineFlat3DCollector->CleanupSwapChain();
+                // }
             }
             void OpenGLESWindow::cleanupSwapChain_Custom()
             {
@@ -4542,7 +5077,32 @@ namespace LostPeterOpenGLES
                 //     }
                 // }
 
+				cleanupSwapChain();
+				
+				createSwapChain();
+				createSwapChainImageViews();
+				if (HasConfig_MASS())
+				{
+					createColorResources();
+				}  
+				if (HasConfig_DepthStencil())
+				{
+					createDepthStencilResources();
+				}
+				createRenderPasses();
+				createFramebuffers();
 
+				createResourceInternal();
+            
+            	createConstBuffers();
+
+				createCustomBeforePipeline();
+				createGraphicsPipeline();
+				createComputePipeline();
+				createDescriptorSets();
+
+				recreateSwapChain_Editor();
+				recreateSwapChain_Custom();
 
 
                 cameraReset();
@@ -4551,7 +5111,26 @@ namespace LostPeterOpenGLES
         }
             void OpenGLESWindow::recreateSwapChain_Editor()
             {
-
+				// if (this->pEditorGrid != nullptr)
+				// {
+				// 	this->pEditorGrid->RecreateSwapChain();
+				// }
+				// if (this->pEditorCameraAxis != nullptr)
+				// {
+				// 	this->pEditorCameraAxis->RecreateSwapChain();
+				// }
+				// if (this->pEditorCoordinateAxis != nullptr)
+				// {
+				// 	this->pEditorCoordinateAxis->RecreateSwapChain();
+				// }
+				// if (this->pEditorLineFlat2DCollector != nullptr)
+				// {
+				// 	this->pEditorLineFlat2DCollector->RecreateSwapChain();
+				// }
+				// if (this->pEditorLineFlat3DCollector != nullptr)
+				// {
+				// 	this->pEditorLineFlat3DCollector->RecreateSwapChain();
+				// }
             }
             void OpenGLESWindow::recreateSwapChain_Custom()
             {
