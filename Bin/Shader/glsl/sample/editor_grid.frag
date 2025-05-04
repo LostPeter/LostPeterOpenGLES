@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #version 300 es
-precision mediump float;
+precision highp float;
 
 in vec4 fragWorldPos;
 in vec4 fragColor;
@@ -119,9 +119,9 @@ void main()
     vec3 viewPos = cam.posEyeWorld.xyz;
     vec4 color = gridObjectConsts.color;
 
-	mediump float fBase = 2.0;
-	mediump float fPow = round(abs(viewPos.y) - step / subdivisions) / step;
-	mediump float fResult = pow(fBase, fPow);
+	float fBase = 2.0;
+	float fPow = round(abs(viewPos.y) - step / subdivisions) / step;
+	float fResult = pow(fBase, fPow);
 	fDivs = divisions / fResult;
 	vec4 vGrid1 = Grid(fragTexCoord, fDivs, color) + Grid(fragTexCoord, fDivs / subdivisions, color);
 

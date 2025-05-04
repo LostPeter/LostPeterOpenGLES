@@ -397,7 +397,7 @@ namespace LostPeterOpenGLES
             float width = (float)Base::GetWindowPtr()->poFramebufferSize.x;
             float height = (float)Base::GetWindowPtr()->poFramebufferSize.y;
 			this->copyBlitObjectCB.offsetX = 0.9f - s_fBlitAreaWidth / width;
-            this->copyBlitObjectCB.offsetY = 1.0f - s_fBlitAreaHeight / height;
+            this->copyBlitObjectCB.offsetY = 0.9f - s_fBlitAreaHeight / height;
             this->copyBlitObjectCB.scaleX = 2.0f * s_fBlitAreaWidth / width;
             this->copyBlitObjectCB.scaleY = 2.0f * s_fBlitAreaHeight / height;
 			this->poBufferUniform_CopyBlitObjectCB = pWindow->createBufferUniform("EditorCameraAxis-CopyBlitObjectConstants", 
@@ -489,24 +489,24 @@ namespace LostPeterOpenGLES
 				int h = (int)this->poViewport.Height();
 				String nameTextureColor = "TextureColor-EditorCameraAxis";
                 GLESTexture* pTexture = pWindow->createTexture(nameTextureColor,
-															 aPathTexture,
-														     nullptr,
-														   	 4,
-															 w,
-															 h,
-															 1,
-															 F_Texture_2D,
-															 F_TexturePixelFormat_R8G8B8A8_UNORM,
-															 F_TextureAddressing_Wrap,
-															 F_TextureFilter_Bilinear,
-															 F_TextureFilter_Bilinear,
-															 F_MSAASampleCount_1_Bit,
-															 FColor(0, 0, 0, 1),
-															 true,
-															 true,
-															 false,
-															 true,
-															 false);
+															   aPathTexture,
+														       nullptr,
+														   	   4,
+															   w,
+															   h,
+															   1,
+															   F_Texture_2D,
+															   F_TexturePixelFormat_R8G8B8A8_UNORM,
+															   F_TextureAddressing_Wrap,
+															   F_TextureFilter_Bilinear,
+															   F_TextureFilter_Bilinear,
+															   F_MSAASampleCount_1_Bit,
+															   FColor(0, 0, 0, 1),
+															   true,
+															   true,
+															   false,
+															   true,
+															   false);
                 if (pTexture == nullptr)
                 {
                     F_LogError("*********************** EditorCameraAxis::initPipelineGraphics: Failed to create texture color, name: [%s] !", nameTextureColor.c_str());
