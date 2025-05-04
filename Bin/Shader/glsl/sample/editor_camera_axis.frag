@@ -1,0 +1,42 @@
+/****************************************************************************
+* LostPeterOpenGLES - Copyright (C) 2022 by LostPeter
+* 
+* Author:   LostPeter
+* Time:     2025-05-04
+* Github:   https://github.com/LostPeter/LostPeterOpenGLES
+* Document: https://www.zhihu.com/people/lostpeter/posts
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
+
+#version 300 es
+precision mediump float;
+
+in vec4 fragWorldPos;
+in vec4 fragColor;
+in vec2 fragTexCoord;
+
+
+///////////////////////////////// CameraAxisObjectConstants /////////////////////
+//CameraAxisObjectConstants
+struct CameraAxisObjectConstant
+{
+	mat4 g_MatWorld;
+    vec4 color;
+};
+#define MAX_OBJECT_CAMERAAXIS_COUNT 	7
+layout (std140) uniform CameraAxisObjectConstants
+{
+    CameraAxisObjectConstant objs[MAX_OBJECT_CAMERAAXIS_COUNT];
+} cameraAxisObjectConsts;
+
+
+out vec4 outColor;
+
+void main()
+{
+	int index = int(floor(fragWorldPos.w + 0.5));
+	CameraAxisObjectConstant obj = cameraAxisObjectConsts.objs[index];
+	
+	outColor = obj.color;
+}
