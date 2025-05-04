@@ -16,6 +16,7 @@
 
 namespace LostPeterOpenGLES
 {
+	#define F_CameraAxisObjectConstants_Separate 1
     class openglesExport EditorCameraAxis : public EditorBase
     {
     public:
@@ -23,7 +24,100 @@ namespace LostPeterOpenGLES
         virtual ~EditorCameraAxis();
 
     public:
-        
+		static size_t s_nMeshConeIndex;
+		static size_t s_nMeshAABBIndex;
+		static size_t s_nMeshQuadIndex;
+		static size_t s_nMeshCameraAxisCount;
+
+		static const String s_strNameShader_CameraAxis_Vert;
+		static const String s_strNameShader_CameraAxis_Frag;
+		static const String s_strNameShader_QuadBlit_Vert;
+		static const String s_strNameShader_QuadBlit_Frag;
+
+		static const float s_fBlitAreaWidth;
+		static const float s_fBlitAreaHeight;
+
+		static FMatrix4 s_aMatrix4Transforms[7];
+
+		static float s_fCameraDistance;
+		static FVector3 s_vCameraPos;
+		static FVector3 s_vCameraLookTarget;
+		static FVector3 s_vCameraUp;
+		static float s_fCameraFOV;
+		static float s_fCameraAspectRatio;
+		static float s_fCameraZNear;
+		static float s_fCameraZFar;
+
+	//CameraAxis
+	public:
+		FCamera* pCamera;
+		FRectI poViewport;
+		FRectI poScissor;
+		FSizeI poOffset;
+		FSizeI poExtent;
+		FColor poColorBackground;
+
+		PassConstants passCB;
+		GLESBufferUniform* poBufferUniform_PassCB;
+
+		std::vector<CameraAxisObjectConstants> cameraAxisObjectCBs;
+		GLESBufferUniform* poBufferUniform_ObjectCB;
+	#ifdef F_CameraAxisObjectConstants_Separate
+		CameraAxisObjectConstants cameraAxisObjectCB_Last;
+		GLESBufferUniform* poBufferUniform_ObjectCB_Last;
+	#endif
+
+		GLESTexturePtrVector poTextureColors;
+		GLESRenderBuffer* poRenderBufferDepthStencil;
+		GLESFrameBuffer* poFrameBufferCameraAxis;
+		GLESRenderPass* poRenderPassCameraAxis;
+
+	//Quad Blit
+	public:
+		//DescriptorSetLayouts
+		String nameDescriptorSetLayout_CopyBlit; 
+		StringVector aNameDescriptorSetLayouts_CopyBlit;
+
+		//GLESStatePipelineGraphics
+		GLESStatePipelineGraphics* pPipelineGraphics_CopyBlit;
+
+		//Uniform Buffer
+		CopyBlitObjectConstants copyBlitObjectCB;
+		GLESBufferUniform* poBufferUniform_CopyBlitObjectCB;
+
+	protected:
+		bool isNeedUpdate;
+	public:
+		F_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
+		F_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+
+	public:
+		virtual void Destroy();
+
+		virtual void Init();
+
+		virtual void UpdateCBs();
+		virtual void Draw();
+		virtual void DrawQuad();
+
+	public:
+		virtual void CleanupSwapChain();
+		virtual void RecreateSwapChain();
+
+	protected:
+		virtual void initConfigs();
+			virtual void initCamera();
+			virtual void initViewport();
+		virtual void initBufferUniforms();
+		virtual void initDescriptorSetLayout();
+		virtual void initPipelineLayout();
+		virtual void initPipelineGraphics();
+		virtual void updateDescriptorSets_Graphics();
+
+		virtual void destroyBufferUniforms();
+		virtual void destroyPipelineGraphics();
+		virtual void destroyPipelineLayout();
+		virtual void destroyDescriptorSetLayout();
     };
 
 }; //LostPeterOpenGLES

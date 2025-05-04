@@ -23,7 +23,45 @@ namespace LostPeterOpenGLES
         virtual ~EditorGrid();
 
     public:
-        
+		static const String s_strNameShader_Grid_Vert;
+		static const String s_strNameShader_Grid_Frag;
+
+	public:
+		GridObjectConstants gridObjectCB;
+		GLESBufferUniform* pBufferUniform;
+
+		void SetColor(FColor& color)
+		{
+			this->gridObjectCB.color = color;
+			SetIsNeedUpdate(true);
+		}
+
+	protected:
+		bool isNeedUpdate;
+	public:
+		F_FORCEINLINE bool IsNeedUpdate() const { return this->isNeedUpdate; }
+		F_FORCEINLINE void SetIsNeedUpdate(bool b) { this->isNeedUpdate = b; }
+
+	public:
+		virtual void Destroy();
+
+		virtual void Init();
+
+		virtual void UpdateCBs();
+		virtual void BindUniformPass();
+
+	public:
+		virtual void CleanupSwapChain();
+		virtual void RecreateSwapChain();
+
+	protected:
+		virtual void initConfigs();
+		virtual void initBufferUniforms();
+		virtual void initPipelineGraphics();
+		virtual void updateDescriptorSets_Graphics();
+
+		virtual void destroyBufferUniforms();
+		virtual void destroyPipelineGraphics();
     };
 
 }; //LostPeterOpenGLES

@@ -101,7 +101,7 @@ void main()
 	vec4 outWorldPos = obj.g_MatWorld * vec4(inPosition, 1.0);
     gl_Position = trans.mat4Proj * trans.mat4View * outWorldPos;
 	fragWorldPos.xyz = outWorldPos.xyz / outWorldPos.w;
-	fragWorldPos.w = instanceIndex;
+	fragWorldPos.w = float(instanceIndex);
     fragColor = inColor;
     fragTexCoord = inTexCoord;
 }

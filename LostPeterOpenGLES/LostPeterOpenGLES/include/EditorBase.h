@@ -23,7 +23,55 @@ namespace LostPeterOpenGLES
         virtual ~EditorBase();
     
     public:
-        
+        //Meshes
+        MeshInfoPtrVector aMeshInfos;
+        MeshPtrVector aMeshes;
+        MeshPtrMap mapMeshes;
+
+        //Shaders
+        ShaderModuleInfoVector aShaderModuleInfos;
+        GLESShaderPtrVector aShaders;
+        GLESShaderPtrMap mapShaders;
+
+        //DescriptorSetLayouts
+        String nameDescriptorSetLayout;
+        StringVector aNameDescriptorSetLayouts;
+
+        //GLESStatePipelineGraphics
+        GLESStatePipelineGraphics* pPipelineGraphics;
+
+	public:
+		GLESShader* GetShader(const String& nameShader);
+
+    public:
+        virtual void Destroy() = 0;
+
+        virtual void Init();
+
+        virtual void UpdateCBs() = 0;
+		virtual void BindUniformPass() { }
+        virtual void Draw();
+
+    public:
+        virtual void CleanupSwapChain();
+        virtual void RecreateSwapChain();
+
+    protected:
+        virtual void initConfigs() = 0;
+        virtual void initMeshes();
+        virtual void initShaders();
+        virtual void initBufferUniforms() = 0;
+        virtual void initDescriptorSetLayout();
+        virtual void initPipelineLayout();
+        virtual void initPipelineGraphics() = 0;
+        virtual void updateDescriptorSets_Graphics() = 0;
+
+        virtual void destroyMeshes();
+        virtual void destroyShaders();
+        virtual void destroyBufferUniforms() = 0;
+        virtual void destroyPipelineGraphics();
+        virtual void destroyPipelineLayout();
+        virtual void destroyDescriptorSetLayout();
     };
 
 }; //LostPeterOpenGLES

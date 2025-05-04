@@ -3921,15 +3921,15 @@ namespace LostPeterOpenGLES
         }
             void OpenGLESWindow::createEditor_Grid()
             {
-				// this->pEditorGrid = new EditorGrid();
-				// this->pEditorGrid->Init();
+				this->pEditorGrid = new EditorGrid();
+				this->pEditorGrid->Init();
 
 				F_LogInfo("<2-3-1> OpenGLESWindow::createEditor_Grid finish !");
             }
             void OpenGLESWindow::createEditor_CameraAxis()
             {
-				// this->pEditorCameraAxis = new EditorCameraAxis();
-				// this->pEditorCameraAxis->Init();
+				this->pEditorCameraAxis = new EditorCameraAxis();
+				this->pEditorCameraAxis->Init();
 
 				F_LogInfo("<2-3-2> OpenGLESWindow::createEditor_CameraAxis finish !");
             }
@@ -3947,11 +3947,11 @@ namespace LostPeterOpenGLES
             }
         void OpenGLESWindow::destroyEditor()
         {
-			// F_DELETE(this->pEditorGrid)
-			// F_DELETE(this->pEditorCameraAxis)
-			// F_DELETE(this->pEditorCoordinateAxis)
-			// F_DELETE(this->pEditorLineFlat2DCollector)
-			// F_DELETE(this->pEditorLineFlat3DCollector)
+			F_DELETE(this->pEditorGrid)
+			F_DELETE(this->pEditorCameraAxis)
+			F_DELETE(this->pEditorCoordinateAxis)
+			F_DELETE(this->pEditorLineFlat2DCollector)
+			F_DELETE(this->pEditorLineFlat3DCollector)
         }
 
 
@@ -4248,13 +4248,13 @@ namespace LostPeterOpenGLES
                                 if (ImGui::CollapsingHeader("EditorGrid Settings"))
                                 {
                                     ImGui::Checkbox("Is EditorGridShow", &cfg_isEditorGridShow);
-                                    // if (this->pEditorGrid != nullptr)
-                                    // {
-                                    //     if (ImGui::ColorEdit4("EditorGrid Color", (float*)&this->cfg_editorGrid_Color))
-                                    //     {
-                                    //         this->pEditorGrid->SetColor(this->cfg_editorGrid_Color);
-                                    //     }
-                                    // }
+                                    if (this->pEditorGrid != nullptr)
+                                    {
+                                        if (ImGui::ColorEdit4("EditorGrid Color", (float*)&this->cfg_editorGrid_Color))
+                                        {
+                                            this->pEditorGrid->SetColor(this->cfg_editorGrid_Color);
+                                        }
+                                    }
                                 }
                                 if (ImGui::CollapsingHeader("EditorCameraAxis Settings"))
                                 {
@@ -4523,14 +4523,14 @@ namespace LostPeterOpenGLES
                 }
             void OpenGLESWindow::updateCBs_Editor()
             {
-				// if (this->pEditorGrid != nullptr)
-                // {
-                //     this->pEditorGrid->UpdateCBs();
-                // }
-                // if (this->pEditorCameraAxis != nullptr)
-                // {
-                //     this->pEditorCameraAxis->UpdateCBs();
-                // }
+				if (this->pEditorGrid != nullptr)
+                {
+                    this->pEditorGrid->UpdateCBs();
+                }
+                if (this->pEditorCameraAxis != nullptr)
+                {
+                    this->pEditorCameraAxis->UpdateCBs();
+                }
                 // if (this->pEditorCoordinateAxis != nullptr)
                 // {
                 //     this->pEditorCoordinateAxis->UpdateCBs();
@@ -4561,31 +4561,31 @@ namespace LostPeterOpenGLES
             }
 				void OpenGLESWindow::updateRenderPass_EditorCameraAxis()
 				{
-					// if (this->pEditorCameraAxis == nullptr ||
-					// 	!this->cfg_isEditorCameraAxisShow)
-					// {
-					// 	return;
-					// }
+					if (this->pEditorCameraAxis == nullptr ||
+						!this->cfg_isEditorCameraAxisShow)
+					{
+						return;
+					}
 
-					// GLESRenderPass* pRenderPass = this->pEditorCameraAxis->poRenderPassCameraAxis;
-					// if (pRenderPass == nullptr)
-					// 	return;
+					GLESRenderPass* pRenderPass = this->pEditorCameraAxis->poRenderPassCameraAxis;
+					if (pRenderPass == nullptr)
+						return;
 
-					// beginRenderPass("[RenderPass-EditorCameraAxis]",
-					// 				pRenderPass,
-					// 				this->pEditorCameraAxis->poOffset,
-					// 				this->pEditorCameraAxis->poExtent,
-					// 				this->pEditorCameraAxis->poColorBackground,
-					// 				1.0f,
-					// 				0);
-					// {
-					// 	//1> Viewport
-					// 	setViewportScissorRect(this->pEditorCameraAxis->poViewport, this->pEditorCameraAxis->poScissor);
+					beginRenderPass("[RenderPass-EditorCameraAxis]",
+									pRenderPass,
+									this->pEditorCameraAxis->poOffset,
+									this->pEditorCameraAxis->poExtent,
+									this->pEditorCameraAxis->poColorBackground,
+									1.0f,
+									0);
+					{
+						//1> Viewport
+						setViewportScissorRect(this->pEditorCameraAxis->poViewport, this->pEditorCameraAxis->poScissor);
 
-					// 	//2> Render CameraAxis
-					// 	this->pEditorCameraAxis->Draw();
-					// }
-					// endRenderPass(pRenderPass);
+						//2> Render CameraAxis
+						this->pEditorCameraAxis->Draw();
+					}
+					endRenderPass(pRenderPass);
 				}
                 void OpenGLESWindow::updateRenderPass_CustomBeforeDefault()
                 {
@@ -4665,20 +4665,20 @@ namespace LostPeterOpenGLES
                         }
                         void OpenGLESWindow::drawMeshDefault_Editor()
                         {
-							// if (this->pEditorGrid != nullptr)
-                            // {
-                            //     if (this->cfg_isEditorGridShow)
-                            //     {
-                            //         this->pEditorGrid->Draw();
-                            //     }
-                            // }
-                            // if (this->pEditorCameraAxis != nullptr)
-                            // {
-                            //     if (this->cfg_isEditorCameraAxisShow)
-                            //     {
-                            //         this->pEditorCameraAxis->DrawQuad();
-                            //     }
-                            // }
+							if (this->pEditorGrid != nullptr)
+                            {
+                                if (this->cfg_isEditorGridShow)
+                                {
+                                    this->pEditorGrid->Draw();
+                                }
+                            }
+                            if (this->pEditorCameraAxis != nullptr)
+                            {
+                                if (this->cfg_isEditorCameraAxisShow)
+                                {
+                                    this->pEditorCameraAxis->DrawQuad();
+                                }
+                            }
                             // if (this->pEditorCoordinateAxis != nullptr)
                             // {
                             //     if (this->cfg_isEditorCoordinateAxisShow)
@@ -5032,14 +5032,14 @@ namespace LostPeterOpenGLES
             }
             void OpenGLESWindow::cleanupSwapChain_Editor()
             {
-				// if (this->pEditorGrid != nullptr)
-                // {
-                //     this->pEditorGrid->CleanupSwapChain();
-                // }
-                // if (this->pEditorCameraAxis != nullptr)
-                // {
-                //     this->pEditorCameraAxis->CleanupSwapChain();
-                // }
+				if (this->pEditorGrid != nullptr)
+                {
+                    this->pEditorGrid->CleanupSwapChain();
+                }
+                if (this->pEditorCameraAxis != nullptr)
+                {
+                    this->pEditorCameraAxis->CleanupSwapChain();
+                }
                 // if (this->pEditorCoordinateAxis != nullptr)
                 // {
                 //     this->pEditorCoordinateAxis->CleanupSwapChain();
@@ -5111,14 +5111,14 @@ namespace LostPeterOpenGLES
         }
             void OpenGLESWindow::recreateSwapChain_Editor()
             {
-				// if (this->pEditorGrid != nullptr)
-				// {
-				// 	this->pEditorGrid->RecreateSwapChain();
-				// }
-				// if (this->pEditorCameraAxis != nullptr)
-				// {
-				// 	this->pEditorCameraAxis->RecreateSwapChain();
-				// }
+				if (this->pEditorGrid != nullptr)
+				{
+					this->pEditorGrid->RecreateSwapChain();
+				}
+				if (this->pEditorCameraAxis != nullptr)
+				{
+					this->pEditorCameraAxis->RecreateSwapChain();
+				}
 				// if (this->pEditorCoordinateAxis != nullptr)
 				// {
 				// 	this->pEditorCoordinateAxis->RecreateSwapChain();
