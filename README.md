@@ -88,3 +88,9 @@ License:
 * sample000：Setup a framework, compile all sort of dependencies libraries, show an Android Window 
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_000_window.png)
+
+### <001> opengles_001_triangle
+[OpenGLES学习例子001: opengles_001_triangle 渲染一个三角形](https://zhuanlan.zhihu.com/p/1912890211324629185)
+* sample001：Render a triangle with OpenGLES api
+
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_001_triangle.png)
