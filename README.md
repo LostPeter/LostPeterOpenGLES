@@ -94,3 +94,9 @@ License:
 * sample001：Render a triangle with OpenGLES api
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_001_triangle.png)
+
+### <002> opengles_002_imgui
+[OpenGLES学习例子002: opengles_002_imgui 集成ImGui界面库](https://zhuanlan.zhihu.com/p/1927854886462142366)
+* sample002：Integrate imgui to OpenGLES
+
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_002_imgui.png)
