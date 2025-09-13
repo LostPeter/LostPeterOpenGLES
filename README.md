@@ -100,3 +100,9 @@ License:
 * sample002：Integrate imgui to OpenGLES
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_002_imgui.png)
+
+### <003> opengles_003_texture
+[OpenGLES学习例子003: opengles_003_texture 渲染一张纹理](https://zhuanlan.zhihu.com/p/1946607666794325393)
+* sample003：Render a texture with OpenGLES api
+
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_003_texture.png)
