@@ -106,3 +106,10 @@ License:
 * sample003：Render a texture with OpenGLES api
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_003_texture.png)
+
+### <004> opengles_004_model
+[OpenGLES学习例子004: opengles_004_model 渲染3D模型](https://zhuanlan.zhihu.com/p/1950542914636743929)
+* sample004：Load different 3D models and textures and then render them
+
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_004_model.png)
+
