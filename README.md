@@ -113,3 +113,8 @@ License:
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_004_model.png)
 
+### <005> opengles_005_camera
+[OpenGLES学习例子005: opengles_005_camera 摄像机漫游功能](https://zhuanlan.zhihu.com/p/1955258032972858827)
+* sample005：Realize a camera and use it in the scene
+
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_005_camera.png)
