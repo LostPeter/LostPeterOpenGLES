@@ -118,3 +118,9 @@ License:
 * sample005：Realize a camera and use it in the scene
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_005_camera.png)
+
+### <006> opengles_006_depth
+[OpenGLES学习例子005: opengles_006_depth 深度操作](https://zhuanlan.zhihu.com/p/1990018715065013934)
+* sample006：Depth state test: depthTest and depthWrite
+
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_006_depth.png)
