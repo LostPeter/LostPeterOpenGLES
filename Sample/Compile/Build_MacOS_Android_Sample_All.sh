@@ -21,3 +21,4 @@ rebuild=${2}
 ./Build_MacOS_Android_Sample.sh opengles_006_depth $debug $rebuild
 ./Build_MacOS_Android_Sample.sh opengles_007_stencil $debug $rebuild
 ./Build_MacOS_Android_Sample.sh opengles_008_blend $debug $rebuild
+./Build_MacOS_Android_Sample.sh opengles_009_instancing $debug $rebuild

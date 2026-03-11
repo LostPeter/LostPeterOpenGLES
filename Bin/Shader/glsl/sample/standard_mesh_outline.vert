@@ -91,6 +91,9 @@ struct OutlineObjectConstant
 	mat4 g_MatWorld;
     vec4 outlineColor;
     float outlineWidth;
+    float reserve0;
+    float reserve1;
+    float reserve2;
 };
 layout (std140) uniform OutlineObjectConstants
 {

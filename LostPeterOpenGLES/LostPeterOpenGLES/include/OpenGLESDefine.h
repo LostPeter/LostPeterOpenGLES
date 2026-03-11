@@ -655,11 +655,17 @@ namespace LostPeterOpenGLES
 		FMatrix4 g_MatWorld;
 		FVector4 g_OutlineColor;
 		float g_OutlineWidth;
+        float reserve0;
+        float reserve1;
+        float reserve2;
 
 		OutlineObjectConstants()
 			: g_MatWorld(FMath::Identity4x4())
 			, g_OutlineColor(1, 1, 1, 1)
 			, g_OutlineWidth(0.02f)
+            , reserve0(0)
+            , reserve1(0)
+            , reserve2(0)
 		{
 
 		}

@@ -20,3 +20,4 @@ debug=${1}
 ./InstallRun_MacOS_Android_Sample.sh opengles_006_depth $debug
 ./InstallRun_MacOS_Android_Sample.sh opengles_007_stencil $debug
 ./InstallRun_MacOS_Android_Sample.sh opengles_008_blend $debug
+./InstallRun_MacOS_Android_Sample.sh opengles_009_instancing $debug

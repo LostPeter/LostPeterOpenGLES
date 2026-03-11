@@ -18,3 +18,4 @@
 ./Clean_MacOS_Android_Sample.sh opengles_006_depth
 ./Clean_MacOS_Android_Sample.sh opengles_007_stencil
 ./Clean_MacOS_Android_Sample.sh opengles_008_blend
+./Clean_MacOS_Android_Sample.sh opengles_009_instancing

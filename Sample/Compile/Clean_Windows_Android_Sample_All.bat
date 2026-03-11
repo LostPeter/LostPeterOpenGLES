@@ -18,3 +18,4 @@ call ./Clean_Windows_Android_Sample.bat opengles_005_camera
 call ./Clean_Windows_Android_Sample.bat opengles_006_depth
 call ./Clean_Windows_Android_Sample.bat opengles_007_stencil
 call ./Clean_Windows_Android_Sample.bat opengles_008_blend
+call ./Clean_Windows_Android_Sample.bat opengles_009_instancing
