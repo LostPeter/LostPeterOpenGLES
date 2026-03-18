@@ -999,8 +999,10 @@ namespace LostPeterOpenGLES
 
         , cfg_colorBackground(FMath::ToLinear(FColor(0.0f, 0.2f, 0.4f, 1.0f)))
 
+        , cfg_isRenderPassShadowMap(false)
         , cfg_isRenderPassDefaultCustom(false)
 		, cfg_isDepthStencil(false)
+
         , cfg_isMSAA(false)
         , cfg_isImgui(false)
         , cfg_isWireFrame(false)
@@ -4070,17 +4072,17 @@ namespace LostPeterOpenGLES
                     this->passCB.g_RenderTargetSize_Inv = FVector2(1.0f / this->poViewport.right, 1.0f / this->poViewport.bottom);
 
                     //Light Settings
-                    // if (this->cfg_isRenderPassShadowMap)
-                    // {
-                    //     const FMatrix4& depthViewMatrix = this->pCameraMainLight->GetMatrix4View();
-                    //     const FMatrix4& depthProjectionMatrix = this->pCameraMainLight->GetMatrix4Projection();
-                    //     this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix;
-                    // }
-                    //memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
-                    // for (int i = 0; i < MAX_LIGHT_COUNT; i++)
-                    // {
-                    //     memcpy(&this->passCB.g_AdditionalLights[i], &this->aAdditionalLights[i], sizeof(LightConstants));
-                    // }
+                    if (this->cfg_isRenderPassShadowMap)
+                    {
+                        const FMatrix4& depthViewMatrix = this->pCameraMainLight->GetMatrix4View();
+                        const FMatrix4& depthProjectionMatrix = this->pCameraMainLight->GetMatrix4Projection();
+                        this->mainLight.depthMVP = depthProjectionMatrix * depthViewMatrix;
+                    }
+                    memcpy(&this->passCB.g_MainLight, &this->mainLight, sizeof(LightConstants));
+                    for (int i = 0; i < MAX_LIGHT_COUNT; i++)
+                    {
+                        memcpy(&this->passCB.g_AdditionalLights[i], &this->aAdditionalLights[i], sizeof(LightConstants));
+                    }
 
                     //Update Buffer
                     GLESBufferUniform* pBufferUniform = this->poBuffers_PassCB[this->poCurrentFrame];
@@ -4458,7 +4460,22 @@ namespace LostPeterOpenGLES
                             }
                         void OpenGLESWindow::lightConfig()
                         {
-
+                            if (ImGui::CollapsingHeader("Light Settings"))
+                            {
+                                //Main Light
+                                lightConfigItem(this->mainLight, "Light - Main", 0, false, true);
+                                
+                                //Additional Light
+                                int count_light = MAX_LIGHT_COUNT;
+                                for (int i = 0; i < count_light; i++)
+                                {
+                                    LightConstants& lc = this->aAdditionalLights[i];
+                                    String nameLight = "Light - " + FUtilString::SaveInt(i);
+                                    lightConfigItem(lc, nameLight, i, true, false);
+                                }
+                            }
+                            ImGui::Separator();
+                            ImGui::Spacing();
                         }
                             void OpenGLESWindow::lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType, bool bIsMainLight)
                             {

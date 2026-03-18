@@ -19,3 +19,4 @@ call ./InstallRun_Windows_Android_Sample.bat opengles_006_depth
 call ./InstallRun_Windows_Android_Sample.bat opengles_007_stencil
 call ./InstallRun_Windows_Android_Sample.bat opengles_008_blend
 call ./InstallRun_Windows_Android_Sample.bat opengles_009_instancing
+call ./InstallRun_Windows_Android_Sample.bat opengles_010_lighting

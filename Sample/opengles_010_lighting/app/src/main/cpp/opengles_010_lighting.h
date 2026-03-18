@@ -2,28 +2,28 @@
 * LostPeterOpenGLES - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2026-03-11
+* Time:     2026-03-18
 * Github:   https://github.com/LostPeter/LostPeterOpenGLES
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 ****************************************************************************/
 
-#ifndef _OPENGLES_009_INSTANCING_H_
-#define _OPENGLES_009_INSTANCING_H_
+#ifndef _OPENGLES_010_LIGHTING_H_
+#define _OPENGLES_010_LIGHTING_H_
 
 #include "OpenGLESWindow.h"
 using namespace LostPeterOpenGLES; 
 
-class OpenGLES_009_Instancing : public OpenGLESWindow
+class OpenGLES_010_Lighting : public OpenGLESWindow
 {
 public:
-    OpenGLES_009_Instancing(String name);
+    OpenGLES_010_Lighting(String name);
 
 public:
 	struct ModelObject
 	{
-		ModelObject(OpenGLES_009_Instancing* _pWindow)
+		ModelObject(OpenGLES_010_Lighting* _pWindow)
 			//Common
 			: pWindow(_pWindow)
 
@@ -119,7 +119,7 @@ public:
 		}
 
 		//Common
-		OpenGLES_009_Instancing* pWindow;
+		OpenGLES_010_Lighting* pWindow;
 
 		//Name
 		String nameModel;

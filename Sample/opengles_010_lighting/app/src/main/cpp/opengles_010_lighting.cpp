@@ -2,7 +2,7 @@
 * LostPeterOpenGLES - Copyright (C) 2022 by LostPeter
 * 
 * Author:   LostPeter
-* Time:     2026-03-11
+* Time:     2026-03-18
 * Github:   https://github.com/LostPeter/LostPeterOpenGLES
 * Document: https://www.zhihu.com/people/lostpeter/posts
 *
@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #include "PreInclude.h"
-#include "opengles_009_instancing.h"
+#include "opengles_010_lighting.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -93,7 +93,7 @@ static FVector4 g_OutlineColor[g_CountLen] =
 };
 
 
-OpenGLES_009_Instancing::OpenGLES_009_Instancing(String name)
+OpenGLES_010_Lighting::OpenGLES_010_Lighting(String name)
     : OpenGLESWindow(name)
 {
     this->cfg_isDepthStencil = true;
@@ -110,14 +110,14 @@ OpenGLES_009_Instancing::OpenGLES_009_Instancing(String name)
     this->cfg_cameraPos = FVector3(0.0f, 20.0f, -10.0f);
 }
 
-void OpenGLES_009_Instancing::createCamera()
+void OpenGLES_010_Lighting::createCamera()
 {
     OpenGLESWindow::createCamera();
     
     cameraReset();
 }
 
-void OpenGLES_009_Instancing::loadModel_Custom()
+void OpenGLES_010_Lighting::loadModel_Custom()
 {
     for (int i = 0; i < g_CountLen; i++)
     {
@@ -133,7 +133,7 @@ void OpenGLES_009_Instancing::loadModel_Custom()
         //Model
         if (!loadModel_VertexIndex(pModelObject, isFlipY, isTransformLocal, g_tranformLocalModels[i]))
         {
-            String msg = "*********************** OpenGLES_009_Instancing::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
+            String msg = "*********************** OpenGLES_010_Lighting::loadModel_Custom: Failed to load model: " + pModelObject->pathModel;
             F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -141,7 +141,7 @@ void OpenGLES_009_Instancing::loadModel_Custom()
         //Texture
         if (!loadModel_Texture(pModelObject))
         {   
-            String msg = "*********************** OpenGLES_009_Instancing::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
+            String msg = "*********************** OpenGLES_010_Lighting::loadModel_Custom: Failed to load texture: " + pModelObject->pathTexture;
             F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -154,7 +154,7 @@ void OpenGLES_009_Instancing::loadModel_Custom()
         m_mapModelObjects[pModelObject->nameModel] = pModelObject;
     }
 }
-bool OpenGLES_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
+bool OpenGLES_010_Lighting::loadModel_VertexIndex(ModelObject* pModelObject, bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load 
     FMeshData meshData;
@@ -162,7 +162,7 @@ bool OpenGLES_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, b
     unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
     if (!FMeshDataLoader::LoadMeshData(pModelObject->pathModel, meshData, eMeshParserFlags))
     {
-        F_LogError("*********************** OpenGLES_009_Instancing::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
+        F_LogError("*********************** OpenGLES_010_Lighting::loadModel_VertexIndex load model failed: [%s] !", pModelObject->pathModel.c_str());
         return false; 
     }
 
@@ -200,7 +200,7 @@ bool OpenGLES_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, b
     pModelObject->poIndexBuffer_Size = pModelObject->poIndexCount * sizeof(uint32_t);
     pModelObject->poIndexBuffer_Data = &pModelObject->indices[0];
 
-    F_LogInfo("OpenGLES_009_Instancing::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
+    F_LogInfo("OpenGLES_010_Lighting::loadModel_VertexIndex: load model [%s] success, Vertex count: [%d], Index count: [%d] !", 
               pModelObject->nameModel.c_str(),
               (int)pModelObject->vertices.size(), 
               (int)pModelObject->indices.size());
@@ -219,7 +219,7 @@ bool OpenGLES_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, b
 																						 false);
 		if (pModelObject->pBufferVertexIndex == nullptr)
 		{
-			F_LogError("*********************** OpenGLES_009_Instancing::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", pModelObject->nameModel.c_str());
+			F_LogError("*********************** OpenGLES_010_Lighting::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", pModelObject->nameModel.c_str());
 			return false;
 		}
 	}
@@ -232,14 +232,14 @@ bool OpenGLES_009_Instancing::loadModel_VertexIndex(ModelObject* pModelObject, b
 																			   false);
 		if (pModelObject->pBufferVertex == nullptr)
 		{
-			F_LogError("*********************** OpenGLES_009_Instancing::loadModel_VertexIndex: create buffer vertex failed: [%s] !", pModelObject->nameModel.c_str());
+			F_LogError("*********************** OpenGLES_010_Lighting::loadModel_VertexIndex: create buffer vertex failed: [%s] !", pModelObject->nameModel.c_str());
 			return false;
 		}
 	}
 
     return true;
 }
-bool OpenGLES_009_Instancing::loadModel_Texture(ModelObject* pModelObject)
+bool OpenGLES_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
 {
     if (!pModelObject->pathTexture.empty())
     {
@@ -264,21 +264,21 @@ bool OpenGLES_009_Instancing::loadModel_Texture(ModelObject* pModelObject)
 												  false);
 		if (!pModelObject->poTexture->Init())
 		{
-			F_LogError("*********************** OpenGLES_009_Instancing::loadModel_Texture: Failed to create texture, path: [%s] !", pModelObject->pathTexture.c_str());
+			F_LogError("*********************** OpenGLES_010_Lighting::loadModel_Texture: Failed to create texture, path: [%s] !", pModelObject->pathTexture.c_str());
 			F_DELETE(this->poTexture)
 			return false;
 		}
-        F_LogInfo("OpenGLES_009_Instancing::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
+        F_LogInfo("OpenGLES_010_Lighting::loadModel_Texture: Load texture [%s] success !", pModelObject->pathTexture.c_str());
     }
 
     return true;
 }
 
-void OpenGLES_009_Instancing::createCustomCB()
+void OpenGLES_010_Lighting::createCustomCB()
 {
 	rebuildInstanceCBs(true);
 }
-void OpenGLES_009_Instancing::rebuildInstanceCBs(bool isCreateBuffer)
+void OpenGLES_010_Lighting::rebuildInstanceCBs(bool isCreateBuffer)
 {
 	size_t maxCount = MAX_OBJECT_COUNT;
 	size_t count = this->m_aModelObjects.size();
@@ -310,7 +310,7 @@ void OpenGLES_009_Instancing::rebuildInstanceCBs(bool isCreateBuffer)
 																false);
 			if (!pModelObject->poBufferUniform)
 			{
-				String msg = "*********************** OpenGLES_009_Instancing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+				String msg = "*********************** OpenGLES_010_Lighting::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 				F_LogError("%s", msg.c_str());
 				throw std::runtime_error(msg);
 			}
@@ -338,7 +338,7 @@ void OpenGLES_009_Instancing::rebuildInstanceCBs(bool isCreateBuffer)
 																			 false);
 				if (!pModelObject->poBufferUniform_Material)
 				{
-					String msg = "*********************** OpenGLES_009_Instancing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+					String msg = "*********************** OpenGLES_010_Lighting::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 					F_LogError("%s", msg.c_str());
 					throw std::runtime_error(msg);
 				}
@@ -367,7 +367,7 @@ void OpenGLES_009_Instancing::rebuildInstanceCBs(bool isCreateBuffer)
 																		false);
 			if (!pModelObject->poBufferUniform_Outline)
 			{
-				String msg = "*********************** OpenGLES_009_Instancing::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+				String msg = "*********************** OpenGLES_010_Lighting::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
 				F_LogError("%s", msg.c_str());
 				throw std::runtime_error(msg);
 			}
@@ -375,12 +375,12 @@ void OpenGLES_009_Instancing::rebuildInstanceCBs(bool isCreateBuffer)
     }
 }
 
-void OpenGLES_009_Instancing::createCustomBeforePipeline()
+void OpenGLES_010_Lighting::createCustomBeforePipeline()
 {
     //1> Shader
     createShaderModules();
 }  
-void OpenGLES_009_Instancing::createGraphicsPipeline_Custom()
+void OpenGLES_010_Lighting::createGraphicsPipeline_Custom()
 {
     String namePathBase;
 
@@ -458,7 +458,7 @@ void OpenGLES_009_Instancing::createGraphicsPipeline_Custom()
 																					pModelObject->poColorWriteMask_Alpha);
         if (pModelObject->poStatePipelineGraphics_Stencil == nullptr)
         {
-            String msg = "*********************** OpenGLES_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
+            String msg = "*********************** OpenGLES_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
             F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -501,7 +501,7 @@ void OpenGLES_009_Instancing::createGraphicsPipeline_Custom()
 																					pModelObject->poColorWriteMask_Alpha);
         if (pModelObject->poStatePipelineGraphics_Outline == nullptr)
         {
-            String msg = "*********************** OpenGLES_009_Instancing::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
+            String msg = "*********************** OpenGLES_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline outline !";
             F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -510,7 +510,7 @@ void OpenGLES_009_Instancing::createGraphicsPipeline_Custom()
 
 }
 
-void OpenGLES_009_Instancing::destroyShaderModules()
+void OpenGLES_010_Lighting::destroyShaderModules()
 {
     size_t count = this->m_aGLESShaderModules.size();
     for (size_t i = 0; i < count; i++)
@@ -521,7 +521,7 @@ void OpenGLES_009_Instancing::destroyShaderModules()
     this->m_aGLESShaderModules.clear();
     this->m_mapGLESShaderModules.clear();
 }
-void OpenGLES_009_Instancing::createShaderModules()
+void OpenGLES_010_Lighting::createShaderModules()
 {
     String nameVertexShader;
     String nameFragmentShader;
@@ -537,29 +537,29 @@ void OpenGLES_009_Instancing::createShaderModules()
         GLESShader* pShaderVertex =  createShader(nameVertexShader, pathVert, F_Shader_Vertex);
         if (pShaderVertex == nullptr)
         {
-            String msg = "*********************** OpenGLES_009_Instancing::createShaderModules: Failed to create shader vertex: " + pathVert;
+            String msg = "*********************** OpenGLES_010_Lighting::createShaderModules: Failed to create shader vertex: " + pathVert;
 			F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg);
         }
         this->m_aGLESShaderModules.push_back(pShaderVertex);
         this->m_mapGLESShaderModules[pathVert] = pShaderVertex;
-        F_LogInfo("OpenGLES_009_Instancing::createShaderModules: create shader [%s] success !", pathVert.c_str());
+        F_LogInfo("OpenGLES_010_Lighting::createShaderModules: create shader [%s] success !", pathVert.c_str());
 
         //frag
         FUtilString::SplitFileName(pathFrag, nameFragmentShader, namePathBase);
         GLESShader* pShaderFragment = createShader(nameFragmentShader, pathFrag, F_Shader_Fragment);
         if (pShaderFragment == nullptr)
         {
-            String msg = "*********************** OpenGLES_009_Instancing::createShaderModules: Failed to create shader fragment: " + pathFrag;
+            String msg = "*********************** OpenGLES_010_Lighting::createShaderModules: Failed to create shader fragment: " + pathFrag;
 			F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg);
         }
         this->m_aGLESShaderModules.push_back(pShaderFragment);
         this->m_mapGLESShaderModules[pathFrag] = pShaderFragment;
-        F_LogInfo("OpenGLES_009_Instancing::createShaderModules: create shader [%s] success !", pathFrag.c_str());
+        F_LogInfo("OpenGLES_010_Lighting::createShaderModules: create shader [%s] success !", pathFrag.c_str());
     }
 }
-GLESShader* OpenGLES_009_Instancing::findShaderModule(const String& pathShaderModule)
+GLESShader* OpenGLES_010_Lighting::findShaderModule(const String& pathShaderModule)
 {
     GLESShaderPtrMap::iterator itFind = this->m_mapGLESShaderModules.find(pathShaderModule);
     if (itFind == this->m_mapGLESShaderModules.end())
@@ -570,7 +570,7 @@ GLESShader* OpenGLES_009_Instancing::findShaderModule(const String& pathShaderMo
 }
 
 
-void OpenGLES_009_Instancing::createDescriptorSets_Custom()
+void OpenGLES_010_Lighting::createDescriptorSets_Custom()
 {
     size_t count = this->m_aModelObjects.size();
     for (size_t i = 0; i < count; i++)
@@ -624,7 +624,7 @@ void OpenGLES_009_Instancing::createDescriptorSets_Custom()
     }
 }
 
-void OpenGLES_009_Instancing::updateCBs_Custom()
+void OpenGLES_010_Lighting::updateCBs_Custom()
 {
 	GLESBufferUniform* pBufferUniform_Pass = GetUniform_PassCB();
     float time = this->pTimer->GetTimeSinceStart();
@@ -681,13 +681,13 @@ void OpenGLES_009_Instancing::updateCBs_Custom()
 
 
 
-bool OpenGLES_009_Instancing::beginRenderImgui()
+bool OpenGLES_010_Lighting::beginRenderImgui()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplAndroid_NewFrame();
     ImGui::NewFrame();
     static bool windowOpened = true;
-    ImGui::Begin("OpenGLES_009_Instancing", &windowOpened, 0);
+    ImGui::Begin("OpenGLES_010_Lighting", &windowOpened, 0);
     {
         //0> Common
         commonConfig();
@@ -703,7 +703,7 @@ bool OpenGLES_009_Instancing::beginRenderImgui()
 
     return true;
 }
-void OpenGLES_009_Instancing::modelConfig()
+void OpenGLES_010_Lighting::modelConfig()
 {
     if (ImGui::CollapsingHeader("Model Settings"))
     {
@@ -808,13 +808,13 @@ void OpenGLES_009_Instancing::modelConfig()
     }
 }
 
-void OpenGLES_009_Instancing::endRenderImgui()
+void OpenGLES_010_Lighting::endRenderImgui()
 {
     OpenGLESWindow::endRenderImgui();
 
 }
 
-void OpenGLES_009_Instancing::drawMeshDefault_Custom()
+void OpenGLES_010_Lighting::drawMeshDefault_Custom()
 {   
 	bool isSetWireFrame = false;
 	size_t count = this->m_aModelObjects_Render.size();
@@ -843,7 +843,7 @@ void OpenGLES_009_Instancing::drawMeshDefault_Custom()
 		}
 		else
 		{	
-			F_Assert(false && "OpenGLES_009_Instancing::drawMeshDefault_Custom")
+			F_Assert(false && "OpenGLES_010_Lighting::drawMeshDefault_Custom")
 		}
 
 		if (pModelObject->isOutline)
@@ -867,13 +867,13 @@ void OpenGLES_009_Instancing::drawMeshDefault_Custom()
 			}
 			else
 			{	
-				F_Assert(false && "OpenGLES_009_Instancing::drawMeshDefault_Custom")
+				F_Assert(false && "OpenGLES_010_Lighting::drawMeshDefault_Custom")
 			}
 		}
     }
 }
 
-void OpenGLES_009_Instancing::cleanupCustom()
+void OpenGLES_010_Lighting::cleanupCustom()
 {
 	destroyShaderModules();
 
