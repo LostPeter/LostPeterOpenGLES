@@ -32,9 +32,8 @@ public:
 			, pathModel("")
 			, pathTexture("")
 			, isShow(true)
-			, isRotate(true)
 			, isWireFrame(false)
-			, isOutline(true)
+			, isRotate(true)
 			, isTransparent(false)
 
 			//Vertex/Index
@@ -52,15 +51,12 @@ public:
             , countInstance(11)
 			, poBufferUniform(nullptr)
 			, poBufferUniform_Material(nullptr)
-			, alpha(0.5f)
-			, poBufferUniform_Outline(nullptr)
 			
 			//Texture
 			, poTexture(nullptr)
 
 			//Pipeline
-			, poStatePipelineGraphics_Stencil(nullptr)
-			, poStatePipelineGraphics_Outline(nullptr)
+			, poStatePipelineGraphics(nullptr)
 
 			//State
 			, poTypePrimitive(GL_TRIANGLES)
@@ -105,17 +101,14 @@ public:
 			//Uniform
 			this->objectCBs.clear();
 			F_DELETE(this->poBufferUniform)
-			this->objectCBs_Outline.clear();
 			this->materialCBs.clear();
 			F_DELETE(this->poBufferUniform_Material)
-			F_DELETE(this->poBufferUniform_Outline)
 
 			//Texture
 			F_DELETE(this->poTexture)
 
 			//Pipeline
-			F_DELETE(this->poStatePipelineGraphics_Stencil)
-			F_DELETE(this->poStatePipelineGraphics_Outline)
+			F_DELETE(this->poStatePipelineGraphics)
 		}
 
 		//Common
@@ -126,9 +119,8 @@ public:
 		String pathModel;
 		String pathTexture;
 		bool isShow;
-		bool isRotate;
 		bool isWireFrame;
-		bool isOutline;
+		bool isRotate;
 		bool isTransparent;
 
 		//Vertex/Index
@@ -153,17 +145,12 @@ public:
 
 		std::vector<MaterialConstants> materialCBs;
 		GLESBufferUniform* poBufferUniform_Material;
-		float alpha;
-
-		std::vector<OutlineObjectConstants> objectCBs_Outline;
-		GLESBufferUniform* poBufferUniform_Outline;
 
 		//Texture
 		GLESTexture* poTexture;
 
 		//Pipeline
-		GLESStatePipelineGraphics* poStatePipelineGraphics_Stencil;
-		GLESStatePipelineGraphics* poStatePipelineGraphics_Outline;
+		GLESStatePipelineGraphics* poStatePipelineGraphics;
 
 		//State
 		GLenum poTypePrimitive;
