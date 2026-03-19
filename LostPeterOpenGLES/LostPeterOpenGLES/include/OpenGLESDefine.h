@@ -546,13 +546,11 @@ namespace LostPeterOpenGLES
     }; 
 
     //////////////////////////////// LightConstants /////////////////////////////////
-    struct openglesExport LightConstants
+    struct openglesExport alignas(16) LightConstants
     {
         FVector4 common;    // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-        FVector3 position;  // directional/point/spot
-        float falloffStart;  // point/spot light only
-        FVector3 direction; // directional/spot light only
-        float falloffEnd;    // point/spot light only
+        FVector4 position;  // xyz: directional/point/spot, w: falloffStart
+        FVector4 direction; // xyz: directional/spot light only, w: falloffEnd
         FVector4 ambient;   // ambient
         FVector4 diffuse;   // diffuse
         FVector4 specular;  // specular
@@ -561,10 +559,8 @@ namespace LostPeterOpenGLES
 
         LightConstants()
             : common(0, 0, 0, 64)
-            , position(0.0f, 100.0f, 0.0f)
-            , falloffStart(1.0f)
-            , direction(0.0f, -1.0f, 0.0f)
-            , falloffEnd(10.0f)
+            , position(0.0f, 100.0f, 0.0f, 1.0f)
+            , direction(0.0f, -1.0f, 0.0f, 10.0f)
             , ambient(1.0f, 1.0f, 1.0f, 1.0f)
             , diffuse(1.0f, 1.0f, 1.0f, 1.0f)
             , specular(1.0f, 1.0f, 1.0f, 1.0f)
@@ -746,58 +742,38 @@ namespace LostPeterOpenGLES
     };
     
     //////////////////////////////// TextureConstants ///////////////////////////////
-    struct openglesExport TextureConstants
+    struct openglesExport alignas(16) TextureConstants
     {
-        float texWidth;
-        float texHeight;
-        float texDepth;
-        float indexTextureArray;
+        //x: texWidth; y: texHeight; z: texDepth; w: indexTextureArray
+        FVector4 texSize;
 
-        float texSpeedU;
-        float texSpeedV;
-        float texSpeedW;
-        float reserve0;
+        //x: texSpeedU; y: texSpeedV; z: texSpeedW; w: reserve0
+        FVector4 texSpeed;
 
-        float texChunkMaxX;
-        float texChunkMaxY;
-        float texChunkIndexX;
-        float texChunkIndexY;
+        //x: texChunkMaxX; y: texChunkMaxY; z: texChunkIndexX; w: texChunkIndexY
+        FVector4 texChunk;
 
         TextureConstants()
-            : texWidth(512.0f)
-            , texHeight(512.0f)
-            , texDepth(512.0f)
-            , indexTextureArray(0.0f)
-
-            , texSpeedU(0.0f)
-            , texSpeedV(0.0f)
-            , texSpeedW(0.0f)
-            , reserve0(0.0f)
-            
-            , texChunkMaxX(0.0f)
-            , texChunkMaxY(0.0f)
-            , texChunkIndexX(0.0f)
-            , texChunkIndexY(0.0f)
+            : texSize(512.0f, 512.0f, 512.0f, 0.0f)
+            , texSpeed(0.0f, 0.0f, 0.0f, 0.0f)
+            , texChunk(0.0f, 0.0f, 0.0f, 0.0f)
         {
 
         }
     };
     
     //////////////////////////////// MaterialConstants //////////////////////////////
-    struct openglesExport MaterialConstants
+    struct openglesExport alignas(16) MaterialConstants
     {
         FVector4 factorAmbient;
         FVector4 factorDiffuse;
         FVector4 factorSpecular;
 
-        float shininess;
-        float alpha;
-        float lighting;
-        float castshadow;
-        float receiveshadow;
-        float reserve0;
-        float reserve1;
-        float reserve2;
+        //x: shininess; y: alpha; z: islighting; w: reserve0
+        FVector4 lighting;
+
+        //x: castshadow; y: receiveshadow; z: reserve0; w: reserve1
+        FVector4 shadow;
 
         TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 
@@ -805,14 +781,9 @@ namespace LostPeterOpenGLES
             : factorAmbient(1.0f, 1.0f, 1.0f, 1.0f)
             , factorDiffuse(1.0f, 1.0f, 1.0f, 1.0f)
             , factorSpecular(1.0f, 1.0f, 1.0f, 1.0f)
-            , shininess(20.0f)
-            , alpha(1.0f)
-            , lighting(1.0f)
-            , castshadow(0.0f)
-            , receiveshadow(0.0f)
-            , reserve0(0.0f)
-            , reserve1(0.0f)
-            , reserve2(0.0f)
+
+            , lighting(20.0f, 1.0f, 1.0f, 0.0f)
+            , shadow(0.0f, 0.0f, 0.0f, 0.0f)
         {
             
         }
@@ -828,8 +799,8 @@ namespace LostPeterOpenGLES
             mc.factorAmbient = FMath::RandomColor(false);
             mc.factorDiffuse = FMath::RandomColor(false);
             mc.factorSpecular = FMath::RandomColor(false);
-            mc.shininess = FMath::RandF(10.0f, 100.0f);
-            mc.alpha = FMath::RandF(0.2f, 0.9f);
+            mc.lighting.x = FMath::RandF(10.0f, 100.0f);
+            mc.lighting.y = FMath::RandF(0.2f, 0.9f);
         }
     };
     typedef std::vector<MaterialConstants> MaterialConstantsVector;

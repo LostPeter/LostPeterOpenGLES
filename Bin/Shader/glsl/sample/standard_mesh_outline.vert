@@ -44,10 +44,8 @@ struct CameraConstants
 struct LightConstants
 {
     vec4 lightCommon; // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-    vec3 position; // directional/point/spot
-    float falloffStart; // point/spot light only
-    vec3 direction; // directional/spot light only
-    float falloffEnd; // point/spot light only
+    vec4 position; // xyz: directional/point/spot, w: falloffStart
+    vec4 direction; // xyz: directional/spot light only, w: falloffEnd
     vec4 ambient; // ambient
     vec4 diffuse; // diffuse
     vec4 specular; // specular

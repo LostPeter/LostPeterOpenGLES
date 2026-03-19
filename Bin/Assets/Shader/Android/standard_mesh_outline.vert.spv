@@ -33,10 +33,8 @@ struct CameraConstants
 struct LightConstants
 {
     vec4 lightCommon; // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-    vec3 position; // directional/point/spot
-    float falloffStart; // point/spot light only
-    vec3 direction; // directional/spot light only
-    float falloffEnd; // point/spot light only
+    vec4 position; // xyz: directional/point/spot, w: falloffStart
+    vec4 direction; // xyz: directional/spot light only, w: falloffEnd
     vec4 ambient; // ambient
     vec4 diffuse; // diffuse
     vec4 specular; // specular
@@ -73,11 +71,11 @@ layout (std140) uniform PassConstants
 
 
 ///////////////////////////////// OutlineObjectConstants ////////////////////////
-#define MAX_OBJECT_COUNT  				1024
+#define MAX_OBJECT_COUNT                                1024
 //OutlineObjectConstants
 struct OutlineObjectConstant
 {
-	mat4 g_MatWorld;
+        mat4 g_MatWorld;
     vec4 outlineColor;
     float outlineWidth;
     float reserve0;
@@ -95,11 +93,11 @@ out vec2 fragTexCoord;
 
 void main()
 {
-	int viewIndex = 0;
-	TransformConstants trans = passConsts.g_Transforms[viewIndex];
-	OutlineObjectConstant obj = outlineObjectConsts.objs[gl_InstanceID];
+        int viewIndex = 0;
+        TransformConstants trans = passConsts.g_Transforms[viewIndex];
+        OutlineObjectConstant obj = outlineObjectConsts.objs[gl_InstanceID];
 
-	vec4 pos = vec4(inPosition.xyz + inNormal * obj.outlineWidth, 1.0);
+        vec4 pos = vec4(inPosition.xyz + inNormal * obj.outlineWidth, 1.0);
     gl_Position = trans.mat4Proj * trans.mat4View * obj.g_MatWorld * pos;
     fragColor = obj.outlineColor;
 }

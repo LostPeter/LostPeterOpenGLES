@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #version 300 es
-precision mediump float;
+precision highp float;
 
 in vec4 fragWorldPos;
 in vec4 fragColor;
@@ -49,10 +49,8 @@ struct CameraConstants
 struct LightConstants
 {
     vec4 lightCommon; // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-    vec3 position; // directional/point/spot
-    float falloffStart; // point/spot light only
-    vec3 direction; // directional/spot light only
-    float falloffEnd; // point/spot light only
+    vec4 position; // xyz: directional/point/spot, w: falloffStart
+    vec4 direction; // xyz: directional/spot light only, w: falloffEnd
     vec4 ambient; // ambient
     vec4 diffuse; // diffuse
     vec4 specular; // specular
@@ -105,20 +103,14 @@ layout (std140) uniform ObjectConstants
 //TextureConstants
 struct TextureConstants
 {
-    float texWidth;
-    float texHeight;
-    float texDepth;
-    float indexTextureArray;
+    //x: texWidth; y: texHeight; z: texDepth; w: indexTextureArray
+    vec4 texSize; 
 
-    float texSpeedU;
-    float texSpeedV;
-    float texSpeedW;
-    float reserve0;
+    //x: texSpeedU; y: texSpeedV; z: texSpeedW; w: reserve0
+    vec4 texSpeed;
 
-    float texChunkMaxX;
-    float texChunkMaxY;
-    float texChunkIndexX;
-    float texChunkIndexY;
+    //x: texChunkMaxX; y: texChunkMaxY; z: texChunkIndexX; w: texChunkIndexY
+    vec4 texChunk;
 };
 
 //MaterialConstants
@@ -129,14 +121,11 @@ struct MaterialConstant
     vec4 factorDiffuse;
     vec4 factorSpecular;
 
-    float shininess;
-    float alpha;
-    float lighting;
-    float castshadow;
-    float receiveshadow;
-    float reserve0;
-    float reserve1;
-    float reserve2;
+    //x: shininess; y: alpha; z: islighting; w: reserve0
+    vec4 lighting;
+
+    //x: castshadow; y: receiveshadow; z: reserve0; w: reserve1
+    vec4 shadow;
 
     TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 };
@@ -195,28 +184,31 @@ vec3 calculate_Light(vec3 ambientGlobal,
                      vec3 posEye,
                      vec3 N)
 {
-    if (int(lightCB.lightCommon.z) == 0 || int(matCB.lighting) != 1)
+    int type = int(lightCB.lightCommon.x + 0.5);
+    int mode = int(lightCB.lightCommon.z + 0.5);
+    int isLighting = int(matCB.lighting.z + 0.5);
+    if (mode == 0 || isLighting != 1)
         return vec3(1.0, 1.0, 1.0);
     
     vec3 L;
-    if (int(lightCB.lightCommon.x) == 0)
+    if (type == 0)
     {
-        L = - lightCB.direction;
+        L = - lightCB.direction.xyz;
     }
     else
     {
-        vec3 posLight = lightCB.position;
+        vec3 posLight = lightCB.position.xyz;
         L = normalize(posLight - posWorld);
     }
 
     //Ambient
     vec3 colorAmbient = vec3(0.0,0.0,0.0); 
-    if (int(lightCB.lightCommon.z) == 1 ||
-        int(lightCB.lightCommon.z) == 5 ||
-        int(lightCB.lightCommon.z) == 6 ||
-        int(lightCB.lightCommon.z) == 7 ||
-        int(lightCB.lightCommon.z) == 10 ||
-        int(lightCB.lightCommon.z) == 11)
+    if (mode == 1 ||
+        mode == 5 ||
+        mode == 6 ||
+        mode == 7 ||
+        mode == 10 ||
+        mode == 11)
     {
         colorAmbient = calculate_Light_Ambient(ambientGlobal,
                                                matCB.factorAmbient.rgb,
@@ -225,12 +217,12 @@ vec3 calculate_Light(vec3 ambientGlobal,
     
     //Diffuse
     vec3 colorDiffuse = vec3(0.0,0.0,0.0); 
-    if (int(lightCB.lightCommon.z) == 2 ||
-        int(lightCB.lightCommon.z) == 5 ||
-        int(lightCB.lightCommon.z) == 8 ||
-        int(lightCB.lightCommon.z) == 9 ||
-        int(lightCB.lightCommon.z) == 10 ||
-        int(lightCB.lightCommon.z) == 11)
+    if (mode == 2 ||
+        mode == 5 ||
+        mode == 8 ||
+        mode == 9 ||
+        mode == 10 ||
+        mode == 11)
     {
         colorDiffuse = calculate_Light_Diffuse_Lambert(matCB.factorDiffuse.rgb,
                                                        lightCB.diffuse.rgb,
@@ -240,29 +232,29 @@ vec3 calculate_Light(vec3 ambientGlobal,
     
     //Specular
     vec3 colorSpecular = vec3(0.0,0.0,0.0);
-    if (int(lightCB.lightCommon.z) == 3 ||
-        int(lightCB.lightCommon.z) == 6 ||
-        int(lightCB.lightCommon.z) == 8 ||
-        int(lightCB.lightCommon.z) == 10)
+    if (mode == 3 ||
+        mode == 6 ||
+        mode == 8 ||
+        mode == 10)
     {
         //Phong
         colorSpecular = calculate_Specular_Phong(matCB.factorSpecular.rgb, 
                                                  lightCB.specular.rgb,
-                                                 matCB.shininess,
+                                                 matCB.lighting.x,
                                                  posWorld,
                                                  posEye,
                                                  L,
                                                  N);
     }
-    else if (int(lightCB.lightCommon.z) == 4 ||
-             int(lightCB.lightCommon.z) == 7 ||
-             int(lightCB.lightCommon.z) == 9 ||
-             int(lightCB.lightCommon.z) == 11)
+    else if (mode == 4 ||
+             mode == 7 ||
+             mode == 9 ||
+             mode == 11)
     {
         //BlinnPhong
         colorSpecular = calculate_Specular_BlinnPhong(matCB.factorSpecular.rgb,
                                                       lightCB.specular.rgb,
-                                                      matCB.shininess,
+                                                      matCB.lighting.x,
                                                       posWorld,
                                                       posEye,
                                                       L,
@@ -277,7 +269,7 @@ void main()
 {
     vec3 color;
 
-    MaterialConstant mat = materialConsts.mats[int(round(fragWorldPos.w))];
+    MaterialConstant mat = materialConsts.mats[int(fragWorldPos.w + 0.5)];
     vec3 N = normalize(fragWorldNormal);
 
     vec3 colorLight;
@@ -304,5 +296,5 @@ void main()
     //Final Color
     color = colorLight * colorTexture * colorVertex;
 
-    outColor = vec4(color.xyz, mat.alpha);
+    outColor = vec4(color.xyz, mat.lighting.y);
 }

@@ -33,10 +33,8 @@ struct CameraConstants
 struct LightConstants
 {
     vec4 lightCommon; // x: type; y: enable(1 or 0); z: 0-11; w: spotPower
-    vec3 position; // directional/point/spot
-    float falloffStart; // point/spot light only
-    vec3 direction; // directional/spot light only
-    float falloffEnd; // point/spot light only
+    vec4 position; // xyz: directional/point/spot, w: falloffStart
+    vec4 direction; // xyz: directional/spot light only, w: falloffEnd
     vec4 ambient; // ambient
     vec4 diffuse; // diffuse
     vec4 specular; // specular
@@ -89,20 +87,14 @@ layout (std140) uniform ObjectConstants
 //TextureConstants
 struct TextureConstants
 {
-    float texWidth;
-    float texHeight;
-    float texDepth;
-    float indexTextureArray;
+    //x: texWidth; y: texHeight; z: texDepth; w: indexTextureArray
+    vec4 texSize; 
 
-    float texSpeedU;
-    float texSpeedV;
-    float texSpeedW;
-    float reserve0;
+    //x: texSpeedU; y: texSpeedV; z: texSpeedW; w: reserve0
+    vec4 texSpeed;
 
-    float texChunkMaxX;
-    float texChunkMaxY;
-    float texChunkIndexX;
-    float texChunkIndexY;
+    //x: texChunkMaxX; y: texChunkMaxY; z: texChunkIndexX; w: texChunkIndexY
+    vec4 texChunk;
 };
 
 //MaterialConstants
@@ -113,15 +105,12 @@ struct MaterialConstant
     vec4 factorDiffuse;
     vec4 factorSpecular;
 
-    float shininess;
-    float alpha;
-    float lighting;
-    float castshadow;
-    float receiveshadow;
-    float reserve0;
-    float reserve1;
-    float reserve2;
+    //x: shininess; y: alpha; z: islighting; w: reserve0
+    vec4 lighting;
 
+    //x: castshadow; y: receiveshadow; z: reserve0; w: reserve1
+    vec4 shadow;
+    
     TextureConstants aTexLayers[MAX_TEXTURE_COUNT];
 };
 #define MAX_MATERIAL_COUNT              64

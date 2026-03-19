@@ -314,8 +314,8 @@ void OpenGLES_010_Lighting::rebuildInstanceCBs(bool isCreateBuffer)
             materialConstants.factorAmbient = FMath::RandomColor(false);
             materialConstants.factorDiffuse = FMath::RandomColor(false);
             materialConstants.factorSpecular = FMath::RandomColor(false);
-            materialConstants.shininess = FMath::RandF(10.0f, 100.0f);
-            materialConstants.alpha = FMath::RandF(0.2f, 0.9f);
+            materialConstants.lighting.x = FMath::RandF(10.0f, 100.0f);
+            materialConstants.lighting.y = FMath::RandF(0.2f, 0.9f);
             pModelObject->materialCBs[j] = materialConstants;
         }
 
@@ -583,7 +583,6 @@ void OpenGLES_010_Lighting::updateCBs_Custom()
         pModelObject->poBufferUniform_Material->UpdateBuffer(sizeof(MaterialConstants) * count_object,
                                                              (uint8*)pModelObject->materialCBs.data(),
                                                              GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-			
     }
 }
 
@@ -732,7 +731,7 @@ void OpenGLES_010_Lighting::modelConfig()
 
                                 //shininess
                                 String nameShininess = "Shininess - " + FUtilString::SaveInt(j);
-                                if (ImGui::DragFloat(nameShininess.c_str(), &mat.shininess, 0.01f, 0.01f, 100.0f))
+                                if (ImGui::DragFloat(nameShininess.c_str(), &mat.lighting.x, 0.01f, 0.01f, 100.0f))
                                 {
                                     
                                 }
@@ -740,7 +739,7 @@ void OpenGLES_010_Lighting::modelConfig()
 
                                 //alpha
                                 String nameAlpha = "Alpha - " + FUtilString::SaveInt(j);
-                                if (ImGui::DragFloat(nameAlpha.c_str(), &mat.alpha, 0.001f, 0.0f, 1.0f))
+                                if (ImGui::DragFloat(nameAlpha.c_str(), &mat.lighting.y, 0.001f, 0.0f, 1.0f))
                                 {
                                     
                                 }
@@ -748,10 +747,10 @@ void OpenGLES_010_Lighting::modelConfig()
 
                                 //lighting
                                 String nameLighting = "Lighting - " + FUtilString::SaveInt(j);
-                                bool isLighting = mat.lighting == 1.0f ? true : false;
+                                bool isLighting = mat.lighting.z == 1.0f ? true : false;
                                 if (ImGui::Checkbox(nameLighting.c_str(), &isLighting))
                                 {
-                                    mat.lighting = isLighting ? 1.0f : 0.0f;
+                                    mat.lighting.z = isLighting ? 1.0f : 0.0f;
                                 }
                                 ImGui::Spacing();
                             }

@@ -10,10 +10,10 @@ in vec2 fragTexCoord;
 //CameraAxisObjectConstants
 struct CameraAxisObjectConstant
 {
-	mat4 g_MatWorld;
+        mat4 g_MatWorld;
     vec4 color;
 };
-#define MAX_OBJECT_CAMERAAXIS_COUNT 	7
+#define MAX_OBJECT_CAMERAAXIS_COUNT     7
 layout (std140) uniform CameraAxisObjectConstants
 {
     CameraAxisObjectConstant objs[MAX_OBJECT_CAMERAAXIS_COUNT];
@@ -24,8 +24,8 @@ out vec4 outColor;
 
 void main()
 {
-	int index = int(floor(fragWorldPos.w + 0.5));
-	CameraAxisObjectConstant obj = cameraAxisObjectConsts.objs[index];
-	
-	outColor = obj.color;
+        int index = int(floor(fragWorldPos.w + 0.5));
+        CameraAxisObjectConstant obj = cameraAxisObjectConsts.objs[index];
+        
+        outColor = obj.color;
 }
