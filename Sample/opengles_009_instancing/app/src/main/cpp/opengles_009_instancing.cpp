@@ -323,7 +323,7 @@ void OpenGLES_009_Instancing::rebuildInstanceCBs(bool isCreateBuffer)
             for (int j = 0; j < pModelObject->countInstance; j++)
             {
                 MaterialConstants materialConstants;
-                materialConstants.alpha = g_TransparentAlpha[i];
+                materialConstants.lighting.y = g_TransparentAlpha[i];
                 pModelObject->materialCBs[j] = materialConstants;
             }
 
@@ -659,7 +659,7 @@ void OpenGLES_009_Instancing::updateCBs_Custom()
 			if (pModelObject->isTransparent)
 			{
 				MaterialConstants& materialCB = pModelObject->materialCBs[j];
-            	materialCB.alpha = pModelObject->alpha;
+            	materialCB.lighting.y = pModelObject->alpha;
 			}
         }
 		pModelObject->poBufferUniform->UpdateBuffer(sizeof(ObjectConstants) * count_object,

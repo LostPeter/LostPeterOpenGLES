@@ -134,5 +134,5 @@ void main()
     gl_Position = trans.mat4Proj * trans.mat4View * obj.g_MatWorld * vec4(inPosition, 1.0);
     fragColor = inColor;
     fragTexCoord = inTexCoord;
-        fragAlpha = mat.alpha;
+        fragAlpha = mat.lighting.y;
 }

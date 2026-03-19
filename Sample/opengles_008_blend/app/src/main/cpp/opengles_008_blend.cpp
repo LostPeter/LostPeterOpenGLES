@@ -294,7 +294,7 @@ void OpenGLES_008_Blend::createCustomCB()
 
 		//2> Material
 		MaterialConstants materialConstants;
-		materialConstants.alpha = g_TransparentAlpha[i];
+		materialConstants.lighting.y = g_TransparentAlpha[i];
 		pModelObject->materialCBs.push_back(materialConstants);
 
 		nameBuffer = "MaterialConstants-" + FUtilString::SaveInt((int)i);
@@ -559,7 +559,7 @@ void OpenGLES_008_Blend::updateCBs_Custom()
 			objectCB_Outline.g_MatWorld = objectCB.g_MatWorld;
 
 			MaterialConstants& materialCB = pModelObject->materialCBs[j];
-            materialCB.alpha = pModelObject->alpha;
+            materialCB.lighting.y = pModelObject->alpha;
         }
 		pModelObject->poBufferUniform->UpdateBuffer(sizeof(ObjectConstants) * count_object,
                                                  	(uint8*)pModelObject->objectCBs.data(),
