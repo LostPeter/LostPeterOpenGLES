@@ -395,7 +395,7 @@ void OpenGLES_010_Lighting::createGraphicsPipeline_Custom()
         }
 
         //poStatePipelineGraphics
-		String namePipelineGraphics_Stencil = "PipelineGraphics-Stencil-" + pModelObject->nameModel;
+		String namePipelineGraphics_Stencil = "PipelineGraphics-" + pModelObject->nameModel;
         pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(namePipelineGraphics_Stencil,
                                                                             pShaderVertex,
                                                                             nullptr,
@@ -432,7 +432,7 @@ void OpenGLES_010_Lighting::createGraphicsPipeline_Custom()
                                                                             pModelObject->poColorWriteMask_Alpha);
         if (pModelObject->poStatePipelineGraphics == nullptr)
         {
-            String msg = "*********************** OpenGLES_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline stencil !";
+            String msg = "*********************** OpenGLES_010_Lighting::createGraphicsPipeline_Custom: Failed to create pipeline !";
             F_LogError("%s", msg.c_str());
             throw std::runtime_error(msg.c_str());
         }
@@ -444,8 +444,8 @@ void OpenGLES_010_Lighting::destroyShaderModules()
     size_t count = this->m_aGLESShaderModules.size();
     for (size_t i = 0; i < count; i++)
     {
-        GLESShader* pDXShader = this->m_aGLESShaderModules[i];
-        F_DELETE(pDXShader)
+        GLESShader* pShader = this->m_aGLESShaderModules[i];
+        F_DELETE(pShader)
     }
     this->m_aGLESShaderModules.clear();
     this->m_mapGLESShaderModules.clear();
