@@ -675,7 +675,7 @@ namespace LostPeterOpenGLES
         void OpenGLESWindow::createUniform_PassCB()
         {
             size_t bufferSize = sizeof(PassConstants);
-            size_t count = this->poSwapChains.size();
+            size_t count = s_maxFramesInFight;
             this->poBuffers_PassCB.resize(count);
             for (size_t i = 0; i < count; i++) 
             {
