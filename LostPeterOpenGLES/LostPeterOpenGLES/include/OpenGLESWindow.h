@@ -244,8 +244,12 @@ namespace LostPeterOpenGLES
         bool cfg_isImgui;
         bool cfg_isWireFrame;
         bool cfg_isRotate;
-        
-    
+		
+
+		bool cfg_isUseComputeShaderBeforeRender;
+        bool cfg_isUseComputeShaderAfterRender;
+		
+
         FVector3 cfg_cameraPos;
         FVector3 cfg_cameraLookTarget;
         FVector3 cfg_cameraUp;

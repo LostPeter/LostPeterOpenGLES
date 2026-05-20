@@ -995,6 +995,11 @@ namespace LostPeterOpenGLES
         , cfg_isWireFrame(false)
         , cfg_isRotate(false)
 
+		
+		, cfg_isUseComputeShaderBeforeRender(false)
+        , cfg_isUseComputeShaderAfterRender(false)
+
+
         , cfg_cameraPos(0.0f, 0.0f, -5.0f)
         , cfg_cameraLookTarget(0.0f, 0.0f, 0.0f)
         , cfg_cameraUp(0.0f, 1.0f, 0.0f)

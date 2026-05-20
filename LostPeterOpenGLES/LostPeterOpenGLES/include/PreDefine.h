@@ -462,6 +462,7 @@ namespace LostPeterOpenGLES
     typedef std::vector<GLESTexture*> GLESTexturePtrVector;
     typedef std::map<String, GLESTexture*> GLESTexturePtrMap;
 	typedef std::map<uint32, GLESTexture*> GLESTexturePtrIDMap;
+	typedef std::map<String, GLESTexturePtrVector> GLESTexturePtrShaderSortMap;
 
 
     class Base;
