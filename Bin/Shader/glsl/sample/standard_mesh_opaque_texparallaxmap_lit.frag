@@ -15,9 +15,13 @@ precision highp float;
 in vec4 fragWorldPos;
 in vec4 fragColor;
 in vec3 fragWorldNormal;
+in vec3 fragWorldTangent;
 in vec2 fragTexCoord;
+in vec3 fragTSPos;
+in vec3 fragTSEyePos;
 
 uniform sampler2D texSampler0;
+uniform sampler2D texSampler1;
 
 out vec4 outColor;
 
@@ -264,18 +268,200 @@ vec3 calculate_Light(vec3 ambientGlobal,
     return colorAmbient + colorDiffuse + colorSpecular;
 }
 
+///////////////////////////////// Common  //////////////////////////////////////////////
+float saturate(float x) { return clamp(x, 0.0, 1.0); }
+vec2 saturate(vec2 x) { return clamp(x, 0.0, 1.0); }
+vec3 saturate(vec3 x) { return clamp(x, 0.0, 1.0); }
+vec4 saturate(vec4 x) { return clamp(x, 0.0, 1.0); }
+
+
+///////////////////////////////// NormalMap //////////////////////////////////////////////
+vec3 Func_UnpackNormalRGB(vec4 packedNormal, float scale)
+{
+    vec3 normal;
+    normal.xyz = packedNormal.xyz * 2.0 - 1.0;
+    normal.xy *= scale;
+    return normalize(normal);
+}
+
+vec3 Func_UnpackNormalRGB(vec4 packedNormal)
+{
+    return Func_UnpackNormalRGB(packedNormal, 1.0);
+}
+
+vec3 Func_UnpackNormalXYZ(sampler2D texNormalMap,
+                          vec2 uv)
+{
+    vec3 packedNormal = texture(texNormalMap, uv).xyz;
+    return normalize(packedNormal * 2.0 - 1.0);
+}
+vec3 Func_UnpackNormalXY(sampler2D texNormalMap,
+                         vec2 uv)
+{
+    vec2 packedNormal = texture(texNormalMap, uv).xy;
+    vec3 normal;
+    normal.xy = packedNormal.xy * 2.0 - 1.0;
+    normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
+    return normalize(normal);
+}
+
+vec3 Func_CalculateNormal(sampler2D texNormalMap,
+                          vec2 inTexCoord,
+                          vec3 inWorldNormal,
+                          vec3 inWorldTangent)
+{
+    vec3 normal = Func_UnpackNormalXYZ(texNormalMap,
+                                       inTexCoord);
+
+    vec3 N = normalize(inWorldNormal);
+    vec3 T = normalize(inWorldTangent);
+    vec3 B = normalize(cross(N, T));
+    mat3 TBN = transpose(mat3(T, B, N));
+
+    return normalize(TBN * normal);
+}
+
+
+///////////////////////////////// ParallaxMap ////////////////////////////////////////////
+vec2 Func_ParallaxMapping_Common(sampler2D texParallaxMap,
+								 vec2 uv,
+								 vec3 viewDirTS,
+								 float heightScale,
+								 float parallaxBias)
+{
+	float height = 1.0 - texture(texParallaxMap, uv).w;
+	vec2 p = viewDirTS.xy * (height * (heightScale * 0.5) + parallaxBias) / viewDirTS.z;
+	return uv - p;
+}
+
+vec2 Func_ParallaxMapping_Steep(sampler2D texParallaxMap,
+								vec2 uv, 
+								vec3 viewDirTS,
+								float heightScale,
+								float numLayers)
+{
+	float layerDepth = 1.0 / numLayers;
+	float currLayerDepth = 0.0;
+	vec2 deltaUV = viewDirTS.xy * heightScale / (viewDirTS.z * numLayers);
+	vec2 currUV = uv;
+	float height = 1.0 - texture(texParallaxMap, currUV).w;
+	for (int i = 0; i < numLayers; i++) 
+    {
+		currLayerDepth += layerDepth;
+		currUV -= deltaUV;
+		height = 1.0 - texture(texParallaxMap, currUV).w;
+		if (height < currLayerDepth) 
+        {
+			break;
+		}
+	}
+	return currUV;
+}
+
+vec2 Func_ParallaxMapping_Occlusion(sampler2D texParallaxMap,
+									vec2 uv, 
+									vec3 viewDirTS,
+									float heightScale,
+									float numLayers)
+{
+	float layerDepth = 1.0 / numLayers;
+	float currLayerDepth = 0.0;
+	vec2 deltaUV = viewDirTS.xy * heightScale / (viewDirTS.z * numLayers);
+	vec2 currUV = uv;
+	float height = 1.0 - texture(texParallaxMap, currUV).w;
+	for (int i = 0; i < numLayers; i++) 
+    {
+		currLayerDepth += layerDepth;
+		currUV -= deltaUV;
+		height = 1.0 - texture(texParallaxMap, currUV).w;
+		if (height < currLayerDepth) 
+        {
+			break;
+		}
+	}
+	vec2 prevUV = currUV + deltaUV;
+	float nextDepth = height - currLayerDepth;
+	float prevDepth = 1.0 - texture(texParallaxMap, prevUV).w - currLayerDepth + layerDepth;
+	return mix(currUV, prevUV, nextDepth / (nextDepth - prevDepth));
+}
+
 
 void main()
 {
     vec3 color;
 
     MaterialConstant mat = materialConsts.mats[int(fragWorldPos.w + 0.5)];
-    vec3 N = normalize(fragWorldNormal);
+    int viewIndex = 0;
+    CameraConstants cam = passConsts.g_Cameras[viewIndex];
+
+	vec3 V = normalize(cam.posEyeWorld - fragWorldPos.xyz);
+    vec3 VT = normalize(fragTSEyePos - fragTSPos);
+    vec3 N = vec3(0,0,1);
+    float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
+    vec2 uv = fragTexCoord;
+    if (parallaxMapFlag == 1 ||
+        parallaxMapFlag == 2)
+    {
+        N = Func_CalculateNormal(texSampler1,
+                                 uv,
+                                 fragWorldNormal,
+                                 fragWorldTangent);
+    }
+    else if (parallaxMapFlag == 3)
+    {
+        float heightScale = mat.aTexLayers[1].texSpeedU;
+        float parallaxBias = mat.aTexLayers[1].texSpeedV;
+        uv = Func_ParallaxMapping_Common(texSampler1, 
+										 uv, 
+										 VT, 
+										 heightScale, 
+										 parallaxBias);
+        N = Func_CalculateNormal(texSampler1,
+                                 uv,
+                                 fragWorldNormal,
+                                 fragWorldTangent);
+    }
+    else if (parallaxMapFlag == 4)
+    {
+        float heightScale = mat.aTexLayers[1].texSpeedU;
+        float numLayers = mat.aTexLayers[1].texSpeedW;
+        uv = Func_ParallaxMapping_Steep(texSampler1, 
+										uv, 
+										VT, 
+										heightScale, 
+										numLayers);
+        N = Func_CalculateNormal(texSampler1,
+                                 uv,
+                                 fragWorldNormal,
+                                 fragWorldTangent);
+    }
+    else if (parallaxMapFlag == 5)
+    {
+        float heightScale = mat.aTexLayers[1].texSpeedU;
+        float numLayers = mat.aTexLayers[1].texSpeedW;
+        uv = Func_ParallaxMapping_Occlusion(texSampler1, 
+											uv, 
+											VT, 
+											heightScale, 
+											numLayers);
+        N = Func_CalculateNormal(texSampler1,
+                                 uv,
+                                 fragWorldNormal,
+                                 fragWorldTangent);
+    }
+    else
+    {
+        N = normalize(fragWorldNormal);
+    }
+
+    // Discard fragments at texture border
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) 
+    {
+		discard;
+    }
 
     vec3 colorLight;
     //Main Light
-    int viewIndex = 0;
-    CameraConstants cam = passConsts.g_Cameras[viewIndex];
     vec3 colorMainLight = calculate_Light(passConsts.g_AmbientLight.rgb,
                                           passConsts.g_MainLight,
                                           mat,
@@ -294,7 +480,18 @@ void main()
     vec3 colorVertex = fragColor.xyz;
 
     //Final Color
-    color = colorLight * colorTexture * colorVertex;
+    if (parallaxMapFlag == 0)
+    {
+        color = colorTexture;
+    }
+    else if (parallaxMapFlag == 1)
+    {
+        color = N;
+    }
+    else
+    {
+        color = colorLight * colorTexture * colorVertex;
+    }
 
     outColor = vec4(color.xyz, 1.0);
 }

@@ -18,6 +18,7 @@ in vec3 fragWorldNormal;
 in vec2 fragTexCoord;
 
 uniform sampler2D texSampler0;
+uniform sampler2D texSampler1;
 
 out vec4 outColor;
 
@@ -272,6 +273,18 @@ void main()
     MaterialConstant mat = materialConsts.mats[int(fragWorldPos.w + 0.5)];
     vec3 N = normalize(fragWorldNormal);
 
+	//BumpMap, Need Sample four times to get dx,dy
+    float bumpMapType = mat.aTexLayers[1].indexTextureArray;
+    if (bumpMapType == 1)
+    {
+        float bumpScale = mat.aTexLayers[1].texSpeedU;
+        float bumpValueU = texture(texSampler1, fragTexCoord + vec2(-1.0 / mat.aTexLayers[1].texSize.x, 0.0)).r -
+                       texture(texSampler1, fragTexCoord + vec2(1.0 / mat.aTexLayers[1].texSize.x, 0.0)).r;
+        float bumpValueV = texture(texSampler1, fragTexCoord + vec2(0.0, -1.0 / mat.aTexLayers[1].texSize.y)).r -
+                        texture(texSampler1, fragTexCoord + vec2(0.0, 1.0 / mat.aTexLayers[1].texSize.y)).r;
+        N = vec3(N.x + bumpValueU * bumpScale, N.y * bumpValueV * bumpScale, N.z);
+    }
+
     vec3 colorLight;
     //Main Light
     int viewIndex = 0;
@@ -294,7 +307,14 @@ void main()
     vec3 colorVertex = fragColor.xyz;
 
     //Final Color
-    color = colorLight * colorTexture * colorVertex;
+	if (bumpMapType == 0)
+    {
+        color = colorTexture;
+    }
+    else
+    {
+        color = colorLight * colorTexture * colorVertex;
+    }
 
     outColor = vec4(color.xyz, 1.0);
 }
