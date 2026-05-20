@@ -434,7 +434,10 @@ namespace LostPeterOpenGLES
         s_pBase->UpdateTimer();
     }
     void App::onRender(AndroidWindow* pWindow)
-    {
+    {	
+		if (!s_pBase->OnIsInit())
+			return;
+
         if (!s_pBase->isAppPaused)
         {
             s_pBase->CalculateFrameStats(s_pWindow);
