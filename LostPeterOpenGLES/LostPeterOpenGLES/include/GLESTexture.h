@@ -30,9 +30,10 @@ namespace LostPeterOpenGLES
                     const FColor& _borderColor,
                     bool _isUseBorderColor,
                     bool _isAutoMipmap,
-                    bool _isCubeMap,
+                    bool _isGraphicsComputeShared,
                     bool _isRenderTarget,
-                    bool _isGraphicsComputeShared);
+                    bool _isUnOrderedAccess,
+                    const FColor& _rtColor);
         virtual ~GLESTexture();
 
     public:
@@ -45,9 +46,10 @@ namespace LostPeterOpenGLES
         FMSAASampleCountType numSamples;
         FColor borderColor;
         bool isUseBorderColor;
-        bool isCubeMap;
-        bool isRenderTarget;
         bool isGraphicsComputeShared;
+        bool isRenderTarget;
+        bool isUnOrderedAccess;
+        FColor rtColor;
         int width;
         int height;
         int depth;
@@ -58,6 +60,7 @@ namespace LostPeterOpenGLES
 
         //Texture 3D
         uint8* pDataRGBA;
+        bool isDeleteRGBA;
 
         //Texture Animation
         int texChunkMaxX;
@@ -75,6 +78,8 @@ namespace LostPeterOpenGLES
     public:
         void Destroy();
         virtual bool Init();
+
+        virtual int RandomTextureIndex();
         virtual bool LoadTexture(int width,
                                  int height,
                                  int depth,
@@ -83,7 +88,11 @@ namespace LostPeterOpenGLES
         virtual void UpdateTexture();
 
     public:
-        void BindTexture();
+        void BindTexture(uint slot, bool enable);
+
+    protected:
+        virtual void updateNoiseTextureData();
+        virtual void updateNoiseTexture();
     };
 
 }; //LostPeterOpenGLES

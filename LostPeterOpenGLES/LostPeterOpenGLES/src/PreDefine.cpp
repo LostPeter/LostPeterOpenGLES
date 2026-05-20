@@ -287,7 +287,7 @@ namespace LostPeterOpenGLES
     {
         switch ((int)type)
         {
-        case F_Texture_1D:          return GL_TEXTURE_2D; //GL_TEXTURE_1D;
+        case F_Texture_1D:          return GL_TEXTURE_2D;
         case F_Texture_2D:          return GL_TEXTURE_2D;
         case F_Texture_2DArray:     return GL_TEXTURE_2D_ARRAY;
         case F_Texture_3D:          return GL_TEXTURE_3D;

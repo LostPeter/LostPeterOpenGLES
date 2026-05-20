@@ -76,7 +76,7 @@ namespace LostPeterOpenGLES
 	public:
 		//DescriptorSetLayouts
 		String nameDescriptorSetLayout_CopyBlit; 
-		StringVector aNameDescriptorSetLayouts_CopyBlit;
+		DescriptorSetLayout* pDescriptorSetLayout_CopyBlit;
 
 		//GLESStatePipelineGraphics
 		GLESStatePipelineGraphics* pPipelineGraphics_CopyBlit;

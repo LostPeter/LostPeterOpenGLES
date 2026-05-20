@@ -36,7 +36,7 @@ namespace LostPeterOpenGLES
     }
 	void EditorGrid::Destroy()
     {
-        CleanupSwapChain();
+        destroyInternal();
         destroyMeshes();
     }
     void EditorGrid::Init()
@@ -97,7 +97,8 @@ namespace LostPeterOpenGLES
         //4> DescriptorSetLayout
         {
             this->nameDescriptorSetLayout = "PassConstants-GridObjectConstants";
-            this->aNameDescriptorSetLayouts = FUtilString::Split(this->nameDescriptorSetLayout, "-");
+            this->pDescriptorSetLayout = new DescriptorSetLayout();
+			this->pDescriptorSetLayout->Init(this->nameDescriptorSetLayout);
         }
     }
     void EditorGrid::initBufferUniforms()
@@ -120,6 +121,7 @@ namespace LostPeterOpenGLES
 		GLESShader* pShaderFragment = GetShader(s_strNameShader_Grid_Frag);
 		F_Assert("EditorGrid::initPipelineGraphics: Shader Fragment" && pShaderFragment)
 		this->pPipelineGraphics = pWindow->createStatePipelineGraphics(namePipelineGraphics,
+                                                                       this->pDescriptorSetLayout,
 																	   pShaderVertex,
 																	   nullptr,
 																	   nullptr,
@@ -165,10 +167,10 @@ namespace LostPeterOpenGLES
     }
     void EditorGrid::updateDescriptorSets_Graphics()
     {   
-		uint32_t count_names = (uint32_t)this->aNameDescriptorSetLayouts.size();
+		uint32_t count_names = (uint32_t)this->pDescriptorSetLayout->aLayouts.size();
 		for (uint32_t i = 0; i < count_names; i++)
 		{
-			const String& nameDescriptorSet = this->aNameDescriptorSetLayouts[i];
+			const String& nameDescriptorSet = this->pDescriptorSetLayout->aLayouts[i];
 			
 			if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_PassConstants)) //PassConstants
 			{

@@ -22,9 +22,11 @@ namespace LostPeterOpenGLES
         GLESStatePipelineGraphics(const String& nameState);
         virtual ~GLESStatePipelineGraphics();
 
+	public:
+		static std::map<uint, String> s_mapIndex2SamplerName;
+
     public:
-		String nameDescriptorSetLayout;
-		StringVector* poDescriptorSetLayoutNames;
+		DescriptorSetLayout* poDescriptorSetLayout;
 
 		FMeshVertexType poTypeVertex;
 
@@ -66,12 +68,17 @@ namespace LostPeterOpenGLES
 
 		Uint2UintMap mapBindIndex2UniformBlockIndex;
 		GLESBufferUniformPtrIDMap mapBufferUniform;
-		GLESTexturePtrIDMap mapTexture;
-
+		GLESTexturePtrIDMap mapTextureVS;
+		GLESTexturePtrIDMap mapTextureFS;
+		GLESTexturePtrIDMap mapTextureTESC;
+		GLESTexturePtrIDMap mapTextureTESE;
+		GLESTexturePtrIDMap mapTextureGS;
+		GLESTexturePtrIDMap mapTextureCS;
 
     public:
         void Destroy();
-		bool Init(GLESShaderProgram* pShaderProgram,
+		bool Init(DescriptorSetLayout* pDescriptorSetLayout,
+				  GLESShaderProgram* pShaderProgram,
 				  bool deleteShaderProgram,
 				  FMeshVertexType typeVertex,
 				  GLenum typePrimitive,
@@ -101,7 +108,8 @@ namespace LostPeterOpenGLES
 				  GLboolean colorWriteMask_Green,
 				  GLboolean colorWriteMask_Blue,
 				  GLboolean colorWriteMask_Alpha);
-		bool Init(GLESShader* pShaderVertex,
+		bool Init(DescriptorSetLayout* pDescriptorSetLayout,
+				  GLESShader* pShaderVertex,
 				  GLESShader* pShaderTessellationControl,
 				  GLESShader* pShaderTessellationEvaluation,
 				  GLESShader* pShaderGeometry,
@@ -145,7 +153,12 @@ namespace LostPeterOpenGLES
 			
 	public:
 		void BindBufferUniform(GLESBufferUniform* pBufferUnifom, uint32 nBindingIndex);
-		void BindTexture(GLESTexture* pTexture, uint32 nBindingIndex);
+		void BindTextureVS(GLESTexture* pTexture, uint32 nBindingIndex);
+		void BindTextureFS(GLESTexture* pTexture, uint32 nBindingIndex);
+		void BindTextureTESC(GLESTexture* pTexture, uint32 nBindingIndex);
+		void BindTextureTESE(GLESTexture* pTexture, uint32 nBindingIndex);
+		void BindTextureGS(GLESTexture* pTexture, uint32 nBindingIndex);
+		void BindTextureCS(GLESTexture* pTexture, uint32 nBindingIndex);
 
     public:
 		void BindState();
@@ -158,6 +171,9 @@ namespace LostPeterOpenGLES
 		void bindStateDepth(bool depthEnable);
 		void bindStateStencil(bool stencilEnable);
 		void bindStateBlend(bool blendEnable);
+
+		void bindTextures(bool enable);
+		void bindTexture(GLESTexturePtrIDMap& mapTexture, bool enable);
         
     };
 

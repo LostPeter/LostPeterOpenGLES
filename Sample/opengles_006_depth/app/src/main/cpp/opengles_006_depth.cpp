@@ -83,6 +83,10 @@ OpenGLES_006_Depth::OpenGLES_006_Depth(String name)
     this->shaderVertex_Path = getShaderPathRelative("pos3_color4_tex2_ubo.vert.spv");
     this->shaderFragment_Path = getShaderPathRelative("pos3_color4_tex2_ubo.frag.spv");
 
+    this->nameDescriptorSetLayoutLocal = "PassConstants-ObjectConstants-TextureFS";
+    this->pDescriptorSetLayoutLocal = new DescriptorSetLayout();
+    this->pDescriptorSetLayoutLocal->Init(this->nameDescriptorSetLayoutLocal);
+
     this->cfg_cameraPos = FVector3(-0.65f, 2.5f, -4.0f);
 }
 
@@ -234,7 +238,8 @@ bool OpenGLES_006_Depth::loadModel_Texture(ModelObject* pModelObject)
 												  true,
 												  false,
 												  false,
-												  false);
+												  false,
+                                                  FMath::ms_clBlack);
 		if (!pModelObject->poTexture->Init())
 		{
 			F_LogError("*********************** OpenGLES_006_Depth::loadModel_Texture: Failed to create texture, path: [%s] !", pModelObject->pathTexture.c_str());
@@ -308,6 +313,7 @@ void OpenGLES_006_Depth::createGraphicsPipeline_Custom()
         //poStatePipelineGraphics
 		String namePipelineGraphics = "PipelineGraphics-" + pModelObject->nameModel;
         pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(namePipelineGraphics,
+                                                                            this->pDescriptorSetLayoutLocal,
 																			this->pShaderVertex,
 																			nullptr,
 																			nullptr,
@@ -382,7 +388,7 @@ void OpenGLES_006_Depth::createDescriptorSets_Custom()
 		}
 		//(4) Image
 		{
-			pModelObject->poStatePipelineGraphics->BindTexture(pModelObject->poTexture, 0);
+			pModelObject->poStatePipelineGraphics->BindTextureFS(pModelObject->poTexture, 0);
 		}
     }
 }
@@ -574,11 +580,13 @@ void OpenGLES_006_Depth::drawMeshDefault_Custom()
 		{	
 			F_Assert(false && "OpenGLES_006_Depth::drawMeshDefault_Custom")
 		}
+        pModelObject->poStatePipelineGraphics->UnBindState();
     }
 }
 
 void OpenGLES_006_Depth::cleanupCustom()
 {
+    F_DELETE(this->pDescriptorSetLayoutLocal)
 	F_DELETE(this->pShaderVertex)
     F_DELETE(this->pShaderFragment)
 

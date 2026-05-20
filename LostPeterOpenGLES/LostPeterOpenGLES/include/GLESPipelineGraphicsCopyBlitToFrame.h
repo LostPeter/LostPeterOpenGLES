@@ -23,8 +23,7 @@ namespace LostPeterOpenGLES
         virtual ~GLESPipelineGraphicsCopyBlitToFrame();
 
     public:
-        String nameDescriptorSetLayout;
-        StringVector* poDescriptorSetLayoutNames;
+        DescriptorSetLayout* pDescriptorSetLayout;
 
         CopyBlitObjectConstants objectCB_CopyBlit;
         GLESBufferUniform* pBuffer_CopyBlit;
@@ -34,11 +33,10 @@ namespace LostPeterOpenGLES
 
     public:
         void Destroy();
-        virtual bool Init(GLESShader* pShaderVertex,
+        virtual bool Init(DescriptorSetLayout* pDescriptorSetLayout,
+                          GLESShader* pShaderVertex,
                           GLESShader* pShaderFragment,
-                          Mesh* pMesh,
-                          const String& descriptorSetLayout,
-                          StringVector* pDescriptorSetLayoutNames);
+                          Mesh* pMesh);
 
     protected:
         void destroyBufferCopyBlitObject();

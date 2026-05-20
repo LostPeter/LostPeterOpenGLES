@@ -203,6 +203,11 @@ public:
 	GLESShader* pShaderVertex_Outline;
 	GLESShader* pShaderFragment_Outline;
 
+	String nameDescriptorSetLayout_Stencil;
+	DescriptorSetLayout* pDescriptorSetLayout_Stencil;
+    String nameDescriptorSetLayout_Outline;
+	DescriptorSetLayout* pDescriptorSetLayout_Outline;
+
 
 protected:
 	//Create Pipeline

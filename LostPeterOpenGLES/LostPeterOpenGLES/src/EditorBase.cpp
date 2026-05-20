@@ -24,6 +24,7 @@ namespace LostPeterOpenGLES
 
 		//DescriptorSetLayouts
         , nameDescriptorSetLayout("")
+        , pDescriptorSetLayout(nullptr)
 
         //GLESStatePipelineGraphics
         , pPipelineGraphics(nullptr)
@@ -41,6 +42,15 @@ namespace LostPeterOpenGLES
 		if (itFind == this->mapShaders.end())
 			return nullptr;
 		return itFind->second;
+	}
+
+    void EditorBase::destroyInternal()
+	{
+		destroyPipelineGraphics();
+        destroyPipelineLayout();
+        destroyDescriptorSetLayout();
+        destroyShaders();
+        destroyBufferUniforms();
 	}
 
 	void EditorBase::Init()
@@ -126,7 +136,7 @@ namespace LostPeterOpenGLES
     }
     void EditorBase::destroyDescriptorSetLayout()
     {
-		
+		F_DELETE(this->pDescriptorSetLayout)
     }   
 
     void EditorBase::Draw()
@@ -155,19 +165,11 @@ namespace LostPeterOpenGLES
 
     void EditorBase::CleanupSwapChain()
     {
-        destroyPipelineGraphics();
-        destroyPipelineLayout();
-        destroyDescriptorSetLayout();
-        destroyShaders();
-        destroyBufferUniforms();
+        
     }
     void EditorBase::RecreateSwapChain()
     {
-        initShaders();
-        initBufferUniforms();
-        initDescriptorSetLayout();
-        initPipelineLayout();
-        initPipelineGraphics();
+        
     }
 
 }; //LostPeterOpenGLES

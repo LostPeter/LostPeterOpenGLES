@@ -35,7 +35,7 @@ namespace LostPeterOpenGLES
 
         //DescriptorSetLayouts
         String nameDescriptorSetLayout;
-        StringVector aNameDescriptorSetLayouts;
+        DescriptorSetLayout* pDescriptorSetLayout;
 
         //GLESStatePipelineGraphics
         GLESStatePipelineGraphics* pPipelineGraphics;
@@ -45,6 +45,7 @@ namespace LostPeterOpenGLES
 
     public:
         virtual void Destroy() = 0;
+            virtual void destroyInternal();
 
         virtual void Init();
 

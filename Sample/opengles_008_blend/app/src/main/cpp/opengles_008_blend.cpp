@@ -96,6 +96,14 @@ OpenGLES_008_Blend::OpenGLES_008_Blend(String name)
 	this->shaderVertex_Path_Outline = getShaderPathRelative("standard_mesh_outline.vert.spv");
     this->shaderFragment_Path_Outline = getShaderPathRelative("standard_mesh_outline.frag.spv");
 
+	this->nameDescriptorSetLayout_Stencil = "PassConstants-ObjectConstants-TextureFS";
+    this->pDescriptorSetLayout_Stencil = new DescriptorSetLayout();
+    this->pDescriptorSetLayout_Stencil->Init(this->nameDescriptorSetLayout_Stencil);
+
+    this->nameDescriptorSetLayout_Outline = "PassConstants-OutlineObjectConstants";
+    this->pDescriptorSetLayout_Outline = new DescriptorSetLayout();
+    this->pDescriptorSetLayout_Outline->Init(this->nameDescriptorSetLayout_Outline);
+
     this->cfg_cameraPos = FVector3(0.0f, 3.0f, -4.0f);
 }
 
@@ -253,7 +261,8 @@ bool OpenGLES_008_Blend::loadModel_Texture(ModelObject* pModelObject)
 												  true,
 												  false,
 												  false,
-												  false);
+												  false,
+												  FMath::ms_clBlack);
 		if (!pModelObject->poTexture->Init())
 		{
 			F_LogError("*********************** OpenGLES_008_Blend::loadModel_Texture: Failed to create texture, path: [%s] !", pModelObject->pathTexture.c_str());
@@ -386,6 +395,7 @@ void OpenGLES_008_Blend::createGraphicsPipeline_Custom()
         //poStatePipelineGraphics_Stencil
 		String namePipelineGraphics_Stencil = "PipelineGraphics-Stencil-" + pModelObject->nameModel;
         pModelObject->poStatePipelineGraphics_Stencil = createStatePipelineGraphics(namePipelineGraphics_Stencil,
+																					this->pDescriptorSetLayout_Stencil,
 																					this->pShaderVertex,
 																					nullptr,
 																					nullptr,
@@ -429,6 +439,7 @@ void OpenGLES_008_Blend::createGraphicsPipeline_Custom()
 		//2> poStatePipelineGraphics_Outline
 		String namePipelineGraphics_Outline = "PipelineGraphics-Outline-" + pModelObject->nameModel;
         pModelObject->poStatePipelineGraphics_Outline = createStatePipelineGraphics(namePipelineGraphics_Outline,
+																					this->pDescriptorSetLayout_Outline,
 																					this->pShaderVertex_Outline,
 																					nullptr,
 																					nullptr,
@@ -521,7 +532,7 @@ void OpenGLES_008_Blend::createDescriptorSets_Custom()
 		}
 		//(5) Image
 		{
-			pModelObject->poStatePipelineGraphics_Stencil->BindTexture(pModelObject->poTexture, 0);
+			pModelObject->poStatePipelineGraphics_Stencil->BindTextureFS(pModelObject->poTexture, 0);
 		}
     }
 }
@@ -716,6 +727,7 @@ void OpenGLES_008_Blend::drawMeshDefault_Custom()
 		{	
 			F_Assert(false && "OpenGLES_008_Blend::drawMeshDefault_Custom")
 		}
+		pModelObject->poStatePipelineGraphics_Stencil->UnBindState();
 
 		if (pModelObject->isOutline)
 		{
@@ -740,12 +752,15 @@ void OpenGLES_008_Blend::drawMeshDefault_Custom()
 			{	
 				F_Assert(false && "OpenGLES_008_Blend::drawMeshDefault_Custom")
 			}
+			pModelObject->poStatePipelineGraphics_Outline->UnBindState();
 		}
     }
 }
 
 void OpenGLES_008_Blend::cleanupCustom()
 {
+	F_DELETE(this->pDescriptorSetLayout_Stencil)
+    F_DELETE(this->pDescriptorSetLayout_Outline)
 	F_DELETE(this->pShaderVertex)
     F_DELETE(this->pShaderFragment)
 	F_DELETE(this->pShaderVertex_Outline)

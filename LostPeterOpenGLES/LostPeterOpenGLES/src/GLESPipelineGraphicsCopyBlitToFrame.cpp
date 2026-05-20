@@ -22,8 +22,7 @@ namespace LostPeterOpenGLES
     GLESPipelineGraphicsCopyBlitToFrame::GLESPipelineGraphicsCopyBlitToFrame(const String& namePipelineGraphics)
         : Base(namePipelineGraphics)
 
-        , nameDescriptorSetLayout("")
-        , poDescriptorSetLayoutNames(nullptr)
+        , pDescriptorSetLayout(nullptr)
 
         , pBuffer_CopyBlit(nullptr)
         
@@ -49,15 +48,13 @@ namespace LostPeterOpenGLES
         }
 
 
-    bool GLESPipelineGraphicsCopyBlitToFrame::Init(GLESShader* pShaderVertex,
+    bool GLESPipelineGraphicsCopyBlitToFrame::Init(DescriptorSetLayout* pDescriptorSetLayout,
+                                                   GLESShader* pShaderVertex,
                                                    GLESShader* pShaderFragment,
-                                                   Mesh* pMesh,
-                                                   const String& descriptorSetLayout,
-                                                   StringVector* pDescriptorSetLayoutNames)
+                                                   Mesh* pMesh)
     {
+        this->pDescriptorSetLayout = pDescriptorSetLayout;
         this->pMeshBlit = pMesh;
-        this->nameDescriptorSetLayout = descriptorSetLayout;
-        this->poDescriptorSetLayoutNames = pDescriptorSetLayoutNames;
 
         //1> GLESBufferUniform
         if (this->pBuffer_CopyBlit == nullptr)
@@ -74,6 +71,7 @@ namespace LostPeterOpenGLES
 			OpenGLESWindow* pWindow = Base::GetWindowPtr();
             String nameStatePipelineGraphics = "StatePipelineGraphics-" + GetName();
 			this->pStatePipelineGraphics = pWindow->createStatePipelineGraphics(nameStatePipelineGraphics,
+                                                                                this->pDescriptorSetLayout,
 																				pShaderVertex,
 																				nullptr,
 																				nullptr,
@@ -136,13 +134,13 @@ namespace LostPeterOpenGLES
 
     void GLESPipelineGraphicsCopyBlitToFrame::CleanupSwapChain()
     {
-        this->poDescriptorSetLayoutNames = nullptr;
+        this->pDescriptorSetLayout = nullptr;
         F_DELETE(this->pStatePipelineGraphics)
     }  
 
     void GLESPipelineGraphicsCopyBlitToFrame::UpdateDescriptorSets()
     {
-        String nameCopyBlit = (*this->poDescriptorSetLayoutNames)[0];
+       const String& nameCopyBlit = this->pDescriptorSetLayout->aLayouts[0];
 		uint32 nUniformBlockIndex = this->pStatePipelineGraphics->GetUniformBlockIndex(nameCopyBlit);
         this->pStatePipelineGraphics->BindUniformBlockBinding(nUniformBlockIndex, DescriptorSet_CopyBlitObjectConstants);
 		this->pStatePipelineGraphics->BindBufferUniform(this->pBuffer_CopyBlit, this->pBuffer_CopyBlit->GetBindingIndex());

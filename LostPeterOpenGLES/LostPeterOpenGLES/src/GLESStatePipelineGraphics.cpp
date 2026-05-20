@@ -18,11 +18,11 @@
 
 namespace LostPeterOpenGLES
 {
+	std::map<uint, String> GLESStatePipelineGraphics::s_mapIndex2SamplerName;
     GLESStatePipelineGraphics::GLESStatePipelineGraphics(const String& nameState)
         : Base(nameState)
 
-		, nameDescriptorSetLayout("")
-        , poDescriptorSetLayoutNames(nullptr)
+        , poDescriptorSetLayout(nullptr)
 
 		, poTypeVertex(F_MeshVertex_Pos3Color4Normal3Tangent3Tex2)
 
@@ -62,7 +62,25 @@ namespace LostPeterOpenGLES
 		, isDeleteShaderProgram(true)
 
     {
-
+		if (s_mapIndex2SamplerName.size() <= 0)
+		{
+			s_mapIndex2SamplerName[0] = "texSampler0";
+			s_mapIndex2SamplerName[1] = "texSampler1";
+			s_mapIndex2SamplerName[2] = "texSampler2";
+			s_mapIndex2SamplerName[3] = "texSampler3";
+			s_mapIndex2SamplerName[4] = "texSampler4";
+			s_mapIndex2SamplerName[5] = "texSampler5";
+			s_mapIndex2SamplerName[6] = "texSampler6";
+			s_mapIndex2SamplerName[7] = "texSampler7";
+			s_mapIndex2SamplerName[8] = "texSampler8";
+			s_mapIndex2SamplerName[9] = "texSampler9";
+			s_mapIndex2SamplerName[10] = "texSampler10";
+			s_mapIndex2SamplerName[11] = "texSampler11";
+			s_mapIndex2SamplerName[12] = "texSampler12";
+			s_mapIndex2SamplerName[13] = "texSampler13";
+			s_mapIndex2SamplerName[14] = "texSampler14";
+			s_mapIndex2SamplerName[15] = "texSampler15";
+		}
     }
     GLESStatePipelineGraphics::~GLESStatePipelineGraphics()
     {
@@ -74,7 +92,8 @@ namespace LostPeterOpenGLES
 		CleanupSwapChain();
 	}
 
-	bool GLESStatePipelineGraphics::Init(GLESShaderProgram* pShaderProgram,
+	bool GLESStatePipelineGraphics::Init(DescriptorSetLayout* pDescriptorSetLayout,
+										 GLESShaderProgram* pShaderProgram,
 									     bool deleteShaderProgram,
 									     FMeshVertexType typeVertex,
 									     GLenum typePrimitive,
@@ -108,6 +127,7 @@ namespace LostPeterOpenGLES
 		this->poShaderProgram = pShaderProgram;
 		this->isDeleteShaderProgram = deleteShaderProgram;
 
+		this->poDescriptorSetLayout = pDescriptorSetLayout;
 		this->poTypeVertex = typeVertex;
 		
 		this->poTypePrimitive = typePrimitive;
@@ -145,7 +165,8 @@ namespace LostPeterOpenGLES
 		return true;
 	}
 
-	bool GLESStatePipelineGraphics::Init(GLESShader* pShaderVertex,
+	bool GLESStatePipelineGraphics::Init(DescriptorSetLayout* pDescriptorSetLayout,
+										 GLESShader* pShaderVertex,
 									     GLESShader* pShaderTessellationControl,
 									     GLESShader* pShaderTessellationEvaluation,
 									     GLESShader* pShaderGeometry,
@@ -181,18 +202,19 @@ namespace LostPeterOpenGLES
 	{
 		String nameShaderProgram = GetName();
 		GLESShaderProgram* pShaderProgram = Base::GetWindowPtr()->createShaderProgram(nameShaderProgram,
-																				    pShaderVertex,
-																				    pShaderTessellationControl,
-																				    pShaderTessellationEvaluation,
-																				    pShaderGeometry,
-																				    pShaderFragment);
+																				      pShaderVertex,
+																				      pShaderTessellationControl,
+																				      pShaderTessellationEvaluation,
+																				      pShaderGeometry,
+																				      pShaderFragment);
 		if (pShaderProgram == nullptr)
 		{
 			String msg = "*********************** GLESStatePipelineGraphics::Init: Failed to create shader program: " + nameShaderProgram;
 			return false;
 		}
 
-		return Init(pShaderProgram,
+		return Init(pDescriptorSetLayout,
+					pShaderProgram,
 					true,
 					typeVertex,
 					typePrimitive,
@@ -226,7 +248,7 @@ namespace LostPeterOpenGLES
 
 	void GLESStatePipelineGraphics::CleanupSwapChain()
 	{
-		this->poDescriptorSetLayoutNames = nullptr;
+		this->poDescriptorSetLayout = nullptr;
 		
 		if (this->isDeleteShaderProgram)
 		{
@@ -236,7 +258,12 @@ namespace LostPeterOpenGLES
 
 		this->mapBindIndex2UniformBlockIndex.clear();
 		this->mapBufferUniform.clear();
-		this->mapTexture.clear();
+		this->mapTextureVS.clear();
+		this->mapTextureFS.clear();
+		this->mapTextureTESC.clear();
+		this->mapTextureTESE.clear();
+		this->mapTextureGS.clear();
+		this->mapTextureCS.clear();
 	}
 
 	uint32 GLESStatePipelineGraphics::GetUniformBlockIndex(const String& name)
@@ -253,9 +280,29 @@ namespace LostPeterOpenGLES
 	{
 		this->mapBufferUniform[nBindingIndex] = pBufferUnifom;
 	}
-	void GLESStatePipelineGraphics::BindTexture(GLESTexture* pTexture, uint32 nBindingIndex)
+	void GLESStatePipelineGraphics::BindTextureVS(GLESTexture* pTexture, uint32 nBindingIndex)
 	{
-		this->mapTexture[nBindingIndex] = pTexture;
+		this->mapTextureVS[nBindingIndex] = pTexture;
+	}
+	void GLESStatePipelineGraphics::BindTextureFS(GLESTexture* pTexture, uint32 nBindingIndex)
+	{
+		this->mapTextureFS[nBindingIndex] = pTexture;
+	}
+	void GLESStatePipelineGraphics::BindTextureTESC(GLESTexture* pTexture, uint32 nBindingIndex)
+	{
+		this->mapTextureTESC[nBindingIndex] = pTexture;
+	}
+	void GLESStatePipelineGraphics::BindTextureTESE(GLESTexture* pTexture, uint32 nBindingIndex)
+	{
+		this->mapTextureTESE[nBindingIndex] = pTexture;
+	}
+	void GLESStatePipelineGraphics::BindTextureGS(GLESTexture* pTexture, uint32 nBindingIndex)
+	{
+		this->mapTextureGS[nBindingIndex] = pTexture;
+	}
+	void GLESStatePipelineGraphics::BindTextureCS(GLESTexture* pTexture, uint32 nBindingIndex)
+	{
+		this->mapTextureCS[nBindingIndex] = pTexture;
 	}
 
 	void GLESStatePipelineGraphics::BindState()
@@ -275,6 +322,7 @@ namespace LostPeterOpenGLES
 		bindStateDepth(false);
 		bindStateStencil(false);
 		bindStateBlend(false);
+		bindTextures(false);
 	}
 	void GLESStatePipelineGraphics::bindStateDepth(bool depthEnable)
 	{
@@ -334,14 +382,39 @@ namespace LostPeterOpenGLES
 	}
 	void GLESStatePipelineGraphics::BindTextures()
 	{
-		size_t count = this->mapTexture.size();
-		if (count > 0)
+		bindTextures(true);
+	}
+	void GLESStatePipelineGraphics::bindTextures(bool enable)
+	{
+		//VS
+		if (this->mapTextureVS.size() > 0)
+			bindTexture(this->mapTextureVS, enable);
+		//FS
+		if (this->mapTextureFS.size() > 0)
+			bindTexture(this->mapTextureFS, enable);
+		//TESC
+		if (this->mapTextureTESC.size() > 0)
+			bindTexture(this->mapTextureTESC, enable);
+		//TESE
+		if (this->mapTextureTESE.size() > 0)
+			bindTexture(this->mapTextureTESE, enable);
+		//GS
+		if (this->mapTextureGS.size() > 0)
+			bindTexture(this->mapTextureGS, enable);
+		//CS
+		if (this->mapTextureCS.size() > 0)
+			bindTexture(this->mapTextureCS, enable);
+	}
+	void GLESStatePipelineGraphics::bindTexture(GLESTexturePtrIDMap& mapTexture, bool enable)
+	{
+		OpenGLESWindow* pWindow = Base::GetWindowPtr();
+		for (GLESTexturePtrIDMap::iterator it = mapTexture.begin();
+			 it != mapTexture.end(); ++it)
 		{
-			for (GLESTexturePtrIDMap::iterator it = this->mapTexture.begin();
-				 it != this->mapTexture.end(); ++it)
-			{
-				it->second->BindTexture();
-			}
+			GLESTexture* pTexture = it->second;
+			uint nBindingIndex = it->first;
+			pTexture->BindTexture(nBindingIndex, enable);
+			pWindow->setUniform1i(this->poShaderProgram->nShaderProgramID, s_mapIndex2SamplerName[nBindingIndex], (int)nBindingIndex);
 		}
 	}
 

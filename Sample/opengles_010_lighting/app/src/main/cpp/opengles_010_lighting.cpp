@@ -109,6 +109,10 @@ OpenGLES_010_Lighting::OpenGLES_010_Lighting(String name)
 
     this->poTypeVertex = F_MeshVertex_Pos3Color4Normal3Tex2;
 
+    this->nameDescriptorSetLayoutLocal = "PassConstants-ObjectConstants-MaterialConstants-TextureFS";
+    this->pDescriptorSetLayoutLocal = new DescriptorSetLayout();
+    this->pDescriptorSetLayoutLocal->Init(this->nameDescriptorSetLayoutLocal);
+
     this->cfg_cameraPos = FVector3(0.0f, 15.0f, -20.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
@@ -270,7 +274,8 @@ bool OpenGLES_010_Lighting::loadModel_Texture(ModelObject* pModelObject)
 												  true,
 												  false,
 												  false,
-												  false);
+												  false,
+                                                  FMath::ms_clBlack);
 		if (!pModelObject->poTexture->Init())
 		{
 			F_LogError("*********************** OpenGLES_010_Lighting::loadModel_Texture: Failed to create texture, path: [%s] !", pModelObject->pathTexture.c_str());
@@ -395,8 +400,9 @@ void OpenGLES_010_Lighting::createGraphicsPipeline_Custom()
         }
 
         //poStatePipelineGraphics
-		String namePipelineGraphics_Stencil = "PipelineGraphics-" + pModelObject->nameModel;
-        pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(namePipelineGraphics_Stencil,
+		String namePipelineGraphics = "PipelineGraphics-" + pModelObject->nameModel;
+        pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(namePipelineGraphics,
+                                                                            this->pDescriptorSetLayoutLocal,
                                                                             pShaderVertex,
                                                                             nullptr,
                                                                             nullptr,
@@ -536,7 +542,7 @@ void OpenGLES_010_Lighting::createDescriptorSets_Custom()
 		}
 		//(4) Image
 		{
-			pModelObject->poStatePipelineGraphics->BindTexture(pModelObject->poTexture, 0);
+			pModelObject->poStatePipelineGraphics->BindTextureFS(pModelObject->poTexture, 0);
 		}
     }
 }
@@ -799,11 +805,13 @@ void OpenGLES_010_Lighting::drawMeshDefault_Custom()
 		{	
 			F_Assert(false && "OpenGLES_010_Lighting::drawMeshDefault_Custom")
 		}
+        pModelObject->poStatePipelineGraphics->UnBindState();
     }
 }
 
 void OpenGLES_010_Lighting::cleanupCustom()
 {
+    F_DELETE(this->pDescriptorSetLayoutLocal)
 	destroyShaderModules();
 
     size_t count = this->m_aModelObjects.size();

@@ -192,6 +192,9 @@ public:
 	GLESShader* pShaderVertex;
 	GLESShader* pShaderFragment;
 
+	String nameDescriptorSetLayoutLocal;
+	DescriptorSetLayout* pDescriptorSetLayoutLocal;
+	
 
 protected:
 	//Create Pipeline
