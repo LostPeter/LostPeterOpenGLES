@@ -96,29 +96,29 @@ vec4 Grid(vec2 texCoord, float divisions, vec4 color)
 
 void main()
 {
-        float fDivs;
+	float fDivs;
     float divisions = 1000.0;
     float step = 100.0;
     float subdivisions = 4.0;
 
-        int viewIndex = 0;
+	int viewIndex = 0;
     CameraConstants cam = passConsts.g_Cameras[viewIndex];
     vec3 viewPos = cam.posEyeWorld.xyz;
     vec4 color = gridObjectConsts.color;
 
-        float fBase = 2.0;
-        float fPow = round(abs(viewPos.y) - step / subdivisions) / step;
-        float fResult = pow(fBase, fPow);
-        fDivs = divisions / fResult;
-        vec4 vGrid1 = Grid(fragTexCoord, fDivs, color) + Grid(fragTexCoord, fDivs / subdivisions, color);
+	float fBase = 2.0;
+	float fPow = round(abs(viewPos.y) - step / subdivisions) / step;
+	float fResult = pow(fBase, fPow);
+	fDivs = divisions / fResult;
+	vec4 vGrid1 = Grid(fragTexCoord, fDivs, color) + Grid(fragTexCoord, fDivs / subdivisions, color);
 
-        fPow = round(abs(viewPos.y + 50.0) - step / subdivisions) / step;
-        fResult = pow(fBase, fPow);
-        fDivs = divisions / fResult;
-        vec4 vGrid2 = Grid(fragTexCoord, fDivs, color) + Grid(fragTexCoord, fDivs / subdivisions, color);
+	fPow = round(abs(viewPos.y + 50.0) - step / subdivisions) / step;
+	fResult = pow(fBase, fPow);
+	fDivs = divisions / fResult;
+	vec4 vGrid2 = Grid(fragTexCoord, fDivs, color) + Grid(fragTexCoord, fDivs / subdivisions, color);
 
-        float fAlpha = mod(abs(viewPos.y), step);
-        fAlpha = 0.0;
+	float fAlpha = mod(abs(viewPos.y), step);
+	fAlpha = 0.0;
 
     outColor = mix(vGrid1, vGrid2, fAlpha);
 

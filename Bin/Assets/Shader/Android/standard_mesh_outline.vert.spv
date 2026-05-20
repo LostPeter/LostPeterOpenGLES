@@ -71,11 +71,11 @@ layout (std140) uniform PassConstants
 
 
 ///////////////////////////////// OutlineObjectConstants ////////////////////////
-#define MAX_OBJECT_COUNT                                1024
+#define MAX_OBJECT_COUNT  				1024
 //OutlineObjectConstants
 struct OutlineObjectConstant
 {
-        mat4 g_MatWorld;
+	mat4 g_MatWorld;
     vec4 outlineColor;
     float outlineWidth;
     float reserve0;
@@ -93,11 +93,11 @@ out vec2 fragTexCoord;
 
 void main()
 {
-        int viewIndex = 0;
-        TransformConstants trans = passConsts.g_Transforms[viewIndex];
-        OutlineObjectConstant obj = outlineObjectConsts.objs[gl_InstanceID];
+	int viewIndex = 0;
+	TransformConstants trans = passConsts.g_Transforms[viewIndex];
+	OutlineObjectConstant obj = outlineObjectConsts.objs[gl_InstanceID];
 
-        vec4 pos = vec4(inPosition.xyz + inNormal * obj.outlineWidth, 1.0);
+	vec4 pos = vec4(inPosition.xyz + inNormal * obj.outlineWidth, 1.0);
     gl_Position = trans.mat4Proj * trans.mat4View * obj.g_MatWorld * pos;
     fragColor = obj.outlineColor;
 }

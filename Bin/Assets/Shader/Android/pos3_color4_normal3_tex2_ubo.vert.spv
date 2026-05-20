@@ -71,12 +71,12 @@ layout (std140) uniform PassConstants
 
 
 ///////////////////////////////// ObjectConstants ///////////////////////////////
-#define MAX_OBJECT_COUNT                                1024
+#define MAX_OBJECT_COUNT  				1024
 //ObjectConstants
 struct ObjectConstant
 {
-        mat4 g_MatWorld;
-};      
+	mat4 g_MatWorld;
+};	
 layout (std140) uniform ObjectConstants
 {
     ObjectConstant objs[MAX_OBJECT_COUNT];
@@ -88,9 +88,9 @@ out vec2 fragTexCoord;
 
 void main()
 {
-        int viewIndex = 0;
-        TransformConstants trans = passConsts.g_Transforms[viewIndex];
-        ObjectConstant obj = objectConsts.objs[gl_InstanceID];
+	int viewIndex = 0;
+	TransformConstants trans = passConsts.g_Transforms[viewIndex];
+	ObjectConstant obj = objectConsts.objs[gl_InstanceID];
 
     gl_Position = trans.mat4Proj * trans.mat4View * obj.g_MatWorld * vec4(inPosition, 1.0);
     fragColor = inColor;

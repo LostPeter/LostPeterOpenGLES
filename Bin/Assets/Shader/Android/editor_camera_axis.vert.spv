@@ -73,10 +73,10 @@ layout (std140) uniform PassConstants
 //CameraAxisObjectConstants
 struct CameraAxisObjectConstant
 {
-        mat4 g_MatWorld;
+	mat4 g_MatWorld;
     vec4 color;
 };
-#define MAX_OBJECT_CAMERAAXIS_COUNT     7
+#define MAX_OBJECT_CAMERAAXIS_COUNT 	7
 layout (std140) uniform CameraAxisObjectConstants
 {
     CameraAxisObjectConstant objs[MAX_OBJECT_CAMERAAXIS_COUNT];
@@ -91,15 +91,15 @@ out vec2 fragTexCoord;
 
 void main()
 {
-        int viewIndex = 0;
-        TransformConstants trans = passConsts.g_Transforms[viewIndex];
-        int instanceIndex = int(gl_InstanceID) + uBaseInstance;
-        CameraAxisObjectConstant obj = cameraAxisObjectConsts.objs[instanceIndex];
+	int viewIndex = 0;
+	TransformConstants trans = passConsts.g_Transforms[viewIndex];
+	int instanceIndex = int(gl_InstanceID) + uBaseInstance;
+	CameraAxisObjectConstant obj = cameraAxisObjectConsts.objs[instanceIndex];
 
-        vec4 outWorldPos = obj.g_MatWorld * vec4(inPosition, 1.0);
+	vec4 outWorldPos = obj.g_MatWorld * vec4(inPosition, 1.0);
     gl_Position = trans.mat4Proj * trans.mat4View * outWorldPos;
-        fragWorldPos.xyz = outWorldPos.xyz / outWorldPos.w;
-        fragWorldPos.w = float(instanceIndex);
+	fragWorldPos.xyz = outWorldPos.xyz / outWorldPos.w;
+	fragWorldPos.w = float(instanceIndex);
     fragColor = inColor;
     fragTexCoord = inTexCoord;
 }
