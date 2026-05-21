@@ -23,3 +23,4 @@ call ./Build_Windows_Android_Sample.bat opengles_007_stencil %debug% %rebuild%
 call ./Build_Windows_Android_Sample.bat opengles_008_blend %debug% %rebuild%
 call ./Build_Windows_Android_Sample.bat opengles_009_instancing %debug% %rebuild%
 call ./Build_Windows_Android_Sample.bat opengles_010_lighting %debug% %rebuild%
+call ./Build_Windows_Android_Sample.bat opengles_011_texturing %debug% %rebuild%

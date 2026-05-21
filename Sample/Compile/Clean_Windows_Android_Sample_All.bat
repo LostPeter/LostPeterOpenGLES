@@ -20,3 +20,4 @@ call ./Clean_Windows_Android_Sample.bat opengles_007_stencil
 call ./Clean_Windows_Android_Sample.bat opengles_008_blend
 call ./Clean_Windows_Android_Sample.bat opengles_009_instancing
 call ./Clean_Windows_Android_Sample.bat opengles_010_lighting
+call ./Clean_Windows_Android_Sample.bat opengles_011_texturing
