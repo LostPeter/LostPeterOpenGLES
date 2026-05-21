@@ -264,7 +264,7 @@ void main()
     vec3 N = normalize(fragWorldNormal);
 
 	//BumpMap, Need Sample four times to get dx,dy
-    float bumpMapType = mat.aTexLayers[1].texSize.w;
+    int bumpMapType = int(mat.aTexLayers[1].texSize.w + 0.5);
     if (bumpMapType == 1)
     {
         float bumpScale = mat.aTexLayers[1].texSpeed.x;

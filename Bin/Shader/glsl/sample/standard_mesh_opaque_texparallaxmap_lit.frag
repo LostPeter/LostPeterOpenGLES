@@ -398,7 +398,7 @@ void main()
 	vec3 V = normalize(cam.posEyeWorld - fragWorldPos.xyz);
     vec3 VT = normalize(fragTSEyePos - fragTSPos);
     vec3 N = vec3(0,0,1);
-    float parallaxMapFlag = mat.aTexLayers[1].texSize.w;  
+    int parallaxMapFlag = int(mat.aTexLayers[1].texSize.w + 0.5);
     vec2 uv = fragTexCoord;
     if (parallaxMapFlag == 1 ||
         parallaxMapFlag == 2)
