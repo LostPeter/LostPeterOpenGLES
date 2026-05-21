@@ -328,7 +328,7 @@ vec2 Func_ParallaxMapping_Steep(sampler2D texParallaxMap,
 								vec2 uv, 
 								vec3 viewDirTS,
 								float heightScale,
-								float numLayers)
+								int numLayers)
 {
 	float layerDepth = 1.0 / numLayers;
 	float currLayerDepth = 0.0;
@@ -352,7 +352,7 @@ vec2 Func_ParallaxMapping_Occlusion(sampler2D texParallaxMap,
 									vec2 uv, 
 									vec3 viewDirTS,
 									float heightScale,
-									float numLayers)
+									int numLayers)
 {
 	float layerDepth = 1.0 / numLayers;
 	float currLayerDepth = 0.0;
@@ -414,7 +414,7 @@ void main()
     else if (parallaxMapFlag == 4)
     {
         float heightScale = mat.aTexLayers[1].texSpeed.x;
-        float numLayers = mat.aTexLayers[1].texSpeed.z;
+        int numLayers = int(mat.aTexLayers[1].texSpeed.z + 0.5);
         uv = Func_ParallaxMapping_Steep(texSampler1, 
 										uv, 
 										VT, 
@@ -428,7 +428,7 @@ void main()
     else if (parallaxMapFlag == 5)
     {
         float heightScale = mat.aTexLayers[1].texSpeed.x;
-        float numLayers = mat.aTexLayers[1].texSpeed.z;
+        int numLayers = int(mat.aTexLayers[1].texSpeed.z + 0.5);
         uv = Func_ParallaxMapping_Occlusion(texSampler1, 
 											uv, 
 											VT, 
