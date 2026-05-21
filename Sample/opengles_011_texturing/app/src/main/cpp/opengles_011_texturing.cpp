@@ -77,10 +77,10 @@ static const int g_MeshCount = 4;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
-    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane
-    "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Assets/Mesh/Common/plane.fbx", //plane_nt
-    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/cube.obj", //cube
-    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Assets/Mesh/Common/sphere.fbx", //sphere
+    "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Common/plane.fbx", //plane
+    "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Mesh/Common/plane.fbx", //plane_nt
+    "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Common/cube.obj", //cube
+    "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Common/sphere.fbx", //sphere
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
@@ -114,32 +114,32 @@ static const int g_TextureCount = 20;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
     //Texture Name                  //Texture Type  //TextureIsRenderTarget  //TextureIsGraphicsComputeShared  //Texture Path
-    "default_blackwhite_01",        "2D",           "false",                 "false",                          "Assets/Texture/Common/default_blackwhite.png", //default_blackwhite_01
-    "terrain",                      "2D",           "false",                 "false",                          "Assets/Texture/Common/terrain.png", //terrain
-    "default_white_01",             "2D",           "false",                 "false",                          "Assets/Texture/Common/default_white.bmp", //default_white_01
+    "default_blackwhite_01",        "2D",           "false",                 "false",                          "Texture/Common/default_blackwhite.png", //default_blackwhite_01
+    "terrain",                      "2D",           "false",                 "false",                          "Texture/Common/terrain.png", //terrain
+    "default_white_01",             "2D",           "false",                 "false",                          "Texture/Common/default_white.bmp", //default_white_01
     
 ////Basic-Level Texture Operation
-    "texturesampler_wrap",          "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_wrap
-    "texturesampler_mirror",        "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_mirror
-    "texturesampler_clamp",         "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_clamp
-    "texturesampler_border",        "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texturesampler_border
-    "texture1d",                    "1D",           "false",                 "false",                          "Assets/Texture/Common/texture1d.tga", //texture1d
-    "texture2d_01",                 "2D",           "false",                 "false",                          "Assets/Texture/Common/texture2d.jpg", //texture2d_01
-    "texture2darray",               "2DArray",      "false",                 "false",                          "Assets/Texture/Terrain/shore_sand_albedo.png;Assets/Texture/Terrain/moss_albedo.png;Assets/Texture/Terrain/rock_cliff_albedo.png;Assets/Texture/Terrain/cliff_albedo.png", //texture2darray
+    "texturesampler_wrap",          "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_wrap
+    "texturesampler_mirror",        "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_mirror
+    "texturesampler_clamp",         "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_clamp
+    "texturesampler_border",        "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_border
+    "texture1d",                    "2D",           "false",                 "false",                          "Texture/Common/texture1d.tga", //texture1d
+    "texture2d_01",                 "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texture2d_01
+    "texture2darray",               "2DArray",      "false",                 "false",                          "Texture/Terrain/shore_sand_albedo.png;Texture/Terrain/moss_albedo.png;Texture/Terrain/rock_cliff_albedo.png;Texture/Terrain/cliff_albedo.png", //texture2darray
     "texture3d",                    "3D",           "true",                  "false",                          "", //texture3d
-    "texturecubemap",               "CubeMap",      "false",                 "false",                          "Assets/Texture/Sky/texturecubemap_x_right.png;Assets/Texture/Sky/texturecubemap_x_left.png;Assets/Texture/Sky/texturecubemap_y_up.png;Assets/Texture/Sky/texturecubemap_y_down.png;Assets/Texture/Sky/texturecubemap_z_front.png;Assets/Texture/Sky/texturecubemap_z_back.png", //texturecubemap
-    "textureanimation_scroll",      "2DArray",      "false",                 "false",                          "Assets/Texture/Common/textureanimation1.png;Assets/Texture/Common/textureanimation2.png", //textureanimation_scroll
-    "textureanimation_chunk",       "2DArray",      "false",                 "false",                          "Assets/Texture/Common/textureanimation3.png", //textureanimation_chunk
+    "texturecubemap",               "CubeMap",      "false",                 "false",                          "Texture/Sky/texturecubemap_x_right.png;Texture/Sky/texturecubemap_x_left.png;Texture/Sky/texturecubemap_y_up.png;Texture/Sky/texturecubemap_y_down.png;Texture/Sky/texturecubemap_z_front.png;Texture/Sky/texturecubemap_z_back.png", //texturecubemap
+    "textureanimation_scroll",      "2DArray",      "false",                 "false",                          "Texture/Common/textureanimation1.png;Texture/Common/textureanimation2.png", //textureanimation_scroll
+    "textureanimation_chunk",       "2DArray",      "false",                 "false",                          "Texture/Common/textureanimation3.png", //textureanimation_chunk
 
 ////High-Level Texture Operation
-    "texturebumpmap_diffuse",       "2D",           "false",                 "false",                          "Assets/Texture/Common/bricks_diffuse.png", //texturebumpmap_diffuse
-    "texturebumpmap_bumpmap",       "2D",           "false",                 "false",                          "Assets/Texture/Common/bricks_bumpmap.png", //texturebumpmap_bumpmap
-    "texturenormalmap_normalmap",   "2D",           "false",                 "false",                          "Assets/Texture/Common/bricks_normalmap.png", //texturenormalmap_normalmap
+    "texturebumpmap_diffuse",       "2D",           "false",                 "false",                          "Texture/Common/bricks_diffuse.png", //texturebumpmap_diffuse
+    "texturebumpmap_bumpmap",       "2D",           "false",                 "false",                          "Texture/Common/bricks_bumpmap.png", //texturebumpmap_bumpmap
+    "texturenormalmap_normalmap",   "2D",           "false",                 "false",                          "Texture/Common/bricks_normalmap.png", //texturenormalmap_normalmap
 
-    "rocks_color",                  "2D",           "false",                 "false",                          "Assets/Texture/Common/rocks_color.png", //rocks_color
-    "rocks_normal_height",          "2D",           "false",                 "false",                          "Assets/Texture/Common/rocks_normal_height.png", //rocks_normal_height
+    "rocks_color",                  "2D",           "false",                 "false",                          "Texture/Common/rocks_color.png", //rocks_color
+    "rocks_normal_height",          "2D",           "false",                 "false",                          "Texture/Common/rocks_normal_height.png", //rocks_normal_height
 
-    "stonefloor_color_height",      "2D",           "false",                 "false",                          "Assets/Texture/Common/stonefloor_color_height.png", //stonefloor_color_height
+    "stonefloor_color_height",      "2D",           "false",                 "false",                          "Texture/Common/stonefloor_color_height.png", //stonefloor_color_height
 
 };
 static int g_TextureChannels[g_TextureCount] = 
@@ -370,18 +370,18 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     //name                                                     //type              //path
 
     ///////////////////////////////////////// vert /////////////////////////////////////////
-    "vert_standard_mesh_opaque_texsampler_lit",                "vert",             "Assets/Shader/Common/standard_mesh_opaque_texsampler_lit.vert.spv", //standard_mesh_opaque_texsampler_lit vert
-    "vert_standard_mesh_opaque_tex1d_lit",                     "vert",             "Assets/Shader/Common/standard_mesh_opaque_tex1d_lit.vert.spv", //standard_mesh_opaque_tex1d_lit vert
-    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",             "Assets/Shader/Common/standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
-    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",             "Assets/Shader/Common/standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
-    "vert_standard_mesh_opaque_tex3d_lit",                     "vert",             "Assets/Shader/Common/standard_mesh_opaque_tex3d_lit.vert.spv", //standard_mesh_opaque_tex3d_lit vert
-    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",             "Assets/Shader/Common/standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
-    "vert_standard_mesh_opaque_texanim_scroll_lit",            "vert",             "Assets/Shader/Common/standard_mesh_opaque_texanim_scroll_lit.vert.spv", //standard_mesh_opaque_texanim_scroll_lit vert
-    "vert_standard_mesh_opaque_texanim_chunk_lit",             "vert",             "Assets/Shader/Common/standard_mesh_opaque_texanim_chunk_lit.vert.spv", //standard_mesh_opaque_texanim_chunk_lit vert
+    "vert_standard_mesh_opaque_texsampler_lit",                "vert",             "standard_mesh_opaque_texsampler_lit.vert.spv", //standard_mesh_opaque_texsampler_lit vert
+    "vert_standard_mesh_opaque_tex1d_lit",                     "vert",             "standard_mesh_opaque_tex1d_lit.vert.spv", //standard_mesh_opaque_tex1d_lit vert
+    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",             "standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",             "standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
+    "vert_standard_mesh_opaque_tex3d_lit",                     "vert",             "standard_mesh_opaque_tex3d_lit.vert.spv", //standard_mesh_opaque_tex3d_lit vert
+    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",             "standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
+    "vert_standard_mesh_opaque_texanim_scroll_lit",            "vert",             "standard_mesh_opaque_texanim_scroll_lit.vert.spv", //standard_mesh_opaque_texanim_scroll_lit vert
+    "vert_standard_mesh_opaque_texanim_chunk_lit",             "vert",             "standard_mesh_opaque_texanim_chunk_lit.vert.spv", //standard_mesh_opaque_texanim_chunk_lit vert
 
-    "vert_standard_mesh_opaque_texbumpmap_lit",                "vert",             "Assets/Shader/Common/standard_mesh_opaque_texbumpmap_lit.vert.spv", //standard_mesh_opaque_texbumpmap_lit vert
-    "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",             "Assets/Shader/Common/standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert   
-    "vert_standard_mesh_opaque_texparallaxmap_lit",            "vert",             "Assets/Shader/Common/standard_mesh_opaque_texparallaxmap_lit.vert.spv", //standard_mesh_opaque_texparallaxmap_lit vert
+    "vert_standard_mesh_opaque_texbumpmap_lit",                "vert",             "standard_mesh_opaque_texbumpmap_lit.vert.spv", //standard_mesh_opaque_texbumpmap_lit vert
+    "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",             "standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert   
+    "vert_standard_mesh_opaque_texparallaxmap_lit",            "vert",             "standard_mesh_opaque_texparallaxmap_lit.vert.spv", //standard_mesh_opaque_texparallaxmap_lit vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
 
@@ -390,18 +390,18 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     ///////////////////////////////////////// geom /////////////////////////////////////////
 
     ///////////////////////////////////////// frag /////////////////////////////////////////
-    "frag_standard_mesh_opaque_texsampler_lit",                "frag",              "Assets/Shader/Common/standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit frag
-    "frag_standard_mesh_opaque_tex1d_lit",                     "frag",              "Assets/Shader/Common/standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit frag
-    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "Assets/Shader/Common/standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
-    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "Assets/Shader/Common/standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
-    "frag_standard_mesh_opaque_tex3d_lit",                     "frag",              "Assets/Shader/Common/standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit frag
-    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "Assets/Shader/Common/standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
-    "frag_standard_mesh_opaque_texanim_scroll_lit",            "frag",              "Assets/Shader/Common/standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit frag
-    "frag_standard_mesh_opaque_texanim_chunk_lit",             "frag",              "Assets/Shader/Common/standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit frag
+    "frag_standard_mesh_opaque_texsampler_lit",                "frag",              "standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit frag
+    "frag_standard_mesh_opaque_tex1d_lit",                     "frag",              "standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit frag
+    "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
+    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
+    "frag_standard_mesh_opaque_tex3d_lit",                     "frag",              "standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit frag
+    "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
+    "frag_standard_mesh_opaque_texanim_scroll_lit",            "frag",              "standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit frag
+    "frag_standard_mesh_opaque_texanim_chunk_lit",             "frag",              "standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit frag
          
-    "frag_standard_mesh_opaque_texbumpmap_lit",                "frag",              "Assets/Shader/Common/standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit frag
-    "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "Assets/Shader/Common/standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
-    "frag_standard_mesh_opaque_texparallaxmap_lit",            "frag",              "Assets/Shader/Common/standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit frag
+    "frag_standard_mesh_opaque_texbumpmap_lit",                "frag",              "standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit frag
+    "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
+    "frag_standard_mesh_opaque_texparallaxmap_lit",            "frag",              "standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
 
@@ -1360,7 +1360,7 @@ void OpenGLES_011_Texturing::createShaderModules()
     {
         String shaderName = g_ShaderModulePaths[3 * i + 0];
         String shaderType = g_ShaderModulePaths[3 * i + 1];
-        String shaderPath = g_ShaderModulePaths[3 * i + 2];
+        String shaderPath = getShaderPathRelative(g_ShaderModulePaths[3 * i + 2]);
 
         GLESShader* pShader =  createShader(shaderName, shaderPath, shaderType);
         if (pShader == nullptr)

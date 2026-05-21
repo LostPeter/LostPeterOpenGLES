@@ -133,8 +133,8 @@ void main()
 {
 	int viewIndex = 0;
 	TransformConstants trans = passConsts.g_Transforms[viewIndex];
+    CameraConstants cam = passConsts.g_Cameras[viewIndex];
 	ObjectConstant obj = objectConsts.objs[gl_InstanceID];
-	MaterialConstant mat = materialConsts.mats[gl_InstanceID];
 
     fragWorldPos = obj.g_MatWorld * vec4(inPosition, 1.0);
     gl_Position = trans.mat4Proj * trans.mat4View * fragWorldPos;

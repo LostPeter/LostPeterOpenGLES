@@ -2795,9 +2795,14 @@ namespace LostPeterOpenGLES
                 {
                     //1> Load Texture From File
                     String pathTexture = GetAssetFullPath(pathAsset_Tex);
+                    CharVector content;
+                    if (!FUtil::LoadAssetFileContent(pathTexture.c_str(), content))
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createTexture1D: Failed to load texture from file, path: [%s] !", pathTexture.c_str());
+                        return false;
+                    }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, 0);
-                    int imageSize = width * height * texChannels;
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -2863,8 +2868,7 @@ namespace LostPeterOpenGLES
                         return false;
                     }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
-                    //int imageSize = width * height * texChannels;
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -2944,16 +2948,22 @@ namespace LostPeterOpenGLES
 					for (size_t i = 0; i < count_tex; i++)
 					{
 						const String& pathAsset_Tex = aPathAsset_Tex[i];
-						String pathTexture = GetAssetFullPath(pathAsset_Tex);
-						int width, height, texChannels;
-						stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
-						if (!pixels) 
-						{
-							s_DeletePixels(aPixels);
-							String msg = "*********************** OpenGLESWindow::createTexture2DArray: Failed to load texture image: " + pathTexture;
-							F_LogError("%s", msg.c_str());
-							throw std::runtime_error(msg);
-						}
+                        String pathTexture = GetAssetFullPath(pathAsset_Tex);
+                        CharVector content;
+                        if (!FUtil::LoadAssetFileContent(pathTexture.c_str(), content))
+                        {
+                            F_LogError("*********************** OpenGLESWindow::createTexture2DArray: Failed to load texture from file, path: [%s] !", pathTexture.c_str());
+                            return false;
+                        }
+                        int width, height, texChannels;
+                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                        if (!pixels) 
+                        {
+                            s_DeletePixels(aPixels);
+                            String msg = "*********************** OpenGLESWindow::createTexture2DArray: Failed to load texture image: " + pathTexture;
+                            F_LogError("%s", msg.c_str());
+                            throw std::runtime_error(msg);
+                        }
 
 						aWidth.push_back(width);
 						aHeight.push_back(height);
@@ -3040,9 +3050,14 @@ namespace LostPeterOpenGLES
 				{
 					//1> Load Texture From File
                     String pathTexture = GetAssetFullPath(pathAsset_Tex);
+                    CharVector content;
+                    if (!FUtil::LoadAssetFileContent(pathTexture.c_str(), content))
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createTexture3D: Failed to load texture from file, path: [%s] !", pathTexture.c_str());
+                        return false;
+                    }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, 0);
-                    int imageSize = width * height * texChannels;
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -3162,16 +3177,22 @@ namespace LostPeterOpenGLES
 					for (size_t i = 0; i < count_tex; i++)
 					{
 						const String& pathAsset_Tex = aPathAsset_Tex[i];
-						String pathTexture = GetAssetFullPath(pathAsset_Tex);
-						int width, height, texChannels;
-						stbi_uc* pixels = stbi_load(pathTexture.c_str(), &width, &height, &texChannels, STBI_rgb_alpha);
-						if (!pixels) 
-						{
-							s_DeletePixels(aPixels);
-							String msg = "*********************** OpenGLESWindow::createTextureCubeMap: Failed to load texture image: " + pathTexture;
-							F_LogError("%s", msg.c_str());
-							throw std::runtime_error(msg);
-						}
+                        String pathTexture = GetAssetFullPath(pathAsset_Tex);
+                        CharVector content;
+                        if (!FUtil::LoadAssetFileContent(pathTexture.c_str(), content))
+                        {
+                            F_LogError("*********************** OpenGLESWindow::createTextureCubeMap: Failed to load texture from file, path: [%s] !", pathTexture.c_str());
+                            return false;
+                        }
+                        int width, height, texChannels;
+                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                        if (!pixels) 
+                        {
+                            s_DeletePixels(aPixels);
+                            String msg = "*********************** OpenGLESWindow::createTextureCubeMap: Failed to load texture image: " + pathAsset_Tex;
+                            F_LogError("%s", msg.c_str());
+                            throw std::runtime_error(msg);
+                        }
 
 						aWidth.push_back(width);
 						aHeight.push_back(height);
