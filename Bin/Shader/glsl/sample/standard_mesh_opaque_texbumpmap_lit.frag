@@ -11,6 +11,7 @@
 
 #version 300 es
 precision highp float;
+precision mediump sampler2D;
 
 in vec4 fragWorldPos;
 in vec4 fragColor;

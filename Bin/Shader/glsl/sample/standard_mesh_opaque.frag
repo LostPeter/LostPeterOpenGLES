@@ -11,6 +11,7 @@
 
 #version 300 es
 precision mediump float;
+precision mediump sampler2D;
 
 in vec4 fragColor;
 in vec2 fragTexCoord;
