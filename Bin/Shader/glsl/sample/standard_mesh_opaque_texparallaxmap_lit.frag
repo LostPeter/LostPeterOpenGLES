@@ -398,7 +398,7 @@ void main()
 	vec3 V = normalize(cam.posEyeWorld - fragWorldPos.xyz);
     vec3 VT = normalize(fragTSEyePos - fragTSPos);
     vec3 N = vec3(0,0,1);
-    float parallaxMapFlag = mat.aTexLayers[1].indexTextureArray;  
+    float parallaxMapFlag = mat.aTexLayers[1].texSize.w;  
     vec2 uv = fragTexCoord;
     if (parallaxMapFlag == 1 ||
         parallaxMapFlag == 2)
@@ -410,8 +410,8 @@ void main()
     }
     else if (parallaxMapFlag == 3)
     {
-        float heightScale = mat.aTexLayers[1].texSpeedU;
-        float parallaxBias = mat.aTexLayers[1].texSpeedV;
+        float heightScale = mat.aTexLayers[1].texSpeed.x;
+        float parallaxBias = mat.aTexLayers[1].texSpeed.y;
         uv = Func_ParallaxMapping_Common(texSampler1, 
 										 uv, 
 										 VT, 
@@ -424,8 +424,8 @@ void main()
     }
     else if (parallaxMapFlag == 4)
     {
-        float heightScale = mat.aTexLayers[1].texSpeedU;
-        float numLayers = mat.aTexLayers[1].texSpeedW;
+        float heightScale = mat.aTexLayers[1].texSpeed.x;
+        float numLayers = mat.aTexLayers[1].texSpeed.z;
         uv = Func_ParallaxMapping_Steep(texSampler1, 
 										uv, 
 										VT, 
@@ -438,8 +438,8 @@ void main()
     }
     else if (parallaxMapFlag == 5)
     {
-        float heightScale = mat.aTexLayers[1].texSpeedU;
-        float numLayers = mat.aTexLayers[1].texSpeedW;
+        float heightScale = mat.aTexLayers[1].texSpeed.x;
+        float numLayers = mat.aTexLayers[1].texSpeed.z;
         uv = Func_ParallaxMapping_Occlusion(texSampler1, 
 											uv, 
 											VT, 

@@ -264,10 +264,10 @@ void main()
     vec3 N = normalize(fragWorldNormal);
 
 	//BumpMap, Need Sample four times to get dx,dy
-    float bumpMapType = mat.aTexLayers[1].indexTextureArray;
+    float bumpMapType = mat.aTexLayers[1].texSize.w;
     if (bumpMapType == 1)
     {
-        float bumpScale = mat.aTexLayers[1].texSpeedU;
+        float bumpScale = mat.aTexLayers[1].texSpeed.x;
         float bumpValueU = texture(texSampler1, fragTexCoord + vec2(-1.0 / mat.aTexLayers[1].texSize.x, 0.0)).r -
                        texture(texSampler1, fragTexCoord + vec2(1.0 / mat.aTexLayers[1].texSize.x, 0.0)).r;
         float bumpValueV = texture(texSampler1, fragTexCoord + vec2(0.0, -1.0 / mat.aTexLayers[1].texSize.y)).r -
