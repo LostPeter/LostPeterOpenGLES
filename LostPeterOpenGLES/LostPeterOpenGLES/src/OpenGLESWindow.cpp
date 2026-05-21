@@ -995,7 +995,7 @@ namespace LostPeterOpenGLES
         , cfg_isWireFrame(false)
         , cfg_isRotate(false)
 
-		
+
 		, cfg_isUseComputeShaderBeforeRender(false)
         , cfg_isUseComputeShaderAfterRender(false)
 
@@ -2802,7 +2802,7 @@ namespace LostPeterOpenGLES
                         return false;
                     }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -2868,7 +2868,7 @@ namespace LostPeterOpenGLES
                         return false;
                     }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -2956,7 +2956,7 @@ namespace LostPeterOpenGLES
                             return false;
                         }
                         int width, height, texChannels;
-                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
                         if (!pixels) 
                         {
                             s_DeletePixels(aPixels);
@@ -3057,7 +3057,7 @@ namespace LostPeterOpenGLES
                         return false;
                     }
                     int width, height, texChannels;
-                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                    stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
                     mipMapCount = static_cast<int>(std::floor(std::log2(std::max(width, height)))) + 1;
                     if (!pixels) 
                     {
@@ -3185,7 +3185,7 @@ namespace LostPeterOpenGLES
                             return false;
                         }
                         int width, height, texChannels;
-                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
+                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
                         if (!pixels) 
                         {
                             s_DeletePixels(aPixels);
