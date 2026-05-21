@@ -852,6 +852,7 @@ void OpenGLES_011_Texturing::cameraReset()
 
     this->pCamera->SetPos(FVector3(-4.0f, 24.0f, 3.6f));
     this->pCamera->SetEulerAngles(FVector3(80.0f, 0.0f, 0.0f));
+	this->pCamera->UpdateViewMatrix();
 }
 
 void OpenGLES_011_Texturing::loadModel_Custom()
