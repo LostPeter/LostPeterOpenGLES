@@ -2956,7 +2956,7 @@ namespace LostPeterOpenGLES
                             return false;
                         }
                         int width, height, texChannels;
-                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
+                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
                         if (!pixels) 
                         {
                             s_DeletePixels(aPixels);
@@ -3185,7 +3185,7 @@ namespace LostPeterOpenGLES
                             return false;
                         }
                         int width, height, texChannels;
-                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, 0);
+                        stbi_uc* pixels = stbi_load_from_memory((stbi_uc const *)content.data(), (int)content.size(), &width, &height, &texChannels, STBI_rgb_alpha);
                         if (!pixels) 
                         {
                             s_DeletePixels(aPixels);

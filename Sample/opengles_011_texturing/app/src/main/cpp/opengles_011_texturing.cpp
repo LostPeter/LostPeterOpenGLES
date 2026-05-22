@@ -1018,6 +1018,7 @@ void OpenGLES_011_Texturing::rebuildInstanceCBs(bool isCreateBuffer)
                             if (pTexture->texChunkMaxX > 0 &&
                                 pTexture->texChunkMaxY > 0)
                             {
+                                materialConstants.aTexLayers[p].texSize.w = 0;
                                 materialConstants.aTexLayers[p].texChunk.x = (float)pTexture->texChunkMaxX;
                                 materialConstants.aTexLayers[p].texChunk.y = (float)pTexture->texChunkMaxY;
                                 int indexX = pTexture->texChunkIndex % pTexture->texChunkMaxX;
