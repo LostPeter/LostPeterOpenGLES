@@ -481,8 +481,8 @@ namespace LostPeterOpenGLES
                                                     g_TextureBorderColors_Internal[i],
                                                     true,
                                                     true,
-                                                    isRenderTarget,
                                                     isGraphicsComputeShared,
+													isRenderTarget,
                                                     false,
                                                     FMath::ms_clBlack);
             pTexture->texChunkMaxX = 0;

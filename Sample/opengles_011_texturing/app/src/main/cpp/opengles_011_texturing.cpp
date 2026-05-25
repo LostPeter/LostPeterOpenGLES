@@ -1156,8 +1156,8 @@ void OpenGLES_011_Texturing::createGraphicsPipeline_Custom()
         }
 
         //poStatePipelineGraphics
-		String namePipelineGraphics_Stencil = "PipelineGraphics-" + pModelObject->nameObject;
-        pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(namePipelineGraphics_Stencil,
+		String namePipelineGraphics = "PipelineGraphics-" + pModelObject->nameObject;
+        pModelObject->poStatePipelineGraphics = createStatePipelineGraphics(namePipelineGraphics,
                                                                             pDescriptorSetLayout,
                                                                             pShaderVertex,
                                                                             nullptr,
