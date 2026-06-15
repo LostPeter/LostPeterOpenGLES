@@ -317,9 +317,6 @@ public:
 	ModelObjectPtrVector m_aModelObjects_Render;
 	ModelObjectPtrMap m_mapModelObjects;
 
-	String nameDescriptorSetLayoutLocal;
-	DescriptorSetLayout* pDescriptorSetLayoutLocal;
-
 	GLESShaderPtrVector m_aGLESShaderModules;
     GLESShaderPtrMap m_mapGLESShaderModules;
 
