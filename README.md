@@ -124,3 +124,20 @@ License:
 * sample006：Depth state test: depthTest and depthWrite
 
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_006_depth.png)
+
+### <007> opengles_007_stencil
+
+
+### <008> opengles_008_blend
+
+
+### <009> opengles_009_instancing
+
+
+### <010> opengles_010_lighting
+
+
+### <011> opengles_011_texturing
+
+
+### <012> opengles_012_shadering
