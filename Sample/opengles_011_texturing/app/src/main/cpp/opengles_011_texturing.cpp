@@ -796,7 +796,7 @@ bool OpenGLES_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTransformL
                                                                                  false);
 		if (this->pBufferVertexIndex == nullptr)
 		{
-			F_LogError("*********************** DirectX11_010_Lighting::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", this->nameMesh.c_str());
+			F_LogError("*********************** OpenGLES_011_Texturing::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", this->nameMesh.c_str());
 			return false;
 		}
 	}
@@ -809,7 +809,7 @@ bool OpenGLES_011_Texturing::ModelMesh::LoadMesh(bool isFlipY, bool isTransformL
                                                                        false);
 		if (this->pBufferVertex == nullptr)
 		{
-			F_LogError("*********************** DirectX11_010_Lighting::loadModel_VertexIndex: create buffer vertex failed: [%s] !", this->nameMesh.c_str());
+			F_LogError("*********************** OpenGLES_011_Texturing::loadModel_VertexIndex: create buffer vertex failed: [%s] !", this->nameMesh.c_str());
 			return false;
 		}
 	}
@@ -829,7 +829,6 @@ OpenGLES_011_Texturing::OpenGLES_011_Texturing(String name)
     this->cfg_isDepthStencil = true;
     this->cfg_isImgui = true;
     this->imgui_IsEnable = true;
-	this->cfg_isUseComputeShaderBeforeRender = true;
     this->cfg_isEditorCreate = true;
     this->cfg_isEditorGridShow = true;
     this->cfg_isEditorCameraAxisShow = true;

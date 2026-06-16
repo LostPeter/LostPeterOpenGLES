@@ -18,370 +18,231 @@
 #include <assimp/postprocess.h>
 
 
-/////////////////////////// Type ////////////////////////////////
-enum BumpMappingType
-{
-    BumpMapping_DiffuseColor = 0,       //0: DiffuseColor
-    BumpMapping_BumpMapping,            //1: NormalMapping
-
-};
-struct EnumBumpMappingDesc { BumpMappingType Value; const char* Name; const char* Tooltip; };
-static const EnumBumpMappingDesc s_aBumpMappingDescs[] =
-{
-    { BumpMapping_DiffuseColor,                   "DiffuseColor",                     "Diffuse Color" },
-    { BumpMapping_BumpMapping,                    "BumpMapping",                      "Bump Mapping" },
-};
-
-
-enum NormalMappingType
-{
-    NormalMapping_DiffuseColor = 0,     //0: DiffuseColor
-    NormalMapping_NormalColor,          //1: NormalColor
-    NormalMapping_NormalMapping,        //2: NormalMapping
-
-};
-struct EnumNormalMappingDesc { NormalMappingType Value; const char* Name; const char* Tooltip; };
-static const EnumNormalMappingDesc s_aNormalMappingDescs[] =
-{
-    { NormalMapping_DiffuseColor,                 "DiffuseColor",                     "Diffuse Color" },
-    { NormalMapping_NormalColor,                  "NormalColor",                      "Normal Color" },
-    { NormalMapping_NormalMapping,                "NormalMapping",                    "Normal Mapping" },
-};
-
-
-enum ParallaxMappingType
-{
-    ParallaxMapping_DiffuseColor = 0,           //0: DiffuseColor
-    ParallaxMapping_NormalColor,                //1: NormalColor
-    ParallaxMapping_NormalMapping,              //2: NormalMapping
-    ParallaxMapping_CommonParallaxMapping,      //3: CommonParallaxMapping
-    ParallaxMapping_SteepParallaxMapping,       //4: SteepParallaxMapping
-    ParallaxMapping_OcclusionParallaxMapping,   //5: OcclusionParallaxMapping
-
-};
-struct EnumParallaxMappingDesc { ParallaxMappingType Value; const char* Name; const char* Tooltip; };
-static const EnumParallaxMappingDesc s_aParallaxMappingDescs[] =
-{
-    { ParallaxMapping_DiffuseColor,                 "DiffuseColor",                     "Diffuse Color" },
-    { ParallaxMapping_NormalColor,                  "NormalColor",                      "Normal Color" },
-    { ParallaxMapping_NormalMapping,                "NormalMapping",                    "Normal Mapping" },
-    { ParallaxMapping_CommonParallaxMapping,        "CommonParallaxMapping",            "Common Parallax Mapping" },
-    { ParallaxMapping_SteepParallaxMapping,         "SteepParallaxMapping",             "Steep Parallax Mapping" },
-    { ParallaxMapping_OcclusionParallaxMapping,     "OcclusionParallaxMapping",         "Occlusion Parallax Mapping" },
-};
-
-
 
 /////////////////////////// Mesh ////////////////////////////////
-static const int g_MeshCount = 4;
+static const int g_MeshCount = 5;
 static const char* g_MeshPaths[5 * g_MeshCount] =
 {
     //Mesh Name         //Vertex Type                           //Mesh Type         //Mesh Geometry Type        //Mesh Path
+    "geo_triangle",     "Pos3Color4Normal3Tex2",                "geometry",         "EntityTriangle",           "", //geo_triangle
+
     "plane",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Common/plane.fbx", //plane
-    "plane_nt",         "Pos3Color4Normal3Tangent3Tex2",        "file",             "",                         "Mesh/Common/plane.fbx", //plane_nt
     "cube",             "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Common/cube.obj", //cube
     "sphere",           "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Common/sphere.fbx", //sphere
+    "bunny",            "Pos3Color4Normal3Tex2",                "file",             "",                         "Mesh/Model/bunny/bunny.obj", //bunny
 
 };
 static bool g_MeshIsFlipYs[g_MeshCount] = 
 {
+    true, //geo_triangle
+
     true, //plane
-    true, //plane_nt
     false, //cube
     false, //sphere
+    false, //bunny
 
 };
 static bool g_MeshIsTranformLocals[g_MeshCount] = 
 {
+    false, //geo_triangle
+
     false, //plane  
-    false, //plane_nt  
     false, //cube
     false, //sphere
+    false, //bunny
     
 };
 static FMatrix4 g_MeshTranformLocals[g_MeshCount] = 
 {
+    FMath::ms_mat4Unit, //geo_triangle
+
     FMath::ms_mat4Unit, //plane
-    FMath::ms_mat4Unit, //plane_nt
     FMath::ms_mat4Unit, //cube
     FMath::ms_mat4Unit, //sphere
+    FMath::ms_mat4Unit, //bunny
 
 };
 
 
 /////////////////////////// Texture /////////////////////////////
-static const int g_TextureCount = 20;
+static const int g_TextureCount = 11;
 static const char* g_TexturePaths[5 * g_TextureCount] = 
 {
-    //Texture Name                  //Texture Type  //TextureIsRenderTarget  //TextureIsGraphicsComputeShared  //Texture Path
-    "default_blackwhite_01",        "2D",           "false",                 "false",                          "Texture/Common/default_blackwhite.png", //default_blackwhite_01
-    "terrain",                      "2D",           "false",                 "false",                          "Texture/Common/terrain.png", //terrain
-    "default_white_01",             "2D",           "false",                 "false",                          "Texture/Common/default_white.bmp", //default_white_01
+    //Texture Name                      //Texture Type      //TextureIsRenderTarget     //TextureIsUnOrderedAccess          //Texture Path
+    "default_white",                    "2D",               "false",                    "false",                            "Texture/Common/default_white.bmp", //default_white  
+    "default_blackwhite_01",            "2D",               "false",                    "false",                            "Texture/Common/default_blackwhite.png", //default_blackwhite_01
+    "bricks_diffuse",                   "2D",               "false",                    "false",                            "Texture/Common/bricks_diffuse.png", //bricks_diffuse
+    "terrain",                          "2D",               "false",                    "false",                            "Texture/Common/terrain.png", //terrain
+    "texture2d",                        "2D",               "false",                    "false",                            "Texture/Common/texture2d.jpg", //texture2d
     
-////Basic-Level Texture Operation
-    "texturesampler_wrap",          "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_wrap
-    "texturesampler_mirror",        "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_mirror
-    "texturesampler_clamp",         "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_clamp
-    "texturesampler_border",        "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texturesampler_border
-    "texture1d",                    "2D",           "false",                 "false",                          "Texture/Common/texture1d.tga", //texture1d
-    "texture2d_01",                 "2D",           "false",                 "false",                          "Texture/Common/texture2d.jpg", //texture2d_01
-    "texture2darray",               "2DArray",      "false",                 "false",                          "Texture/Terrain/shore_sand_albedo.png;Texture/Terrain/moss_albedo.png;Texture/Terrain/rock_cliff_albedo.png;Texture/Terrain/cliff_albedo.png", //texture2darray
-    "texture3d",                    "3D",           "true",                  "false",                          "", //texture3d
-    "texturecubemap",               "CubeMap",      "false",                 "false",                          "Texture/Sky/texturecubemap_x_right.png;Texture/Sky/texturecubemap_x_left.png;Texture/Sky/texturecubemap_y_up.png;Texture/Sky/texturecubemap_y_down.png;Texture/Sky/texturecubemap_z_front.png;Texture/Sky/texturecubemap_z_back.png", //texturecubemap
-    "textureanimation_scroll",      "2DArray",      "false",                 "false",                          "Texture/Common/textureanimation1.png;Texture/Common/textureanimation2.png", //textureanimation_scroll
-    "textureanimation_chunk",       "2DArray",      "false",                 "false",                          "Texture/Common/textureanimation3.png", //textureanimation_chunk
+    "texturecubemap",                   "CubeMap",          "false",                    "false",                            "Texture/Sky/texturecubemap_x_right.png;Texture/Sky/texturecubemap_x_left.png;Texture/Sky/texturecubemap_y_up.png;Texture/Sky/texturecubemap_y_down.png;Texture/Sky/texturecubemap_z_front.png;Texture/Sky/texturecubemap_z_back.png", //texturecubemap
 
-////High-Level Texture Operation
-    "texturebumpmap_diffuse",       "2D",           "false",                 "false",                          "Texture/Common/bricks_diffuse.png", //texturebumpmap_diffuse
-    "texturebumpmap_bumpmap",       "2D",           "false",                 "false",                          "Texture/Common/bricks_bumpmap.png", //texturebumpmap_bumpmap
-    "texturenormalmap_normalmap",   "2D",           "false",                 "false",                          "Texture/Common/bricks_normalmap.png", //texturenormalmap_normalmap
+    "texture_terrain_diffuse",          "2DArray",          "false",                    "false",                            "Texture/Terrain/shore_sand_albedo.png;Texture/Terrain/moss_albedo.png;Texture/Terrain/rock_cliff_albedo.png;Texture/Terrain/cliff_albedo.png", //texture_terrain_diffuse
+    "texture_terrain_normal",           "2DArray",          "false",                    "false",                            "Texture/Terrain/shore_sand_norm.png;Texture/Terrain/moss_norm.tga;Texture/Terrain/rock_cliff_norm.tga;Texture/Terrain/cliff_norm.png", //texture_terrain_normal
+    "texture_terrain_control",          "2DArray",          "false",                    "false",                            "Texture/Terrain/terrain_control.png", //texture_terrain_control
 
-    "rocks_color",                  "2D",           "false",                 "false",                          "Texture/Common/rocks_color.png", //rocks_color
-    "rocks_normal_height",          "2D",           "false",                 "false",                          "Texture/Common/rocks_normal_height.png", //rocks_normal_height
-
-    "stonefloor_color_height",      "2D",           "false",                 "false",                          "Texture/Common/stonefloor_color_height.png", //stonefloor_color_height
+    "texture_rt_compute_copy_tex",      "2D",               "true",                     "true",                             "", //texture_rt_compute_copy_tex
+    "texture_rt_compute_copy_texarray", "2D",                "true",                    "true",                             "", //texture_rt_compute_copy_texarray
 
 };
 static int g_TextureChannels[g_TextureCount] = 
 {
+    4, //default_white
     4, //default_blackwhite_01
+    4, //bricks_diffuse
     4, //terrain
-    4, //default_white_01
+    4, //texture2d
 
-////Basic-Level Texture Operation
-    4, //texturesampler_wrap
-    4, //texturesampler_mirror
-    4, //texturesampler_clamp
-    4, //texturesampler_border
-    4, //texture1d
-    4, //texture2d_01
-    4, //texture2darray
-    1, //texture3d
     4, //texturecubemap
-    4, //textureanimation_scroll
-    4, //textureanimation_chunk
 
-////High-Level Texture Operation
-    4, //texturebumpmap_diffuse
-    4, //texturebumpmap_bumpmap
-    4, //texturenormalmap_normalmap
+    4, //texture_terrain_diffuse
+    4, //texture_terrain_normal
+    4, //texture_terrain_control
 
-    4, //rocks_color
-    4, //rocks_normal_height
-
-    4, //stonefloor_color_height
+    4, //texture_rt_compute_copy_tex
+    4, //texture_rt_compute_copy_texarray
 
 };
 static FTexturePixelFormatType g_TextureFormats[g_TextureCount] = 
 {
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white
     F_TexturePixelFormat_R8G8B8A8_SRGB, //default_blackwhite_01
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //bricks_diffuse
     F_TexturePixelFormat_R8G8B8A8_SRGB, //terrain
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //default_white_01
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d
 
-////Basic-Level Texture Operation
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_wrap
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_mirror
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_clamp
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturesampler_border
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture1d
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2d_01
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture2darray
-    F_TexturePixelFormat_R8_UNORM, //texture3d
     F_TexturePixelFormat_R8G8B8A8_SRGB, //texturecubemap
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //textureanimation_scroll
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //textureanimation_chunk
 
-////High-Level Texture Operation
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturebumpmap_diffuse
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //texturebumpmap_bumpmap
-    F_TexturePixelFormat_R8G8B8A8_UNORM, //texturenormalmap_normalmap
+    F_TexturePixelFormat_R8G8B8A8_SRGB, //texture_terrain_diffuse
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_terrain_normal
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_terrain_control
 
-    F_TexturePixelFormat_R8G8B8A8_SRGB, //rocks_color
-    F_TexturePixelFormat_R8G8B8A8_UNORM, //rocks_normal_height
-
-    F_TexturePixelFormat_R8G8B8A8_UNORM, //stonefloor_color_height
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_rt_compute_copy_tex
+    F_TexturePixelFormat_R8G8B8A8_UNORM, //texture_rt_compute_copy_texarray
 
 };
 static FTextureFilterType g_TextureFilters[2 * g_TextureCount] = 
 {
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //default_white
     F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //default_blackwhite_01
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //bricks_diffuse
     F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //terrain
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //default_white_01
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture2d
 
-////Basic-Level Texture Operation
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturesampler_wrap
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturesampler_mirror
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturesampler_clamp
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturesampler_border
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture1d
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture2d_01
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture2darray
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture3d
     F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturecubemap
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //textureanimation_scroll
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //textureanimation_chunk
 
-////High-Level Texture Operation
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturebumpmap_diffuse
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturebumpmap_bumpmap
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texturenormalmap_normalmap
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture_terrain_diffuse
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture_terrain_normal
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture_terrain_control
 
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //rocks_color
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //rocks_normal_height
-
-    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //stonefloor_color_height
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture_rt_compute_copy_tex
+    F_TextureFilter_Bilinear, F_TextureFilter_Bilinear, //texture_rt_compute_copy_texarray
 
 };
 static FTextureAddressingType g_TextureAddressings[g_TextureCount] = 
 {
+    F_TextureAddressing_Clamp, //default_white
     F_TextureAddressing_Clamp, //default_blackwhite_01
+    F_TextureAddressing_Clamp, //bricks_diffuse
     F_TextureAddressing_Clamp, //terrain
-    F_TextureAddressing_Clamp, //default_white_01
+    F_TextureAddressing_Clamp, //texture2d
 
-////Basic-Level Texture Operation
-    F_TextureAddressing_Wrap, //texturesampler_wrap
-    F_TextureAddressing_Mirror, //texturesampler_mirror
-    F_TextureAddressing_Clamp, //texturesampler_clamp
-    F_TextureAddressing_Border, //texturesampler_border
-    F_TextureAddressing_Clamp, //texture1d
-    F_TextureAddressing_Clamp, //texture2d_01
-    F_TextureAddressing_Clamp, //texture2darray
-    F_TextureAddressing_Clamp, //texture3d
     F_TextureAddressing_Wrap, //texturecubemap
-    F_TextureAddressing_Wrap, //textureanimation_scroll
-    F_TextureAddressing_Wrap, //textureanimation_chunk
 
-////High-Level Texture Operation
-    F_TextureAddressing_Clamp, //texturebumpmap_diffuse
-    F_TextureAddressing_Clamp, //texturebumpmap_bumpmap
-    F_TextureAddressing_Clamp, //texturenormalmap_normalmap
+    F_TextureAddressing_Clamp, //texture_terrain_diffuse
+    F_TextureAddressing_Clamp, //texture_terrain_normal
+    F_TextureAddressing_Clamp, //texture_terrain_control
 
-    F_TextureAddressing_Clamp, //rocks_color
-    F_TextureAddressing_Clamp, //rocks_normal_height
-
-    F_TextureAddressing_Clamp, //stonefloor_color_height
+    F_TextureAddressing_Clamp, //texture_rt_compute_copy_tex
+    F_TextureAddressing_Clamp, //texture_rt_compute_copy_texarray
 
 };
 static FColor g_TextureBorderColors[g_TextureCount] = 
 {
+    FColor(0, 0, 0, 1), //default_white
     FColor(0, 0, 0, 1), //default_blackwhite_01
+    FColor(0, 0, 0, 1), //bricks_diffuse
     FColor(0, 0, 0, 1), //terrain
-    FColor(0, 0, 0, 1), //default_white_01
+    FColor(0, 0, 0, 1), //texture2d
 
-////Basic-Level Texture Operation
-    FColor(0, 0, 0, 1), //texturesampler_wrap
-    FColor(0, 0, 0, 1), //texturesampler_mirror
-    FColor(0, 0, 0, 1), //texturesampler_clamp
-    FColor(0, 0, 0, 1), //texturesampler_border
-    FColor(0, 0, 0, 1), //texture1d
-    FColor(0, 0, 0, 1), //texture2d_01
-    FColor(0, 0, 0, 1), //texture2darray
-    FColor(0, 0, 0, 1), //texture3d
     FColor(0, 0, 0, 1), //texturecubemap
-    FColor(0, 0, 0, 1), //textureanimation_scroll
-    FColor(0, 0, 0, 1), //textureanimation_chunk
 
-////High-Level Texture Operation
-    FColor(0, 0, 0, 1), //texturebumpmap_diffuse
-    FColor(0, 0, 0, 1), //texturebumpmap_bumpmap
-    FColor(0, 0, 0, 1), //texturenormalmap_normalmap
+    FColor(0, 0, 0, 1), //texture_terrain_diffuse
+    FColor(0, 0, 0, 1), //texture_terrain_normal
+    FColor(0, 0, 0, 1), //texture_terrain_control
 
-    FColor(0, 0, 0, 1), //rocks_color
-    FColor(0, 0, 0, 1), //rocks_normal_height
-
-    FColor(0, 0, 0, 1), //stonefloor_color_height
+    FColor(0, 0, 0, 1), //texture_rt_compute_copy_tex
+    FColor(0, 0, 0, 1), //texture_rt_compute_copy_texarray
 
 };
 static int g_TextureSizes[3 * g_TextureCount] = 
 {
+     64,     64,    1, //default_white
     512,    512,    1, //default_blackwhite_01
+    512,    512,    1, //bricks_diffuse
     512,    512,    1, //terrain
-     64,     64,    1, //default_white_01
+    512,    512,    1, //texture2d
 
-////Basic-Level Texture Operation
-    512,    512,    1, //texturesampler_wrap
-    512,    512,    1, //texturesampler_mirror
-    512,    512,    1, //texturesampler_clamp
-    512,    512,    1, //texturesampler_border
-     64,      1,    1, //texture1d
-    512,    512,    1, //texture2d_01
-   1024,   1024,    1, //texture2darray
-    128,    128,    128, //texture3d
     512,    512,    1, //texturecubemap
-     64,     64,    1, //textureanimation_scroll
-    512,    512,    1, //textureanimation_chunk
 
-////High-Level Texture Operation
-    512,    512,    1, //texturebumpmap_diffuse
-    512,    512,    1, //texturebumpmap_bumpmap
-    512,    512,    1, //texturenormalmap_normalmap
+   1024,   1024,    1, //texture_terrain_diffuse
+   1024,   1024,    1, //texture_terrain_normal
+    512,    512,    1, //texture_terrain_control
 
-    1024,  1024,    1, //rocks_color
-    1024,  1024,    1, //rocks_normal_height
-
-    1024,  1024,    1, //stonefloor_color_height
+   1024,   1024,    1, //texture_rt_compute_copy_tex
+   2048,   2048,    1, //texture_rt_compute_copy_texarray
 
 };
 static float g_TextureAnimChunks[2 * g_TextureCount] = 
 {
+    0,    0, //default_white
     0,    0, //default_blackwhite_01
+    0,    0, //bricks_diffuse
     0,    0, //terrain
-    0,    0, //default_white_01
+    0,    0, //texture2d
 
-////Basic-Level Texture Operation
-    0,    0, //texturesampler_wrap
-    0,    0, //texturesampler_mirror
-    0,    0, //texturesampler_clamp
-    0,    0, //texturesampler_border
-    0,    0, //texture1d
-    0,    0, //texture2d_01
-    0,    0, //texture2darray
-    0,    0, //texture3d
     0,    0, //texturecubemap
-    0,    0, //textureanimation_scroll
-    4,    8, //textureanimation_chunk
 
-////High-Level Texture Operation
-    0,    0, //texturebumpmap_diffuse
-    0,    0, //texturebumpmap_bumpmap
-    0,    0, //texturenormalmap_normalmap
+    0,    0, //texture_terrain_diffuse
+    0,    0, //texture_terrain_normal
+    0,    0, //texture_terrain_control
 
-    0,    0, //rocks_color
-    0,    0, //rocks_normal_height
-
-    0,    0, //stonefloor_color_height
+    0,    0, //texture_rt_compute_copy_tex
+    0,    0, //texture_rt_compute_copy_texarray
 
 };
 
 
 /////////////////////////// DescriptorSetLayout /////////////////
-static const int g_DescriptorSetLayoutCount = 2;
+static const int g_DescriptorSetLayoutCount = 7;
 static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 {
     "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",
     "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TextureFS",
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TextureFS-TextureFS",
+    
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TessellationConstants",
+
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-GeometryConstants",
+
+    "TextureCopyConstants-TextureCSR-TextureCSRW",
+
 };
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 22;
+static const int g_ShaderCount = 8;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
-    //name                                                     //type              //path
+    //name                                                     //type               //path
 
     ///////////////////////////////////////// vert /////////////////////////////////////////
-    "vert_standard_mesh_opaque_texsampler_lit",                "vert",             "standard_mesh_opaque_texsampler_lit.vert.spv", //standard_mesh_opaque_texsampler_lit vert
-    "vert_standard_mesh_opaque_tex1d_lit",                     "vert",             "standard_mesh_opaque_tex1d_lit.vert.spv", //standard_mesh_opaque_tex1d_lit vert
-    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",             "standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
-    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",             "standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
-    "vert_standard_mesh_opaque_tex3d_lit",                     "vert",             "standard_mesh_opaque_tex3d_lit.vert.spv", //standard_mesh_opaque_tex3d_lit vert
-    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",             "standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
-    "vert_standard_mesh_opaque_texanim_scroll_lit",            "vert",             "standard_mesh_opaque_texanim_scroll_lit.vert.spv", //standard_mesh_opaque_texanim_scroll_lit vert
-    "vert_standard_mesh_opaque_texanim_chunk_lit",             "vert",             "standard_mesh_opaque_texanim_chunk_lit.vert.spv", //standard_mesh_opaque_texanim_chunk_lit vert
+    "vert_standard_mesh_opaque_tex2d_lit",                     "vert",              "standard_mesh_opaque_tex2d_lit.vert.spv", //standard_mesh_opaque_tex2d_lit vert
+    "vert_standard_mesh_opaque_texcubemap_lit",                "vert",              "standard_mesh_opaque_texcubemap_lit.vert.spv", //standard_mesh_opaque_texcubemap_lit vert
+    "vert_standard_mesh_opaque_tex2darray_lit",                "vert",              "standard_mesh_opaque_tex2darray_lit.vert.spv", //standard_mesh_opaque_tex2darray_lit vert
 
-    "vert_standard_mesh_opaque_texbumpmap_lit",                "vert",             "standard_mesh_opaque_texbumpmap_lit.vert.spv", //standard_mesh_opaque_texbumpmap_lit vert
-    "vert_standard_mesh_opaque_texnormalmap_lit",              "vert",             "standard_mesh_opaque_texnormalmap_lit.vert.spv", //standard_mesh_opaque_texnormalmap_lit vert   
-    "vert_standard_mesh_opaque_texparallaxmap_lit",            "vert",             "standard_mesh_opaque_texparallaxmap_lit.vert.spv", //standard_mesh_opaque_texparallaxmap_lit vert
+    "vert_standard_terrain_opaque_lit",                        "vert",              "standard_terrain_opaque_lit.vert.spv", //standard_terrain_opaque_lit vert
 
     ///////////////////////////////////////// tesc /////////////////////////////////////////
 
@@ -390,302 +251,253 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     ///////////////////////////////////////// geom /////////////////////////////////////////
 
     ///////////////////////////////////////// frag /////////////////////////////////////////
-    "frag_standard_mesh_opaque_texsampler_lit",                "frag",              "standard_mesh_opaque_texsampler_lit.frag.spv", //standard_mesh_opaque_texsampler_lit frag
-    "frag_standard_mesh_opaque_tex1d_lit",                     "frag",              "standard_mesh_opaque_tex1d_lit.frag.spv", //standard_mesh_opaque_tex1d_lit frag
     "frag_standard_mesh_opaque_tex2d_lit",                     "frag",              "standard_mesh_opaque_tex2d_lit.frag.spv", //standard_mesh_opaque_tex2d_lit frag
-    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
-    "frag_standard_mesh_opaque_tex3d_lit",                     "frag",              "standard_mesh_opaque_tex3d_lit.frag.spv", //standard_mesh_opaque_tex3d_lit frag
     "frag_standard_mesh_opaque_texcubemap_lit",                "frag",              "standard_mesh_opaque_texcubemap_lit.frag.spv", //standard_mesh_opaque_texcubemap_lit frag
-    "frag_standard_mesh_opaque_texanim_scroll_lit",            "frag",              "standard_mesh_opaque_texanim_scroll_lit.frag.spv", //standard_mesh_opaque_texanim_scroll_lit frag
-    "frag_standard_mesh_opaque_texanim_chunk_lit",             "frag",              "standard_mesh_opaque_texanim_chunk_lit.frag.spv", //standard_mesh_opaque_texanim_chunk_lit frag
-         
-    "frag_standard_mesh_opaque_texbumpmap_lit",                "frag",              "standard_mesh_opaque_texbumpmap_lit.frag.spv", //standard_mesh_opaque_texbumpmap_lit frag
-    "frag_standard_mesh_opaque_texnormalmap_lit",              "frag",              "standard_mesh_opaque_texnormalmap_lit.frag.spv", //standard_mesh_opaque_texnormalmap_lit frag
-    "frag_standard_mesh_opaque_texparallaxmap_lit",            "frag",              "standard_mesh_opaque_texparallaxmap_lit.frag.spv", //standard_mesh_opaque_texparallaxmap_lit frag
+    "frag_standard_mesh_opaque_tex2darray_lit",                "frag",              "standard_mesh_opaque_tex2darray_lit.frag.spv", //standard_mesh_opaque_tex2darray_lit frag
+
+    "frag_standard_terrain_opaque_lit",                        "frag",              "standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
-
 
 };
 
 
 /////////////////////////// Object //////////////////////////////
-static const int g_ObjectCount = 18;
-static const char* g_ObjectConfigs[8 * g_ObjectCount] = 
+static const int g_ObjectCount = 15;
+static const char* g_ObjectConfigs[5 * g_ObjectCount] = 
 {
-    //Object Name                       //Mesh Path                    //Texture VS            //TextureTESC                    //TextureTESE               //TextureGS           //Texture FS                                                         //Texture CS
-    "ground",                           "plane",                       "",                     "",                              "",                         "",                   "terrain",                                                           "", //ground
+    //Object Name                               //Mesh Name         //Texture VS            //Texture FS                                                                    //Texture CS
+    "textureCubeMap_SkyBox",                    "cube",             "",                     "texturecubemap",                                                               "", //textureCubeMap_SkyBox
+    "texture2Darray_TerrainDiffuse",            "plane",            "",                     "texture_terrain_diffuse",                                                      "", //texture2Darray_TerrainDiffuse
+    "texture2Darray_TerrainNormal",             "plane",            "",                     "texture_terrain_normal",                                                       "", //texture2Darray_TerrainNormal
+    "texture2Darray_TerrainControl",            "plane",            "",                     "texture_terrain_control",                                                      "", //texture2Darray_TerrainControl
 
-////Basic-Level Texture Operation
-    "textureSampler_Wrap",              "plane",                       "",                     "",                              "",                         "",                   "texturesampler_wrap",                                                "", //textureSampler_Wrap
-    "textureSampler_Mirror",            "plane",                       "",                     "",                              "",                         "",                   "texturesampler_mirror",                                              "", //textureSampler_Mirror
-    "textureSampler_Clamp",             "plane",                       "",                     "",                              "",                         "",                   "texturesampler_clamp",                                               "", //textureSampler_Clamp
-    "textureSampler_Border",            "plane",                       "",                     "",                              "",                         "",                   "texturesampler_border",                                              "", //textureSampler_Border
-    "texture1D",                        "plane",                       "",                     "",                              "",                         "",                   "texture1d",                                                          "", //texture1D
-    "texture2D",                        "plane",                       "",                     "",                              "",                         "",                   "texture2d_01",                                                       "", //texture2D
-    "texture2Darray",                   "plane",                       "",                     "",                              "",                         "",                   "texture2darray",                                                     "", //texture2Darray
-    "texture3D",                        "plane",                       "",                     "",                              "",                         "",                   "texture3d",                                                          "", //texture3D
-    "textureCubeMap_SkyBox",            "cube",                        "",                     "",                              "",                         "",                   "texturecubemap",                                                     "", //textureCubeMap_SkyBox
-    "textureCubeMap_Sphere",            "sphere",                      "",                     "",                              "",                         "",                   "texturecubemap",                                                     "", //textureCubeMap_Sphere
-    "textureAnimation_Scroll",          "plane",                       "",                     "",                              "",                         "",                   "textureanimation_scroll",                                            "", //textureAnimation_Scroll
-    "textureAnimation_Chunk",           "plane",                       "",                     "",                              "",                         "",                   "textureanimation_chunk",                                             "", //textureAnimation_Chunk
+    "compute_CopyTexture",                      "plane",            "",                     "texture_rt_compute_copy_tex",                                                  "default_blackwhite_01;texture_rt_compute_copy_tex", //compute_CopyTexture
+    "compute_CopyTextureArray",                 "plane",            "",                     "texture_rt_compute_copy_texarray",                                             "texture_terrain_diffuse;texture_rt_compute_copy_texarray", //compute_CopyTextureArray
 
-////High-Level Texture Operation
-    "textureOriginal",                  "plane",                       "",                     "",                              "",                         "",                   "texturebumpmap_diffuse",                                             "", //textureOriginal    
-    "textureBumpMap",                   "plane",                       "",                     "",                              "",                         "",                   "texturebumpmap_diffuse;texturebumpmap_bumpmap",                      "", //textureBumpMap
-    "textureNormalMap",                 "plane_nt",                    "",                     "",                              "",                         "",                   "texturebumpmap_diffuse;texturenormalmap_normalmap",                  "", //textureNormalMap
-    "textureParallaxMap",               "plane_nt",                    "",                     "",                              "",                         "",                   "rocks_color;rocks_normal_height",                                    "", //textureParallaxMap
-    "textureOriginal2",           		"plane",                       "",                     "",                              "",  						"",                   "texturebumpmap_diffuse",                                    			"", //textureOriginal2
+    "tessellation_passthrough",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_passthrough
+    "tessellation_triangle_integer",            "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_integer
+    "tessellation_triangle_fractional_even",    "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_fractional_even
+    "tessellation_triangle_fractional_odd",     "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_fractional_odd
+    "tessellation_triangle_pow2",               "geo_triangle",     "",                     "bricks_diffuse",                                                               "", //tessellation_triangle_pow2
+    "tessellation_pntriangles",                 "plane",            "",                     "bricks_diffuse",                                                               "", //tessellation_pntriangles
+
+    "geometry_show",                            "bunny",            "",                     "default_white",                                                                "", //geometry_show 
+    "geometry_normal",                          "bunny",            "",                     "",                                                                             "", //geometry_normal         
+
+    "terrain",                                  "plane",            "",                     "texture_terrain_diffuse;texture_terrain_normal;texture_terrain_control",       "", //terrain
 
 };
-
-static const String g_Object_Texture2DArray = "texture2Darray";
-static const String g_Object_Texture3D = "texture3D";
-static const String g_Object_TextureAnimation_Scroll = "textureAnimation_Scroll";
-static const String g_Object_TextureAnimation_Chunk = "textureAnimation_Chunk";
-static const String g_Object_TextureOriginal = "textureOriginal";
-static const String g_Object_TextureBumpMap = "textureBumpMap";
-static const String g_Object_TextureNormalMap = "textureNormalMap";
-static const String g_Object_TextureParallaxMap = "textureParallaxMap";
-
 static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] = 
 {
-    //vert                                                  //tesc                                          //tese                                          //geom                      //frag                                                  //comp
+    //vert                                                  //tesc                                                  //tese                                          			//geom                                  //frag                                                  //comp
+    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainDiffuse
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
+    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
+
+	"vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //compute_CopyTexture
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //compute_CopyTextureArray
+
+
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",       			                                        "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_passthrough
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",   			                                            "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_triangle_integer
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                                         "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_triangle_fractional_even
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                                         "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_triangle_fractional_odd
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",          		                                        "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_triangle_pow2
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",       			                                        "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_pntriangles
+
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //geometry_show
     
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //ground
+	"vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",        								"frag_standard_mesh_opaque_tex2d_lit",                  "", //geometry_normal
 
-////Basic-Level Texture Operation
-    "vert_standard_mesh_opaque_texsampler_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Wrap 
-    "vert_standard_mesh_opaque_texsampler_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Mirror 
-    "vert_standard_mesh_opaque_texsampler_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Clamp 
-    "vert_standard_mesh_opaque_texsampler_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texsampler_lit",             "", //textureSampler_Border 
-    "vert_standard_mesh_opaque_tex1d_lit",                  "",                                             "",                                             "",                         "frag_standard_mesh_opaque_tex1d_lit",                  "", //texture1D 
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //texture2D 
-    "vert_standard_mesh_opaque_tex2darray_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray 
-    "vert_standard_mesh_opaque_tex3d_lit",                  "",                                             "",                                             "",                         "frag_standard_mesh_opaque_tex3d_lit",                  "", //texture3D 
-    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_SkyBox 
-    "vert_standard_mesh_opaque_texcubemap_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texcubemap_lit",             "", //textureCubeMap_Sphere 
-    "vert_standard_mesh_opaque_texanim_scroll_lit",         "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texanim_scroll_lit",         "", //textureAnimation_Scroll 
-    "vert_standard_mesh_opaque_texanim_chunk_lit",          "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texanim_chunk_lit",          "", //textureAnimation_Chunk 
-
-////High-Level Texture Operation
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                             "",                                             "",                         "frag_standard_mesh_opaque_tex2d_lit",                  "", //textureOriginal 
-    "vert_standard_mesh_opaque_texbumpmap_lit",             "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texbumpmap_lit",             "", //textureBumpMap 
-    "vert_standard_mesh_opaque_texnormalmap_lit",           "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texnormalmap_lit",           "", //textureNormalMap 
-    "vert_standard_mesh_opaque_texparallaxmap_lit",         "",                                             "",                                             "",                         "frag_standard_mesh_opaque_texparallaxmap_lit",         "", //textureParallaxMap 
-
+    "vert_standard_terrain_opaque_lit",                     "",                                                     "",                                             			"",                                     "frag_standard_terrain_opaque_lit",                     "", //terrain
     
-    "vert_standard_mesh_opaque_tex2d_lit",     				"",      										"",      										"",                         "frag_standard_mesh_opaque_tex2d_lit",     				"", //textureOriginal2
-
 };
 static const char* g_ObjectNameDescriptorSetLayouts[2 * g_ObjectCount] = 
 {
     //Pipeline Graphics                                                 //Pipeline Compute
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //ground 
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //textureCubeMap_SkyBox
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //texture2Darray_TerrainDiffuse
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //texture2Darray_TerrainNormal
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //texture2Darray_TerrainControl
 
-////Basic-Level Texture Operation
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureSampler_Wrap 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureSampler_Mirror 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureSampler_Clamp 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureSampler_Border 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //texture1D 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //texture2D 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //texture2Darray
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //texture3D
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureCubeMap_SkyBox
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureCubeMap_Sphere
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureAnimation_Scroll
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureAnimation_Chunk
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "TextureCopyConstants-TextureCSR-TextureCSRW", //compute_CopyTexture
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "TextureCopyConstants-TextureCSR-TextureCSRW", //compute_CopyTextureArray
 
-////High-Level Texture Operation
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                                      "", //textureOriginal 
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TextureFS",                            "", //textureBumpMap
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TextureFS",                            "", //textureNormalMap
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TextureFS",                            "", //textureParallaxMap
-    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",    									"", //textureOriginal2
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //tessellation_passthrough
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //tessellation_triangle_integer
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //tessellation_triangle_fractional_even
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //tessellation_triangle_fractional_odd
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //tessellation_triangle_pow2
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //tessellation_pntriangles
+
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS",                          "", //geometry_show
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-GeometryConstants",                  "", //geometry_normal
+
+    "PassConstants-ObjectConstants-MaterialConstants-InstanceConstants-TextureFS-TextureFS-TextureFS",      "", //terrain
 
 };
 static float g_instanceGap = 1.2f;
 static int g_ObjectInstanceExtCount[g_ObjectCount] =
 {
-    0, //ground
+    0, //textureCubeMap_SkyBox
+    0, //texture2Darray_TerrainDiffuse 
+    0, //texture2Darray_TerrainNormal 
+    0, //texture2Darray_TerrainControl 
 
-////Basic-Level Texture Operation
-    5, //textureSampler_Wrap 
-    5, //textureSampler_Mirror 
-    5, //textureSampler_Clamp 
-    5, //textureSampler_Border 
-    5, //texture1D 
-    5, //texture2D 
-    5, //texture2Darray 
-    5, //texture3D 
-    0, //textureCubeMap_SkyBox 
-    5, //textureCubeMap_Sphere 
-    5, //textureAnimation_Scroll
-    5, //textureAnimation_Chunk
+    0, //compute_CopyTexture 
+    0, //compute_CopyTextureArray 
 
-////High-Level Texture Operation
-    5, //textureOriginal 
-    5, //textureBumpMap 
-    5, //textureNormalMap 
-    5, //textureParallaxMap 
-    0, //textureOriginal2 
+    0, //tessellation_passthrough 
+    0, //tessellation_triangle_integer 
+    0, //tessellation_triangle_fractional_even 
+    0, //tessellation_triangle_fractional_odd 
+    0, //tessellation_triangle_pow2 
+    0, //tessellation_pntriangles 
+
+    0, //geometry_show 
+    0, //geometry_normal 
+
+    0, //terrain 
 
 };
 static FVector3 g_ObjectTranforms[3 * g_ObjectCount] = 
 {   
-    FVector3(   0, -0.1,    0),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //ground
+    FVector3(   0,    0,   0),     FVector3(     0,  0,  0),    FVector3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
+    FVector3(-2.0,  1.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainDiffuse
+    FVector3(   0,  1.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainNormal
+    FVector3( 2.0,  1.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //texture2Darray_TerrainControl
 
-////Basic-Level Texture Operation
-    FVector3(   0,  0.1,  0.4),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Wrap
-    FVector3(   0,  0.1,  1.5),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Mirror
-    FVector3(   0,  0.1,  2.6),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Clamp
-    FVector3(   0,  0.1,  3.7),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureSampler_Border
-    FVector3(   0,  0.1,  4.8),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture1D
-    FVector3(   0,  0.1,  5.9),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture2D
-    FVector3(   0,  0.1,  7.0),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture2Darray
-    FVector3(   0,  0.1,  8.1),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //texture3D
-    FVector3(   0,    0,    0),     FVector3(     0,  0,  0),    FVector3( 100.0f,  100.0f,  100.0f), //textureCubeMap_SkyBox
-    FVector3(   0,  0.4,  9.2),     FVector3(     0,  0,  0),    FVector3( 0.005f,  0.005f,  0.005f), //textureCubeMap_Sphere
-    FVector3(   0,  0.1, 10.3),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureAnimation_Scroll
-    FVector3(   0,  0.1, 11.4),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureAnimation_Chunk
+    FVector3(   0,  2.2,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //compute_CopyTexture
+    FVector3(   0,  3.4,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //compute_CopyTextureArray
 
-////High-Level Texture Operation
-    FVector3(   0,  0.1, 12.5),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureOriginal
-    FVector3(   0,  0.1, 13.6),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureBumpMap
-    FVector3(   0,  0.1, 14.7),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureNormalMap
-    FVector3(   0,  0.1, 15.8),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureParallaxMap
-    FVector3(   0,  0.1, 16.9),     FVector3(     0,  0,  0),    FVector3( 0.01f,   0.01f,    0.01f), //textureOriginal2
+    FVector3(   0,  4.6,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //tessellation_passthrough
+    FVector3(-2.0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_integer
+    FVector3(-1.0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_even
+    FVector3(   0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_fractional_odd
+    FVector3( 1.0,  5.8,   0),     FVector3(     0,  0,  0),    FVector3(  1.0f,    1.0f,    1.0f), //tessellation_triangle_pow2
+    FVector3(   0,  7.0,   0),     FVector3(   -90,  0,  0),    FVector3( 0.01f,   0.01f,   0.01f), //tessellation_pntriangles
+
+    FVector3(   0,   0,  -10),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //geometry_show
+    FVector3(   0,   0,  -10),     FVector3(     0, 180, 0),    FVector3( 1.0f,   1.0f,   1.0f), //geometry_normal
+
+    FVector3(   0, -0.1,   0),     FVector3(     0,  0,  0),    FVector3( 1.0f,   1.0f,   1.0f), //terrain
 
 };
 static bool g_ObjectIsTransparents[g_ObjectCount] = 
 {
-    false, //ground
-
-////Basic-Level Texture Operation
-    false, //textureSampler_Wrap
-    false, //textureSampler_Mirror
-    false, //textureSampler_Clamp
-    false, //textureSampler_Border
-    false, //texture1D
-    false, //texture2D
-    false, //texture2Darray
-    false, //texture3D
     false, //textureCubeMap_SkyBox
-    false, //textureCubeMap_Sphere
-    false, //textureAnimation_Scroll
-    false, //textureAnimation_Chunk
+    false, //texture2Darray_TerrainDiffuse
+    false, //texture2Darray_TerrainNormal
+    false, //texture2Darray_TerrainControl
 
-////High-Level Texture Operation
-    false, //textureOriginal
-    false, //textureBumpMap
-    false, //textureNormalMap
-    false, //textureParallaxMap
-    false, //textureOriginal2
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
+
+    false, //tessellation_passthrough
+    false, //tessellation_triangle_integer
+    false, //tessellation_triangle_fractional_even
+    false, //tessellation_triangle_fractional_odd
+    false, //tessellation_triangle_pow2
+    false, //tessellation_pntriangles
+
+    false, //geometry_show
+    false, //geometry_normal
+
+    false, //terrain
 
 };
 static bool g_ObjectIsShows[] = 
 {
-    true, //ground
-
-////Basic-Level Texture Operation
-    true, //textureSampler_Wrap
-    true, //textureSampler_Mirror
-    true, //textureSampler_Clamp
-    true, //textureSampler_Border
-    true, //texture1D
-    true, //texture2D
-    true, //texture2Darray
-    true, //texture3D
     true, //textureCubeMap_SkyBox
-    true, //textureCubeMap_Sphere
-    true, //textureAnimation_Scroll
-    true, //textureAnimation_Chunk
+    true, //texture2Darray_TerrainDiffuse
+    true, //texture2Darray_TerrainNormal
+    true, //texture2Darray_TerrainControl
 
-////High-Level Texture Operation
-    true, //textureOriginal
-    true, //textureBumpMap
-    true, //textureNormalMap
-    true, //textureParallaxMap
-    true, //textureOriginal2
+    true, //compute_CopyTexture
+    true, //compute_CopyTextureArray
+
+    true, //tessellation_passthrough
+    true, //tessellation_triangle_integer
+    true, //tessellation_triangle_fractional_even
+    true, //tessellation_triangle_fractional_odd
+    true, //tessellation_triangle_pow2
+    true, //tessellation_pntriangles
+
+    true, //geometry_show
+    true, //geometry_normal
+
+    true, //terrain
 
 };
 static GLenum g_ObjectTypeCulling[] = 
 {
-    GL_BACK, //ground
-
-////Basic-Level Texture Operation
-    GL_BACK, //textureSampler_Wrap
-    GL_BACK, //textureSampler_Mirror
-    GL_BACK, //textureSampler_Clamp
-    GL_BACK, //textureSampler_Border
-    GL_BACK, //texture1D
-    GL_BACK, //texture2D
-    GL_BACK, //texture2Darray
-    GL_BACK, //texture3D
     GL_FRONT, //textureCubeMap_SkyBox
-    GL_BACK, //textureCubeMap_Sphere
-    GL_BACK, //textureAnimation_Scroll
-    GL_BACK, //textureAnimation_Chunk
+	GL_BACK, //texture2Darray_TerrainDiffuse
+    GL_BACK, //texture2Darray_TerrainNormal
+    GL_BACK, //texture2Darray_TerrainControl
 
-////High-Level Texture Operation
-    GL_BACK, //textureOriginal
-    GL_BACK, //textureBumpMap
-    GL_BACK, //textureNormalMap
-    GL_BACK, //textureParallaxMap
-    GL_BACK, //textureOriginal2
+	GL_BACK, //compute_CopyTexture
+    GL_BACK, //compute_CopyTextureArray
+
+	GL_BACK, //tessellation_passthrough
+    GL_BACK, //tessellation_triangle_integer
+    GL_BACK, //tessellation_triangle_fractional_even
+    GL_BACK, //tessellation_triangle_fractional_odd
+    GL_BACK, //tessellation_triangle_pow2
+    GL_BACK, //tessellation_pntriangles
+
+	GL_BACK, //geometry_show
+    GL_BACK, //geometry_normal
+
+    GL_BACK, //terrain
 
 };
 static bool g_ObjectIsRotates[g_ObjectCount] =
 {
-    false, //ground
-
-////Basic-Level Texture Operation
-    false, //textureSampler_Wrap
-    false, //textureSampler_Mirror
-    false, //textureSampler_Clamp
-    false, //textureSampler_Border
-    false, //texture1D
-    false, //texture2D
-    false, //texture2Darray
-    false, //texture3D
     false, //textureCubeMap_SkyBox
-    false, //textureCubeMap_Sphere
-    false, //textureAnimation_Scroll
-    false, //textureAnimation_Chunk
+    false, //texture2Darray_TerrainDiffuse
+    false, //texture2Darray_TerrainNormal
+    false, //texture2Darray_TerrainControl
 
-////High-Level Texture Operation
-    false, //textureOriginal
-    false, //textureBumpMap
-    false, //textureNormalMap
-    false, //textureParallaxMap
-    false, //textureOriginal2
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
+
+    false, //tessellation_passthrough
+    false, //tessellation_triangle_integer
+    false, //tessellation_triangle_fractional_even
+    false, //tessellation_triangle_fractional_odd
+    false, //tessellation_triangle_pow2
+    false, //tessellation_pntriangles
+
+    false, //geometry_show
+    false, //geometry_normal
+
+    false, //terrain
 
 };
 static bool g_ObjectIsLightings[g_ObjectCount] =
 {
-    true, //ground
+    false, //textureCubeMap_SkyBox
+    false, //texture2Darray_TerrainDiffuse
+    false, //texture2Darray_TerrainNormal
+    false, //texture2Darray_TerrainControl
 
-////Basic-Level Texture Operation
-    true, //textureSampler_Wrap
-    true, //textureSampler_Mirror
-    true, //textureSampler_Clamp
-    true, //textureSampler_Border
-    true, //texture1D
-    true, //texture2D
-    true, //texture2Darray
-    true, //texture3D
-    true, //textureCubeMap_SkyBox
-    true, //textureCubeMap_Sphere
-    true, //textureAnimation_Scroll
-    true, //textureAnimation_Chunk
+    false, //compute_CopyTexture
+    false, //compute_CopyTextureArray
 
-////High-Level Texture Operation
-    true, //textureOriginal
-    true, //textureBumpMap
-    true, //textureNormalMap
-    true, //textureParallaxMap
-    true, //textureOriginal2
+    true, //tessellation_passthrough
+    true, //tessellation_triangle_integer
+    true, //tessellation_triangle_fractional_even
+    true, //tessellation_triangle_fractional_odd
+    true, //tessellation_triangle_pow2
+    true, //tessellation_pntriangles
+
+    false, //geometry_show
+    false, //geometry_normal
+
+    false, //terrain
 
 };
 
@@ -694,13 +506,30 @@ static bool g_ObjectIsLightings[g_ObjectCount] =
 bool OpenGLES_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal)
 {
     //1> Load
+    FMeshDataPC meshDataPC;
     FMeshData meshData;
     meshData.bIsFlipY = isFlipY;
-    unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-    if (!FMeshDataLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+    if (this->typeMesh == F_Mesh_File)
     {
-        F_LogError("*********************** OpenGLES_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
-        return false; 
+        unsigned int eMeshParserFlags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+        if (!FMeshDataLoader::LoadMeshData(this->pathMesh, meshData, eMeshParserFlags))
+        {
+            F_LogError("*********************** OpenGLES_012_Shadering::ModelMesh::LoadMesh: load mesh failed: [%s] !", this->pathMesh.c_str());
+            return false; 
+        }
+    }
+    else if (this->typeMesh == F_Mesh_Geometry)
+    {
+        if (!FMeshGeometry::CreateGeometry(&meshDataPC, &meshData, this->typeGeometryType))
+        {
+            F_LogError("*********************** OpenGLES_012_Shadering::ModelMesh::LoadMesh: create geometry mesh failed: typeGeometry: [%s] !", F_GetMeshGeometryTypeName(this->typeGeometryType).c_str());
+            return false; 
+        }
+    }
+    else
+    {
+        F_Assert(false && "OpenGLES_012_Shadering::ModelMesh::LoadMesh: Wrong typeMesh !")
+        return false;
     }
 
     int count_vertex = (int)meshData.vertices.size();
@@ -796,7 +625,7 @@ bool OpenGLES_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTransformL
                                                                                  false);
 		if (this->pBufferVertexIndex == nullptr)
 		{
-			F_LogError("*********************** DirectX11_010_Lighting::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", this->nameMesh.c_str());
+			F_LogError("*********************** OpenGLES_012_Shadering::loadModel_VertexIndex: create buffer vertex index failed: [%s] !", this->nameMesh.c_str());
 			return false;
 		}
 	}
@@ -809,7 +638,7 @@ bool OpenGLES_012_Shadering::ModelMesh::LoadMesh(bool isFlipY, bool isTransformL
                                                                        false);
 		if (this->pBufferVertex == nullptr)
 		{
-			F_LogError("*********************** DirectX11_010_Lighting::loadModel_VertexIndex: create buffer vertex failed: [%s] !", this->nameMesh.c_str());
+			F_LogError("*********************** OpenGLES_012_Shadering::loadModel_VertexIndex: create buffer vertex failed: [%s] !", this->nameMesh.c_str());
 			return false;
 		}
 	}
@@ -835,6 +664,8 @@ OpenGLES_012_Shadering::OpenGLES_012_Shadering(String name)
     this->cfg_isEditorCameraAxisShow = true;
     this->cfg_isEditorCoordinateAxisShow = false;
 
+    this->cfg_cameraPos = FVector3(-2.5f, 2.0f, -20.0f);
+    this->cfg_cameraLookTarget = FVector3(-2.5f, 5.0f, 0.0f);
     this->mainLight.common.x = 0; //Directional Type
     this->mainLight.common.y = 1.0f; //Enable
     this->mainLight.common.z = 11; //Ambient + DiffuseLambert + SpecularBlinnPhong Type
@@ -850,10 +681,6 @@ void OpenGLES_012_Shadering::createCamera()
 void OpenGLES_012_Shadering::cameraReset()
 {
     OpenGLESWindow::cameraReset();
-
-    this->pCamera->SetPos(FVector3(-4.0f, 24.0f, 3.6f));
-    this->pCamera->SetEulerAngles(FVector3(80.0f, 0.0f, 0.0f));
-	this->pCamera->UpdateViewMatrix();
 }
 
 void OpenGLES_012_Shadering::loadModel_Custom()
@@ -867,19 +694,23 @@ void OpenGLES_012_Shadering::loadModel_Custom()
     {
         ModelObject* pModelObject = new ModelObject(this);
         pModelObject->indexModel = i;
-        pModelObject->nameObject = g_ObjectConfigs[8 * i + 0];
-        pModelObject->nameMesh = g_ObjectConfigs[8 * i + 1];
+        pModelObject->nameObject = g_ObjectConfigs[5 * i + 0];
+        pModelObject->nameMesh = g_ObjectConfigs[5 * i + 1];
 
         //Mesh
         {
             ModelMesh* pMesh = this->findMesh(pModelObject->nameMesh);
+            if (pMesh == nullptr)
+            {
+                F_LogError("*********************** OpenGLES_012_Shadering::loadModel_Custom: can not find mesh: [%s] !", pModelObject->nameMesh.c_str());
+            }
             F_Assert(pMesh != nullptr && "OpenGLES_012_Shadering::loadModel_Custom")
             pModelObject->SetMesh(pMesh);
         }
 
         //Texture VS
         {
-            String nameTextureVS = g_ObjectConfigs[8 * i + 2]; //Texture VS
+            String nameTextureVS = g_ObjectConfigs[5 * i + 2]; //Texture VS
             if (!nameTextureVS.empty())
             {
                 StringVector aTextureVS = FUtilString::Split(nameTextureVS, ";");
@@ -894,7 +725,7 @@ void OpenGLES_012_Shadering::loadModel_Custom()
         }
         //Texture FS
         {
-            String nameTextureFS = g_ObjectConfigs[8 * i + 6]; //Texture FS
+            String nameTextureFS = g_ObjectConfigs[5 * i + 3]; //Texture FS
             if (!nameTextureFS.empty())
             {
                 StringVector aTextureFS = FUtilString::Split(nameTextureFS, ";");
@@ -909,7 +740,7 @@ void OpenGLES_012_Shadering::loadModel_Custom()
         }
         //Texture CS
         {
-            String nameTextureCS = g_ObjectConfigs[8 * i + 7]; //Texture CS
+            String nameTextureCS = g_ObjectConfigs[5 * i + 4]; //Texture CS
             if (!nameTextureCS.empty())
             {
                 StringVector aTextureCS = FUtilString::Split(nameTextureCS, ";");
@@ -921,6 +752,13 @@ void OpenGLES_012_Shadering::loadModel_Custom()
                     pModelObject->AddTexture(F_GetShaderTypeName(F_Shader_Compute), pTextureCS);
                 }
             }
+        }
+
+        //Compute
+        String nameShaderComp = g_ObjectNameShaderModules[6 * i + 5];
+        if (!nameShaderComp.empty())
+        {
+			pModelObject->isUsedCompute = true;
         }
 
         //Common
@@ -959,135 +797,50 @@ void OpenGLES_012_Shadering::rebuildInstanceCBs(bool isCreateBuffer)
         for (int j = 0; j < pModelObject->countInstance; j++)
         {
             //ObjectConstants
-            ObjectConstants objectConstants;
-            objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
-                                                        g_ObjectTranforms[i * 3 + 1],
-                                                        g_ObjectTranforms[i * 3 + 2]);
-            pModelObject->objectCBs[j] = objectConstants;
-            pModelObject->instanceMatWorld[j] = objectConstants.g_MatWorld;
+            {
+                ObjectConstants objectConstants;
+                objectConstants.g_MatWorld = FMath::FromTRS(g_ObjectTranforms[i * 3 + 0] + FVector3((j - pModelObject->countInstanceExt) * g_instanceGap , 0, 0),
+                                                            g_ObjectTranforms[i * 3 + 1],
+                                                            g_ObjectTranforms[i * 3 + 2]);
+                pModelObject->objectCBs[j] = objectConstants;
+                pModelObject->instanceMatWorld[j] = objectConstants.g_MatWorld;
+            }
 
             //MaterialConstants
-            MaterialConstants materialConstants;
-            materialConstants.factorAmbient = FMath::RandomColor(false);
-            materialConstants.factorDiffuse = FMath::RandomColor(false);
-            materialConstants.factorSpecular = FMath::RandomColor(false);
-            materialConstants.lighting.x = FMath::RandF(10.0f, 100.0f);
-            materialConstants.lighting.y = FMath::RandF(0.2f, 0.9f);
-            //Texture VS
             {
-                GLESTexturePtrVector* pTextureVSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
-                if (pTextureVSs != nullptr)
+                MaterialConstants materialConstants;
+                materialConstants.factorAmbient = FMath::RandomColor(false);
+                materialConstants.factorDiffuse = FMath::RandomColor(false);
+                materialConstants.factorSpecular = FMath::RandomColor(false);
+                materialConstants.lighting.x = FMath::RandF(10.0f, 100.0f);
+                materialConstants.lighting.y = FMath::RandF(0.2f, 0.9f);
+                materialConstants.lighting.z = g_ObjectIsLightings[i] ? 1.0f : 0.0f;
+                //Texture VS
                 {
-
-                }
-            }
-            //Texture FS
-            {
-                GLESTexturePtrVector* pTextureFSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
-                if (pTextureFSs != nullptr)
-                {
-                    int count_texture = (int)pTextureFSs->size();
-                    for (int p = 0; p < count_texture; p++)
+                    GLESTexturePtrVector* pTextureVSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Vertex));
+                    if (pTextureVSs != nullptr)
                     {
-                        GLESTexture* pTexture = (*pTextureFSs)[p];
-                        materialConstants.aTexLayers[p].texSize.x = (float)pTexture->width;
-                        materialConstants.aTexLayers[p].texSize.y = (float)pTexture->height;
-                        materialConstants.aTexLayers[p].texSize.z = (float)pTexture->depth;
 
-                        if (pModelObject->nameObject == g_Object_Texture2DArray) //Texture2DArray
-                        {
-                            materialConstants.aTexLayers[p].texSize.w = (float)pTexture->RandomTextureIndex();
-                        }
-                        else if (pModelObject->nameObject == g_Object_Texture3D) //Texture3D
-                        {
-                            materialConstants.aTexLayers[p].texSize.w = FMath::RandF(0.0f, 1.0f);
-                        }
-                        else if (pModelObject->nameObject == g_Object_TextureAnimation_Scroll) //TextureAnimation_Scroll
-                        {
-                            if (pTexture->typeTexture == F_Texture_2DArray)
-                            {
-                                materialConstants.aTexLayers[p].texSize.w = (float)pTexture->RandomTextureIndex();
-
-                                if (materialConstants.aTexLayers[p].texSize.w > 0)
-                                {
-                                    materialConstants.aTexLayers[p].texSpeed.x = FMath::RandF(1.0f, 10.0f);
-                                }
-                                else 
-                                {
-                                    materialConstants.aTexLayers[p].texSpeed.y = FMath::RandF(1.0f, 10.0f);
-                                }
-                            }
-                        }
-                        else if (pModelObject->nameObject == g_Object_TextureAnimation_Chunk) //TextureAnimation_Chunk
-                        {
-                            if (pTexture->texChunkMaxX > 0 &&
-                                pTexture->texChunkMaxY > 0)
-                            {
-                                materialConstants.aTexLayers[p].texSize.w = 0;
-                                materialConstants.aTexLayers[p].texChunk.x = (float)pTexture->texChunkMaxX;
-                                materialConstants.aTexLayers[p].texChunk.y = (float)pTexture->texChunkMaxY;
-                                int indexX = pTexture->texChunkIndex % pTexture->texChunkMaxX;
-                                int indexZ = pTexture->texChunkIndex / pTexture->texChunkMaxX;
-                                materialConstants.aTexLayers[p].texChunk.z = (float)indexX;
-                                materialConstants.aTexLayers[p].texChunk.w = (float)indexZ;
-                            }
-                        }       
-                        else if (pModelObject->nameObject == g_Object_TextureOriginal) //TextureOriginal
-                        {
-                            if (j == pModelObject->countInstance / 2)
-                            {
-                                materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
-                                materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                                materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                                materialConstants.lighting.z = 0.0f;
-                            }
-                        }
-                        else if (pModelObject->nameObject == g_Object_TextureBumpMap) //TextureBumpMap
-                        {
-                            if (j == pModelObject->countInstance / 2)
-                            {
-                                materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
-                                materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                                materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                            }
-                            materialConstants.aTexLayers[p].texSize.w = 1; 
-                            materialConstants.aTexLayers[p].texSpeed.x = FMath::RandF(20.0f, 1000.0f);
-                        } 
-                        else if (pModelObject->nameObject == g_Object_TextureNormalMap) //TextureNormalMap
-                        {
-                            if (j == pModelObject->countInstance / 2)
-                            {
-                                materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
-                                materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                                materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                            }
-                            materialConstants.aTexLayers[p].texSize.w = 2;
-                        }
-                        else if (pModelObject->nameObject == g_Object_TextureParallaxMap) //TextureParallaxMap
-                        {
-                            if (j == pModelObject->countInstance / 2)
-                            {
-                                materialConstants.factorAmbient = FVector4(0.0f, 0.0f, 0.0f, 1.0f);
-                                materialConstants.factorDiffuse = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                                materialConstants.factorSpecular = FVector4(1.0f, 1.0f, 1.0f, 1.0f);
-                            }
-                            materialConstants.aTexLayers[p].texSize.w = 3;
-                            materialConstants.aTexLayers[p].texSpeed.x = 0.1f;
-                            materialConstants.aTexLayers[p].texSpeed.y = -0.02f;
-                            materialConstants.aTexLayers[p].texSpeed.z = 48.0f;
-                        }
                     }
                 }
-            }
-            //Texture CS
-            {
-                GLESTexturePtrVector* pTextureCSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
-                if (pTextureCSs != nullptr)
+                //Texture FS
                 {
-
+                    GLESTexturePtrVector* pTextureFSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
+                    if (pTextureFSs != nullptr)
+                    {
+                        
+                    }
                 }
+                //Texture CS
+                {
+                    GLESTexturePtrVector* pTextureCSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Compute));
+                    if (pTextureCSs != nullptr)
+                    {
+
+                    }
+                }
+                pModelObject->materialCBs[j] = materialConstants;
             }
-            pModelObject->materialCBs[j] = materialConstants;
         }
 
 		if (isCreateBuffer)
@@ -1120,6 +873,29 @@ void OpenGLES_012_Shadering::rebuildInstanceCBs(bool isCreateBuffer)
                 String msg = "*********************** OpenGLES_012_Shadering::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
                 F_LogError("%s", msg.c_str());
                 throw std::runtime_error(msg);
+            }
+
+            //TextureCopyConstants
+            if (pModelObject->isUsedCompute)
+            {
+                pModelObject->textureCopyCBs.clear();
+                TextureCopyConstants textureCopyCB;
+                pModelObject->textureCopyCBs.push_back(textureCopyCB);
+
+                F_DELETE(pModelObject->poBufferUniform_TextureCopy)
+                nameBuffer = "TextureCopyConstants-" + pModelObject->nameObject;
+                pModelObject->poBufferUniform_TextureCopy = createBufferUniform(nameBuffer,
+																				DescriptorSet_TextureCopyConstants,
+																				GL_DYNAMIC_DRAW,
+                                                                                sizeof(TextureCopyConstants) * pModelObject->textureCopyCBs.size(),
+                                                                                (uint8*)pModelObject->textureCopyCBs.data(),
+                                                                                false);
+                if (!pModelObject->poBufferUniform_TextureCopy)
+                {
+                    String msg = "*********************** OpenGLES_012_Shadering::rebuildInstanceCBs: create buffer uniform: [" + nameBuffer + "] failed !";
+                    F_LogError("%s", msg.c_str());
+                    throw std::runtime_error(msg);
+                }
             }
 		}
     }
@@ -1208,7 +984,41 @@ void OpenGLES_012_Shadering::createGraphicsPipeline_Custom()
 
 void OpenGLES_012_Shadering::createComputePipeline_Custom()
 {
+    size_t count = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        ModelObject* pModelObject = this->m_aModelObjects[i];
+        
+        String nameShaderComp = g_ObjectNameShaderModules[6 * i + 5];
+        if (nameShaderComp.empty())
+            continue;
 
+        StringVector aShaderComps = FUtilString::Split(nameShaderComp, ";");
+        StringVector aDSLs = FUtilString::Split(g_ObjectNameDescriptorSetLayouts[2 * i + 1], ";");
+        F_Assert(aShaderComps.size() == aDSLs.size() && "OpenGLES_012_Shadering::createComputePipeline_Custom")
+
+        size_t count_cs = aShaderComps.size();
+        for (size_t j = 0; j < count_cs; j++)
+        {
+            const String& nameCS = aShaderComps[j];
+            GLESShader* pShaderCS = findShaderModule(nameCS);
+            const String& nameDSL = aDSLs[j];
+            DescriptorSetLayout* pDSL = findDescriptorSetLayout(nameDSL);
+
+            String nameStateCompute = "PipelineCompute-" + pModelObject->nameObject + "-" + FUtilString::SaveSizeT(j);
+            GLESStatePipelineCompute* pStatePipelineCompute = createStatePipelineCompute(nameStateCompute,
+                                                                                         pDSL,
+                                                                                         pShaderCS);
+            if (pStatePipelineCompute == nullptr)
+            {
+                String msg = "*********************** OpenGLES_012_Shadering::createComputePipeline_Custom: Failed to create pipeline compute !";
+                F_LogError("%s", msg.c_str());
+                throw std::runtime_error(msg.c_str());
+            }
+            pModelObject->AddPipelineCompute(pStatePipelineCompute);
+            
+        }
+    }
 }
 
 void OpenGLES_012_Shadering::destroyMeshes()
@@ -1292,8 +1102,8 @@ void OpenGLES_012_Shadering::createTextures()
         FTextureType typeTexture = F_ParseTextureType(nameType);
         String nameIsRenderTarget = g_TexturePaths[5 * i + 2];
         bool isRenderTarget = FUtilString::ParserBool(nameIsRenderTarget);
-        String nameIsGraphicsComputeShared = g_TexturePaths[5 * i + 3];
-        bool isGraphicsComputeShared = FUtilString::ParserBool(nameIsGraphicsComputeShared);
+        String nameIsUnOrderedAccess = g_TexturePaths[5 * i + 3];
+        bool isUnOrderedAccess = FUtilString::ParserBool(nameIsUnOrderedAccess);
         String pathTextures = g_TexturePaths[5 * i + 4];
 
         StringVector aPathTexture = FUtilString::Split(pathTextures, ";");
@@ -1310,7 +1120,7 @@ void OpenGLES_012_Shadering::createTextures()
 												true,
 												false,
 												isRenderTarget,
-												false,
+												isUnOrderedAccess,
 												FMath::ms_clBlack);
         pTexture->texChunkMaxX = (int)g_TextureAnimChunks[i * 2 + 0];
         pTexture->texChunkMaxY = (int)g_TextureAnimChunks[i * 2 + 1];
@@ -1465,6 +1275,14 @@ void OpenGLES_012_Shadering::createDescriptorSets_Custom()
                 {
 
                 }
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_TessellationConstants)) //TessellationConstants
+                {
+
+                }
+                else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_GeometryConstants)) //GeometryConstants
+                {
+
+                }
                 else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_TextureVS)) //TextureVS
                 {
                     GLESTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Vertex), nIndexTextureVS);
@@ -1485,7 +1303,115 @@ void OpenGLES_012_Shadering::createDescriptorSets_Custom()
                 }
             }
 		}
+
+        //Pipeline Computes
+        if (pModelObject->isUsedCompute)
+		{
+			size_t count_comp = pModelObject->aPipelineComputes.size();
+            for (int j = 0; j < count_comp; j++)
+            {
+                GLESStatePipelineCompute* pStatePipelineCompute = pModelObject->aPipelineComputes[j];
+
+                int nIndexTextureCS = 0;
+                size_t count_names = pStatePipelineCompute->poDescriptorSetLayout->aLayouts.size();
+                for (size_t p = 0; p < count_names; p++)
+                {
+                    String& nameDescriptorSet = pStatePipelineCompute->poDescriptorSetLayout->aLayouts[p];
+                    int nBindingIndex = (int)p;
+
+                    if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_TextureCopyConstants)) //TextureCopyConstants
+                    {
+						uint32 nBindingIndex = (uint32)DescriptorSet_TextureCopyConstants;
+						uint32 nUniformBlockIndex = pStatePipelineCompute->GetUniformBlockIndex(nameDescriptorSet);
+						pStatePipelineCompute->BindUniformBlockBinding(nUniformBlockIndex, nBindingIndex);
+						pStatePipelineCompute->BindBufferUniform(pModelObject->poBufferUniform_TextureCopy, nBindingIndex);
+                    }   
+                    else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_TextureCSR)) //TextureCSR
+                    {
+						GLESTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
+						pStatePipelineCompute->BindTextureCS(pTexture, nIndexTextureCS);
+						nIndexTextureCS ++;
+                    }
+                    else if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_TextureCSRW)) //TextureCSRW
+                    {
+						GLESTexture* pTexture = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), nIndexTextureCS);
+						pStatePipelineCompute->BindTextureImageCS(pTexture, nIndexTextureCS);
+						nIndexTextureCS ++;
+                    }
+                    else
+                    {
+                        String msg = "*********************** OpenGLES_012_Shadering::createDescriptorSets_Custom: Compute: Wrong DescriptorSetLayout type: " + nameDescriptorSet;
+                        F_LogError("%s", msg.c_str());
+                        throw std::runtime_error(msg.c_str());
+                    }
+                }
+            }
+		}
     }
+}
+
+void OpenGLES_012_Shadering::updateCompute_BeforeRender_Custom()
+{
+	size_t count = this->m_aModelObjects.size();
+    for (size_t i = 0; i < count; i++)
+	{
+		ModelObject* pModelObject = this->m_aModelObjects[i];
+        if (!pModelObject->isUsedCompute)
+            continue;
+
+		size_t count_comp = pModelObject->aPipelineComputes.size();
+        for (int j = 0; j < count_comp; j++)
+		{
+			GLESStatePipelineCompute* pStatePipelineCompute = pModelObject->aPipelineComputes[j];
+
+            bool isRand = false;
+            if (++pModelObject->frameRand > 15)
+            {
+                isRand = true;
+                pModelObject->frameRand = 0;
+            }
+            GLESTexture* pTextureSrc = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 0);
+            GLESTexture* pTextureTarget = pModelObject->GetTexture(F_GetShaderTypeName(F_Shader_Compute), 1);
+            TextureCopyConstants& textureCopyCB = pModelObject->textureCopyCBs[0];
+            textureCopyCB.texInfo.x = (float)pTextureSrc->width;
+            textureCopyCB.texInfo.y = (float)pTextureSrc->height;
+            textureCopyCB.texInfo.z = 0;
+            textureCopyCB.texInfo.w = 0;
+            if (isRand)
+            {
+                textureCopyCB.texOffset.x = (FMath::RandF(0, 1) >= 0.5f ? 1.0f : 0.0f) * (float)pTextureSrc->width;
+                textureCopyCB.texOffset.y = (FMath::RandF(0, 1) >= 0.5f ? 1.0f : 0.0f) * (float)pTextureSrc->height;
+                textureCopyCB.texOffset.z = 0;
+                textureCopyCB.texOffset.w = 0;
+
+                int seed = FMath::Rand(0, 10000);
+                int start = seed % 4;
+                textureCopyCB.texIndexArray.x = (float)start;
+                textureCopyCB.texIndexArray.y = (float)(++start % 4);
+                textureCopyCB.texIndexArray.z = (float)(++start % 4);
+                textureCopyCB.texIndexArray.w = (float)(++start % 4);
+            }
+            textureCopyCB.texClearColor.x = 0;
+            textureCopyCB.texClearColor.y = 0;
+            textureCopyCB.texClearColor.z = 0;
+            textureCopyCB.texClearColor.w = 1;
+
+            pModelObject->poBufferUniform_TextureCopy->UpdateBuffer(sizeof(TextureCopyConstants) * pModelObject->textureCopyCBs.size(),
+                                                                    (uint8*)pModelObject->textureCopyCBs.data(),
+                                                                    GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+
+            pStatePipelineCompute->BindState();
+            pStatePipelineCompute->BindShader();
+            pStatePipelineCompute->BindBufferUniforms();
+            pStatePipelineCompute->BindTextures();
+            
+            uint32_t groupX = (uint32_t)(pTextureTarget->width / 8);
+            uint32_t groupY = (uint32_t)(pTextureTarget->height / 8);
+            dispatch(groupX, groupY, 1);
+
+            pStatePipelineCompute->UnBindState();
+		}
+	}
 }
 
 void OpenGLES_012_Shadering::updateCBs_Custom()
@@ -1496,7 +1422,7 @@ void OpenGLES_012_Shadering::updateCBs_Custom()
     for (size_t i = 0; i < count; i++)
     {
         ModelObject* pModelObject = this->m_aModelObjects[i];
-
+        
 		//0: PassConstants
 		pModelObject->poStatePipelineGraphics->BindBufferUniform(pBufferUniform_Pass, (uint32)DescriptorSet_PassConstants);
 
@@ -1518,36 +1444,7 @@ void OpenGLES_012_Shadering::updateCBs_Custom()
 
 			//MaterialConstants
 			MaterialConstants& materialCB = pModelObject->materialCBs[j];
-            if (pModelObject->nameObject == g_Object_TextureAnimation_Chunk)
-            {
-                GLESTexturePtrVector* pTextureFSs = pModelObject->GetTextures(F_GetShaderTypeName(F_Shader_Fragment));
-                if (pTextureFSs != nullptr)
-                {
-                    size_t count_texture = pTextureFSs->size();
-                    for (size_t p = 0; p < count_texture; p++)
-                    {
-                        GLESTexture* pTexture = (*pTextureFSs)[p];
-
-                        if (pTexture->texChunkMaxX > 0 &&
-                            pTexture->texChunkMaxY > 0)
-                        {
-                            if (++ pTexture->frameCurrent >= 30)
-                            {
-                                pTexture->frameCurrent = 0;
-                                pTexture->texChunkIndex ++;
-                                if (pTexture->texChunkIndex >= pTexture->texChunkMaxX * pTexture->texChunkMaxY)
-                                {
-                                    pTexture->texChunkIndex = 0;
-                                }
-                                int indexX = pTexture->texChunkIndex % pTexture->texChunkMaxX;
-                                int indexZ = pTexture->texChunkIndex / pTexture->texChunkMaxX;
-                                materialCB.aTexLayers[0].texChunk.z = (float)indexX;
-                                materialCB.aTexLayers[0].texChunk.w = (float)indexZ;
-                            }   
-                        }
-                    }
-                }
-            }   
+            
         }
 
         //ObjectConstants
@@ -1787,139 +1684,30 @@ void OpenGLES_012_Shadering::modelConfig()
                                                 }
                                                 else 
                                                 {
-                                                    if (pModelObject->nameObject == g_Object_TextureBumpMap) //TextureBumpMap
+                                                    if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].texSize.w, 0.001f, 0.0f, 1.0f))
                                                     {
-                                                        //BumpMapping Type
-                                                        int nIndex = 0;
-                                                        for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aBumpMappingDescs); nIndex++)
-                                                        {
-                                                            if (s_aBumpMappingDescs[nIndex].Value == (int)mat.aTexLayers[p].texSize.w)
-                                                                break;
-                                                        }
-                                                        const char* preview_text = s_aBumpMappingDescs[nIndex].Name;
-                                                        String nameBumpMappingType = "BumpMappingType - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        if (ImGui::BeginCombo(nameBumpMappingType.c_str(), preview_text))
-                                                        {
-                                                            for (int q = 0; q < IM_ARRAYSIZE(s_aBumpMappingDescs); q++)
-                                                            {
-                                                                if (ImGui::Selectable(s_aBumpMappingDescs[q].Name, nIndex == q))
-                                                                {
-                                                                    mat.aTexLayers[p].texSize.w = (float)s_aBumpMappingDescs[q].Value;
-                                                                    break;
-                                                                }
-                                                            }
-                                                            ImGui::EndCombo();
-                                                        }
 
-                                                        //Bump Scale
-                                                        String nameBumpScale = "BumpScale - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        if (ImGui::DragFloat(nameBumpScale.c_str(), &mat.aTexLayers[p].texSpeed.x, 0.5f, 0.0f, 5000.0f))
-                                                        {
-                                                            
-                                                        }
-                                                    }
-                                                    else if (pModelObject->nameObject == g_Object_TextureNormalMap) //TextureNormalMap
-                                                    {
-                                                        //NormalMapping Type
-                                                        int nIndex = 0;
-                                                        for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aNormalMappingDescs); nIndex++)
-                                                        {
-                                                            if (s_aNormalMappingDescs[nIndex].Value == mat.aTexLayers[p].texSize.w)
-                                                                break;
-                                                        }
-                                                        const char* preview_text = s_aNormalMappingDescs[nIndex].Name;
-                                                        String nameNormalMappingType = "NormalMappingType - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        if (ImGui::BeginCombo(nameNormalMappingType.c_str(), preview_text))
-                                                        {
-                                                            for (int q = 0; q < IM_ARRAYSIZE(s_aNormalMappingDescs); q++)
-                                                            {
-                                                                if (ImGui::Selectable(s_aNormalMappingDescs[q].Name, nIndex == q))
-                                                                {
-                                                                    mat.aTexLayers[p].texSize.w = (float)s_aNormalMappingDescs[q].Value;
-                                                                    break;
-                                                                }
-                                                            }
-                                                            ImGui::EndCombo();
-                                                        }
-                                                    }
-                                                    else if (pModelObject->nameObject == g_Object_TextureParallaxMap) //TextureParallaxMap
-                                                    {
-                                                        //ParallaxMapping Type
-                                                        int nIndex = 0;
-                                                        for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aParallaxMappingDescs); nIndex++)
-                                                        {
-                                                            if (s_aParallaxMappingDescs[nIndex].Value == mat.aTexLayers[p].texSize.w)
-                                                                break;
-                                                        }
-                                                        const char* preview_text = s_aParallaxMappingDescs[nIndex].Name;
-                                                        String nameParallaxMappingType = "ParallaxMappingType - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        if (ImGui::BeginCombo(nameParallaxMappingType.c_str(), preview_text))
-                                                        {
-                                                            for (int q = 0; q < IM_ARRAYSIZE(s_aParallaxMappingDescs); q++)
-                                                            {
-                                                                if (ImGui::Selectable(s_aParallaxMappingDescs[q].Name, nIndex == q))
-                                                                {
-                                                                    mat.aTexLayers[p].texSize.w = (float)s_aParallaxMappingDescs[q].Value;
-                                                                    break;
-                                                                }
-                                                            }
-                                                            ImGui::EndCombo();
-                                                        }
-
-                                                        //heightScale
-                                                        String nameHeightScale = "HeightScale - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        if (ImGui::DragFloat(nameHeightScale.c_str(), &mat.aTexLayers[p].texSpeed.x, 0.01f, 0.0f, 10.0f))
-                                                        {
-                                                            
-                                                        }
-                                                        //parallaxBias
-                                                        String nameParallaxBias = "ParallaxBias - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        if (ImGui::DragFloat(nameParallaxBias.c_str(), &mat.aTexLayers[p].texSpeed.y, 0.01f, -5.0f, 5.0f))
-                                                        {
-                                                            
-                                                        }
-                                                        //numLayers
-                                                        String nameNumLayers = "NumLayers - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                        int numLayers = (int)mat.aTexLayers[p].texSpeed.z;
-                                                        if (ImGui::DragInt(nameNumLayers.c_str(), &numLayers, 1, 1, 100))
-                                                        {
-                                                            mat.aTexLayers[p].texSpeed.z = (float)numLayers;
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (ImGui::DragFloat(nameIndexTextureArray.c_str(), &mat.aTexLayers[p].texSize.w, 0.001f, 0.0f, 1.0f))
-                                                        {
-
-                                                        }
                                                     }
                                                 }
 
-                                                if (pModelObject->nameObject != g_Object_TextureBumpMap &&
-                                                    pModelObject->nameObject != g_Object_TextureParallaxMap)
+                                                //texSpeedU
+                                                String nameTexSpeedU = "TexSpeedU - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeed.x, 0.01f, 0.0f, 100.0f))
                                                 {
-                                                    //texSpeedU
-                                                    String nameTexSpeedU = "TexSpeedU - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                    if (ImGui::DragFloat(nameTexSpeedU.c_str(), &mat.aTexLayers[p].texSpeed.x, 0.01f, 0.0f, 100.0f))
-                                                    {
-                                                        
-                                                    }
+                                                    
                                                 }
                                                 
-                                                if (pModelObject->nameObject != g_Object_TextureParallaxMap)
+                                                //texSpeedV
+                                                String nameTexSpeedV = "TexSpeedV - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeed.y, 0.01f, 0.0f, 100.0f))
                                                 {
-                                                    //texSpeedV
-                                                    String nameTexSpeedV = "TexSpeedV - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                    if (ImGui::DragFloat(nameTexSpeedV.c_str(), &mat.aTexLayers[p].texSpeed.y, 0.01f, 0.0f, 100.0f))
-                                                    {
-                                                        
-                                                    }
-                                                    //texSpeedW
-                                                    String nameTexSpeedW = "TexSpeedW - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
-                                                    if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeed.z, 0.01f, 0.0f, 100.0f))
-                                                    {
-                                                        
-                                                    }
+                                                    
+                                                }
+                                                //texSpeedW
+                                                String nameTexSpeedW = "TexSpeedW - " + FUtilString::SaveInt(j) + " - " + FUtilString::SaveInt(p) + " - " + pModelObject->nameObject;
+                                                if (ImGui::DragFloat(nameTexSpeedW.c_str(), &mat.aTexLayers[p].texSpeed.z, 0.01f, 0.0f, 100.0f))
+                                                {
+                                                    
                                                 }
                                                 
                                                 //texChunkMaxX

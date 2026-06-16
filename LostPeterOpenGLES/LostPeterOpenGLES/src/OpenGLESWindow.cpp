@@ -4760,6 +4760,22 @@ namespace LostPeterOpenGLES
 
                 }
 
+                    GLESStatePipelineCompute* OpenGLESWindow::createStatePipelineCompute(const String& nameStatePipelineCompute,
+                                                                                         DescriptorSetLayout* pDSL,
+                                                                                         GLESShader* pShaderCompute)
+					{
+						GLESStatePipelineCompute* pStatePipelineCompute = new GLESStatePipelineCompute(nameStatePipelineCompute);
+                        if (!pStatePipelineCompute->Init(pDSL,
+                                                         pShaderCompute)) 
+                        {
+                            F_LogError("*********************** OpenGLESWindow::createStatePipelineCompute failed, name: [%s] !", nameStatePipelineCompute.c_str());
+                            F_DELETE(pStatePipelineCompute)
+                            return nullptr;
+                        }
+
+                        return pStatePipelineCompute;
+					}
+
 
             void OpenGLESWindow::createDescriptorSets()
             {

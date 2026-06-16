@@ -191,7 +191,6 @@ namespace LostPeterOpenGLES
 	}
 	void GLESStatePipelineCompute::bindTextureImage(GLESTexturePtrIDMap& mapTexture, bool enable)
 	{
-		OpenGLESWindow* pWindow = Base::GetWindowPtr();
 		for (GLESTexturePtrIDMap::iterator it = mapTexture.begin();
 			 it != mapTexture.end(); ++it)
 		{

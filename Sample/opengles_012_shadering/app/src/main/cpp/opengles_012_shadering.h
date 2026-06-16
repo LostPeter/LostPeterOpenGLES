@@ -10,7 +10,7 @@
 ****************************************************************************/
 
 #ifndef _OPENGLES_012_SHADERING_H_
-#define _OPENGLES_011_TEXTURING_H_
+#define _OPENGLES_012_SHADERING_H_
 
 #include "OpenGLESWindow.h"
 using namespace LostPeterOpenGLES; 
@@ -106,6 +106,8 @@ public:
 			, isRotate(true)
 			, isTransparent(false)
 			, isLighting(true)
+			, isUsedCompute(false)
+			, frameRand(0)
 
 			//Mesh
             , pMesh(nullptr)
@@ -115,6 +117,7 @@ public:
             , countInstance(11)
 			, poBufferUniform(nullptr)
 			, poBufferUniform_Material(nullptr)
+			, poBufferUniform_TextureCopy(nullptr)
 			
 			//Pipeline Graphics
 			, poStatePipelineGraphics(nullptr)
@@ -161,6 +164,11 @@ public:
 			//Mesh
             this->pMesh = nullptr;
 
+			//Uniform
+			this->objectCBs.clear();
+			this->materialCBs.clear();
+			this->textureCopyCBs.clear();
+
             //Texture
             this->mapModelTexturesShaderSort.clear();
 
@@ -169,6 +177,14 @@ public:
 
 			//Pipeline
 			F_DELETE(this->poStatePipelineGraphics)
+
+			//Pipeline Computes
+			size_t count = this->aPipelineComputes.size();
+            for (size_t i = 0; i < count; i++) 
+			{
+				F_DELETE(this->aPipelineComputes[i])
+			}
+			this->aPipelineComputes.clear();
 		}
 
 		void CleanupSwapChain()
@@ -176,7 +192,7 @@ public:
 			//Uniform
 			F_DELETE(this->poBufferUniform)
 			F_DELETE(this->poBufferUniform_Material)
-
+			F_DELETE(this->poBufferUniform_TextureCopy)
 
 		}
 
@@ -214,6 +230,11 @@ public:
 
 		std::vector<MaterialConstants> materialCBs;
 		GLESBufferUniform* poBufferUniform_Material;
+
+		std::vector<TextureCopyConstants> textureCopyCBs;
+		GLESBufferUniform* poBufferUniform_TextureCopy;
+		bool isUsedCompute;
+		int frameRand;
 
 		//Pipeline
 		GLESStatePipelineGraphics* poStatePipelineGraphics;
@@ -253,6 +274,7 @@ public:
 		GLboolean poColorWriteMask_Green;
 		GLboolean poColorWriteMask_Blue;
 		GLboolean poColorWriteMask_Alpha;
+
 
 	////Mesh
         void SetMesh(ModelMesh* pMesh)
@@ -344,7 +366,10 @@ protected:
 		//DescriptorSets
 		virtual void createDescriptorSets_Custom();
 
-		//Render/Update
+	//Compute/Update
+		virtual void updateCompute_BeforeRender_Custom();
+
+	//Render/Update
 			virtual void updateCBs_Custom();
 
 			virtual bool beginRenderImgui();
