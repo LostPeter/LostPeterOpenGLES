@@ -232,7 +232,7 @@ static const char* g_nameDescriptorSetLayouts[g_DescriptorSetLayoutCount] =
 
 
 /////////////////////////// Shader //////////////////////////////
-static const int g_ShaderCount = 8;
+static const int g_ShaderCount = 10;
 static const char* g_ShaderModulePaths[3 * g_ShaderCount] = 
 {
     //name                                                     //type               //path
@@ -258,6 +258,8 @@ static const char* g_ShaderModulePaths[3 * g_ShaderCount] =
     "frag_standard_terrain_opaque_lit",                        "frag",              "standard_terrain_opaque_lit.frag.spv", //standard_terrain_opaque_lit frag
 
     ///////////////////////////////////////// comp /////////////////////////////////////////
+    "comp_standard_compute_texcopy_tex2d",                     "comp",              "standard_compute_texcopy_tex2d.comp.spv", //standard_compute_texcopy_tex2d comp
+    "comp_standard_compute_texcopy_tex2darray",                "comp",              "standard_compute_texcopy_tex2darray.comp.spv", //standard_compute_texcopy_tex2darray comp
 
 };
 
@@ -296,9 +298,8 @@ static const char* g_ObjectNameShaderModules[6 * g_ObjectCount] =
     "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainNormal
     "vert_standard_mesh_opaque_tex2darray_lit",             "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2darray_lit",             "", //texture2Darray_TerrainControl
 
-	"vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //compute_CopyTexture
-    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //compute_CopyTextureArray
-
+	"vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2d", //compute_CopyTexture
+    "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",                                             			"",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "comp_standard_compute_texcopy_tex2darray", //compute_CopyTextureArray
 
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",       			                                        "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_passthrough
     "vert_standard_mesh_opaque_tex2d_lit",                  "",                                                     "",   			                                            "",                                     "frag_standard_mesh_opaque_tex2d_lit",                  "", //tessellation_triangle_integer

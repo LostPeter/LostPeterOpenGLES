@@ -1,0 +1,84 @@
+#version 310 es
+precision highp float;
+precision highp int;
+precision highp sampler2DArray;
+precision highp image2D;
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0) uniform sampler2DArray texSampler0;
+layout(binding = 1, rgba8) writeonly uniform image2D texSampler1;
+
+
+///////////////////////////////// ComputeConstants //////////////////////////////
+struct TextureCopyConstant
+{
+    //[x,y,z,w] = [w,h,mip,processLinear]
+    vec4 texInfo;
+        vec4 texOffset;
+        vec4 texIndexArray;
+        vec4 texClearColor;
+};
+layout (std140) uniform TextureCopyConstants
+{
+        TextureCopyConstant texCopy;
+} textureCopyConsts;
+
+
+///////////////////////////////// Common  //////////////////////////////////////////////
+float saturate(float x) { return clamp(x, 0.0, 1.0); }
+vec2 saturate(vec2 x) { return clamp(x, 0.0, 1.0); }
+vec3 saturate(vec3 x) { return clamp(x, 0.0, 1.0); }
+vec4 saturate(vec4 x) { return clamp(x, 0.0, 1.0); }
+
+vec4 Func_LinearToSRGB(vec4 pixel)
+{
+        vec3 linear = max(pixel.xyz, 0.0);
+
+        vec3 sRGBLo = linear * 12.92;
+        vec3 sRGBHi = (pow(abs(linear), vec3(1.0 / 2.4)) * 1.055) - 0.055;
+        vec3 sRGB = mix(sRGBHi, sRGBLo, step(linear, vec3(0.0031308)));
+        return vec4(saturate(sRGB), pixel.w);
+}
+
+
+void main()
+{
+    uvec2 id = gl_GlobalInvocationID.xy;
+    uvec2 coord = id;
+    int index = 0;
+
+    TextureCopyConstant texCopy = textureCopyConsts.texCopy;
+
+    if (id.x < uint(texCopy.texInfo.x) &&
+        id.y < uint(texCopy.texInfo.y))
+    {
+        index = int(texCopy.texIndexArray.x);
+    }
+    else if (id.x >= uint(texCopy.texInfo.x) &&
+             id.y < uint(texCopy.texInfo.y))
+    {
+        index = int(texCopy.texIndexArray.y);
+        coord.x -= uint(texCopy.texInfo.x);
+    }
+    else if (id.x < uint(texCopy.texInfo.x) &&
+             id.y >= uint(texCopy.texInfo.y))
+    {
+        index = int(texCopy.texIndexArray.z);
+        coord.y -= uint(texCopy.texInfo.y);
+    }
+    else
+    {
+        index = int(texCopy.texIndexArray.w);
+        coord.x -= uint(texCopy.texInfo.x);
+        coord.y -= uint(texCopy.texInfo.y);
+    }
+
+    vec4 pixel = texelFetch(texSampler0, ivec3(int(coord.x), int(coord.y), index), 0);
+    int isSRGB = 0;
+    if (int(texCopy.texInfo.w) > isSRGB)
+    {
+        pixel = Func_LinearToSRGB(pixel);
+    }
+    imageStore(texSampler1, ivec2(int(id.x), int(id.y)), pixel);
+}

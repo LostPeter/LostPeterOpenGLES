@@ -1,0 +1,87 @@
+/****************************************************************************
+* LostPeterOpenGLES - Copyright (C) 2022 by LostPeter
+* 
+* Author:   LostPeter
+* Time:     2026-06-16
+* Github:   https://github.com/LostPeter/LostPeterOpenGLES
+* Document: https://www.zhihu.com/people/lostpeter/posts
+*
+* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+****************************************************************************/
+
+#version 310 es
+precision highp float;
+precision highp int;
+precision highp sampler2D;
+precision highp image2D;
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0) uniform sampler2D texSampler0;
+layout(binding = 1, rgba8) writeonly uniform image2D texSampler1;
+
+
+///////////////////////////////// ComputeConstants //////////////////////////////
+struct TextureCopyConstant
+{
+    //[x,y,z,w] = [w,h,mip,processLinear]
+    vec4 texInfo;
+	vec4 texOffset;
+	vec4 texIndexArray;
+	vec4 texClearColor;
+};
+layout (std140) uniform TextureCopyConstants
+{
+	TextureCopyConstant texCopy;
+} textureCopyConsts;
+
+
+///////////////////////////////// Common  //////////////////////////////////////////////
+float saturate(float x) { return clamp(x, 0.0, 1.0); }
+vec2 saturate(vec2 x) { return clamp(x, 0.0, 1.0); }
+vec3 saturate(vec3 x) { return clamp(x, 0.0, 1.0); }
+vec4 saturate(vec4 x) { return clamp(x, 0.0, 1.0); }
+
+vec4 Func_LinearToSRGB(vec4 pixel)
+{
+        vec3 linear = max(pixel.xyz, 0.0);
+
+        vec3 sRGBLo = linear * 12.92;
+        vec3 sRGBHi = (pow(abs(linear), vec3(1.0 / 2.4)) * 1.055) - 0.055;
+        vec3 sRGB = mix(sRGBHi, sRGBLo, step(linear, vec3(0.0031308)));
+        return vec4(saturate(sRGB), pixel.w);
+}
+
+
+void main()
+{
+    uint coordX = gl_GlobalInvocationID.x;
+    uint coordY = gl_GlobalInvocationID.y;
+
+    TextureCopyConstant texCopy = textureCopyConsts.texCopy;
+
+    bool inRange =
+        coordX >= uint(texCopy.texOffset.x) &&
+        coordX <  uint(texCopy.texOffset.x + texCopy.texInfo.x) &&
+        coordY >= uint(texCopy.texOffset.y) &&
+        coordY <  uint(texCopy.texOffset.y + texCopy.texInfo.y);
+
+    if (inRange)
+    {
+        int sx = int(coordX - uint(texCopy.texOffset.x));
+        int sy = int(coordY - uint(texCopy.texOffset.y));
+        int mipLevel = int(texCopy.texInfo.z);
+
+        vec4 pixel = texelFetch(texSampler0, ivec2(sx, sy), mipLevel);
+        int isSRGB = 0;
+        if (int(texCopy.texInfo.w) > isSRGB)
+        {
+            pixel = Func_LinearToSRGB(pixel);
+        }
+        imageStore(texSampler1, ivec2(int(coordX), int(coordY)), pixel);
+    }
+    else
+    {
+        imageStore(texSampler1, ivec2(int(coordX), int(coordY)), texCopy.texClearColor);
+    }
+}
