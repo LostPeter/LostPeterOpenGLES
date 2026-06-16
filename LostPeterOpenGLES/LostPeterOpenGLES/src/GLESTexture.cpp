@@ -451,4 +451,15 @@ namespace LostPeterOpenGLES
         }
     }
 
+    void GLESTexture::BindTextureImage(uint slot, uint32 access, bool enable)
+    {
+        if (this->nTextureID > 0)
+        {
+            if (enable)
+                Base::GetWindowPtr()->bindGLTextureImage(this->typeTexture, slot, this->nTextureID, access, Util_Transform2GLFormatInternal(this->typePixelFormat));
+            else
+                Base::GetWindowPtr()->bindGLTextureImage(this->typeTexture, slot, 0, access, GL_RGBA8);
+        }
+    }
+
 }; //LostPeterOpenGLES

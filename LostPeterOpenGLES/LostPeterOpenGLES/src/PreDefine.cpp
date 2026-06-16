@@ -308,6 +308,18 @@ namespace LostPeterOpenGLES
         F_Assert(false && "Util_Transform2GLFormat: Wrong type !")
         return GL_RGBA;
     }
+    GLenum Util_Transform2GLFormatInternal(FTexturePixelFormatType type)
+    {
+        switch ((int32)type)
+        {
+            case F_TexturePixelFormat_R8_UNORM:          return GL_R8;
+            case F_TexturePixelFormat_R16_UNORM:         return GL_R16F;
+            case F_TexturePixelFormat_R8G8B8A8_SRGB:     return GL_RGBA8;
+            case F_TexturePixelFormat_R8G8B8A8_UNORM:    return GL_RGBA8;
+        }
+        F_Assert(false && "Util_Transform2GLFormatInternal: Wrong type !")
+        return GL_RGBA8;
+    }
     GLenum Util_Transform2GLFilterSize(FTextureFilterSizeType type)
     {
         switch ((int)type)

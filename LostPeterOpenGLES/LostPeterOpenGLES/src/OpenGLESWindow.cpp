@@ -1106,37 +1106,19 @@ namespace LostPeterOpenGLES
 
     bool OpenGLESWindow::OnBeginCompute_BeforeRender()
     {
-        return false;
+        return beginCompute_BeforeRender();
     }
         void OpenGLESWindow::OnUpdateCompute_BeforeRender()
         {
-
+            updateCompute_BeforeRender();
         }
         void OpenGLESWindow::OnCompute_BeforeRender()
         {
-
+            compute_BeforeRender();
         }
     void OpenGLESWindow::OnEndCompute_BeforeRender()
     {
-
-    }
-
-
-    bool OpenGLESWindow::OnBeginCompute_AfterRender()
-    {
-        return false;
-    }
-        void OpenGLESWindow::OnUpdateCompute_AfterRender()
-        {
-
-        }
-        void OpenGLESWindow::OnCompute_AfterRender()
-        {
-
-        }
-    void OpenGLESWindow::OnEndCompute_AfterRender()
-    {
-
+        endCompute_BeforeRender();
     }
 
 
@@ -1155,6 +1137,24 @@ namespace LostPeterOpenGLES
     void OpenGLESWindow::OnEndRender()
     {
         endRender();
+    }
+
+
+    bool OpenGLESWindow::OnBeginCompute_AfterRender()
+    {
+        return beginCompute_AfterRender();
+    }
+        void OpenGLESWindow::OnUpdateCompute_AfterRender()
+        {
+            updateCompute_AfterRender();
+        }
+        void OpenGLESWindow::OnCompute_AfterRender()
+        {
+            compute_AfterRender();
+        }
+    void OpenGLESWindow::OnEndCompute_AfterRender()
+    {
+        endCompute_AfterRender();
     }
 
 
@@ -3904,18 +3904,26 @@ namespace LostPeterOpenGLES
 
                     //2> Texture Data
                     GLenum typeFormat = Util_Transform2GLFormat(typePixelFormat);
+                    GLenum formatInternal;
                     GLenum format;
-					if (channel == 1)
-						format = GL_RED;
-					else if (channel == 3)
-						format = GL_RGB;
-					else if (channel == 4)
-						format = GL_RGBA;
+					if (channel == 1) {
+                        formatInternal = GL_RED;
+                        format = GL_RED;
+                    }
+					else if (channel == 3) {
+                        formatInternal = GL_RGB;
+                        format = GL_RGB;
+                    }
+					else if (channel == 4) {
+                        formatInternal = GL_RGBA8;
+                        format = GL_RGBA;
+                    }
+
                     if (typeTexture == F_Texture_1D)
                     {
                         glTexImage2D(type, 
 									 0, 
-									 format, 
+									 formatInternal, 
 									 width, 
                                      1,
 									 0, 
@@ -3927,7 +3935,7 @@ namespace LostPeterOpenGLES
                     {
                         glTexImage2D(type, 
 									 0, 
-									 format, 
+									 formatInternal, 
 									 width, 
 									 height, 
 									 0, 
@@ -3939,7 +3947,7 @@ namespace LostPeterOpenGLES
                     {
                         glTexImage3D(GL_TEXTURE_2D_ARRAY, 
 									 0, 
-									 format,               
+									 formatInternal,               
 									 width,               
 									 height,               
 									 numArray,           
@@ -3952,7 +3960,7 @@ namespace LostPeterOpenGLES
                     {
                         glTexImage3D(GL_TEXTURE_3D, 
 									 0, 
-									 format,               
+									 formatInternal,               
 									 width,               
 									 height,               
 									 depth,           
@@ -3968,7 +3976,7 @@ namespace LostPeterOpenGLES
 							uint8* pDataCur = pData + i * width * height * channel;
 							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 										 0, 
-										 format, 
+										 formatInternal, 
 										 width, 
 										 height, 
 										 0, 
@@ -4018,6 +4026,16 @@ namespace LostPeterOpenGLES
                     }
                 }
 
+                void OpenGLESWindow::bindGLTextureImage(FTextureType typeTexture, uint slot, uint32 nTextureID, uint32 access, uint32 format)
+                {
+                    glBindImageTexture(slot,
+                                       nTextureID,
+                                       0,
+                                       GL_FALSE,
+                                       0,
+                                       access,
+                                       format);
+                }
 
 
             void OpenGLESWindow::createConstBuffers()
@@ -4960,6 +4978,91 @@ namespace LostPeterOpenGLES
 		this->poFramebufferSize.x = (float)frameW;
 		this->poFramebufferSize.y = (float)frameH;
 	}
+
+    //Compute Before Render
+    bool OpenGLESWindow::beginCompute_BeforeRender() 
+    {
+        if (!this->cfg_isUseComputeShaderBeforeRender)
+        {
+            return false;
+        }
+        return true;
+    }
+        void OpenGLESWindow::updateCompute_BeforeRender()
+        {
+            //CommandBuffer
+            updateComputeCommandBuffer_BeforeRender();
+
+        }
+            void OpenGLESWindow::updateComputeCommandBuffer_BeforeRender()
+            {
+                updateCompute_BeforeRender_Default();
+                updateCompute_BeforeRender_Terrain();
+                updateCompute_BeforeRender_Custom();
+                updateCompute_BeforeRender_Cull();
+            }
+                void OpenGLESWindow::updateCompute_BeforeRender_Default()
+                {
+
+                }
+                void OpenGLESWindow::updateCompute_BeforeRender_Terrain()
+                {
+
+                }
+                void OpenGLESWindow::updateCompute_BeforeRender_Custom()
+                {
+
+                }
+                void OpenGLESWindow::updateCompute_BeforeRender_Cull()
+                {
+
+                }
+                    
+        void OpenGLESWindow::compute_BeforeRender()
+        {
+
+        }
+    void OpenGLESWindow::endCompute_BeforeRender()
+    {
+
+    }
+
+    //Compute After Render
+    bool OpenGLESWindow::beginCompute_AfterRender()
+    {
+        return true;
+    }
+        void OpenGLESWindow::updateCompute_AfterRender()
+        {
+
+        }
+            void OpenGLESWindow::updateComputeCommandBuffer_AfterRender()
+            {
+
+            }
+                void OpenGLESWindow::updateCompute_AfterRender_Default()
+                {
+
+                }
+                void OpenGLESWindow::updateCompute_AfterRender_Custom()
+                {
+
+                }
+                void OpenGLESWindow::updateCompute_AfterRender_HizDepthGenerate()
+                {
+
+                }
+
+        void OpenGLESWindow::compute_AfterRender()
+        {
+
+        }
+    void OpenGLESWindow::endCompute_AfterRender()
+    {
+
+    }
+
+
     bool OpenGLESWindow::beginRender()
     {
         GLESFrameBuffer* pFrameBuffer = this->poFrameBuffers[this->poCurrentFrame];
@@ -5861,6 +5964,12 @@ namespace LostPeterOpenGLES
 					{
 						glDrawElementsInstancedBaseInstanceEXT(mode, count, type, indices, instancecount, baseinstance);
 					}
+
+                    void OpenGLESWindow::dispatch(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z)
+					{
+						glDispatchCompute(num_groups_x, num_groups_y, num_groups_z);
+					}
+
                 void OpenGLESWindow::endRenderPass(GLESRenderPass* pRenderPass)
                 {
 					bindGLFrameBuffer(0);

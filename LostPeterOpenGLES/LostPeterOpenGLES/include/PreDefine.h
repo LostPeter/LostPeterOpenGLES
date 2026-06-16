@@ -325,6 +325,7 @@ namespace LostPeterOpenGLES
 
     openglesExport GLenum Util_Transform2GLTextureType(FTextureType type);
     openglesExport GLenum Util_Transform2GLFormat(FTexturePixelFormatType type);
+    openglesExport GLenum Util_Transform2GLFormatInternal(FTexturePixelFormatType type);
     openglesExport GLenum Util_Transform2GLFilterSize(FTextureFilterSizeType type);
     openglesExport GLenum Util_Transform2GLFilter(FTextureFilterPixelType type);
     openglesExport GLenum Util_Transform2GLSamplerMipmapMode(FTextureFilterPixelType type);

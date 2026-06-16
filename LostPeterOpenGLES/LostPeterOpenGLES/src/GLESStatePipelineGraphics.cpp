@@ -210,6 +210,7 @@ namespace LostPeterOpenGLES
 		if (pShaderProgram == nullptr)
 		{
 			String msg = "*********************** GLESStatePipelineGraphics::Init: Failed to create shader program: " + nameShaderProgram;
+			F_LogError("%s", msg.c_str());
 			return false;
 		}
 
