@@ -3,6 +3,8 @@ plugins {
 }
 
 android {
+	//namespace "com.lostpeter.opengles.opengles_012_shadering"
+
     compileSdk 31
     ndkVersion "21.0.6113669"
 
