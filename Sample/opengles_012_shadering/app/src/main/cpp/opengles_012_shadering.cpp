@@ -82,7 +82,7 @@ static const char* g_TexturePaths[5 * g_TextureCount] =
     "texture_terrain_control",          "2DArray",          "false",                    "false",                            "Texture/Terrain/terrain_control.png", //texture_terrain_control
 
     "texture_rt_compute_copy_tex",      "2D",               "true",                     "true",                             "", //texture_rt_compute_copy_tex
-    "texture_rt_compute_copy_texarray", "2D",                "true",                    "true",                             "", //texture_rt_compute_copy_texarray
+    "texture_rt_compute_copy_texarray", "2D",               "true",                     "true",                             "", //texture_rt_compute_copy_texarray
 
 };
 static int g_TextureChannels[g_TextureCount] = 
@@ -1318,11 +1318,11 @@ void OpenGLES_012_Shadering::createDescriptorSets_Custom()
                 for (size_t p = 0; p < count_names; p++)
                 {
                     String& nameDescriptorSet = pStatePipelineCompute->poDescriptorSetLayout->aLayouts[p];
-                    int nBindingIndex = (int)p;
+                    uint32 nBindingIndex = (uint32)p;
 
                     if (nameDescriptorSet == Util_GetDescriptorSetTypeName(DescriptorSet_TextureCopyConstants)) //TextureCopyConstants
                     {
-						uint32 nBindingIndex = (uint32)DescriptorSet_TextureCopyConstants;
+                        nBindingIndex = (uint32)DescriptorSet_TextureCopyConstants;
 						uint32 nUniformBlockIndex = pStatePipelineCompute->GetUniformBlockIndex(nameDescriptorSet);
 						pStatePipelineCompute->BindUniformBlockBinding(nUniformBlockIndex, nBindingIndex);
 						pStatePipelineCompute->BindBufferUniform(pModelObject->poBufferUniform_TextureCopy, nBindingIndex);

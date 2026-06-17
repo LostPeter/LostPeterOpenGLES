@@ -2607,9 +2607,10 @@ namespace LostPeterOpenGLES
                     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 					glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex, nBufferUniformID, 0, bufSize);
 
-                    if (GL_NO_ERROR != glGetError())
+                    GLenum glError = glGetError();
+                    if (GL_NO_ERROR != glError)
                     {
-                        F_LogError("*********************** OpenGLESWindow::createGLBufferUniform: create uniform buffer error, GL error: [%u] !", glGetError());
+                        F_LogError("*********************** OpenGLESWindow::createGLBufferUniform: create uniform buffer error, GL error: [%u] !", glError);
                     }
 
                     this->poDebug->SetGLBufferUniformName(nBufferUniformID, "BufferUniform-" + nameBuffer);
@@ -2648,12 +2649,20 @@ namespace LostPeterOpenGLES
                 {
                     if (nBufferID <= 0)
                         return nullptr;
-
-                    UTIL_GLES_CHECK(glBindBufferRange(target, nBlockIndex, nBufferID, offset, bufSize));
+                    
+                    glBindBufferRange(target, nBlockIndex, nBufferID, offset, bufSize);
+                    GLenum glError = glGetError();
+                    if(glError != GL_NO_ERROR) {
+                        F_LogError("*********************** OpenGLESWindow::mapGLBufferRange: [%u - %u - %u - %u - %u - %u], GL error: [%u] !", 
+                                   nBufferID, nBlockIndex, target, (uint32)offset, (uint32)bufSize, access,
+                                   glError);
+                    }
                     UTIL_GLES_CHECK(void* pData = glMapBufferRange(target, offset, bufSize, access));
                     if (pData == nullptr)
                     {
-                        F_LogError("*********************** OpenGLESWindow::mapGLBufferRange: GL error: [%u] !", glGetError());
+                        F_LogError("*********************** OpenGLESWindow::mapGLBufferRange: [%u - %u - %u - %u - %u - %u], GL error: [%u] !", 
+                                   nBufferID, nBlockIndex, target, (uint32)offset, (uint32)bufSize, access,
+                                   glGetError());
                     }
                     return pData;
                 }
@@ -3921,68 +3930,110 @@ namespace LostPeterOpenGLES
 
                     if (typeTexture == F_Texture_1D)
                     {
-                        glTexImage2D(type, 
-									 0, 
-									 formatInternal, 
-									 width, 
-                                     1,
-									 0, 
-									 format, 
-									 GL_UNSIGNED_BYTE, 
-									 pData);
+                        if (!isUnOrderedAccess) {
+                            glTexImage2D(type, 
+                                         0, 
+                                         formatInternal, 
+                                         width, 
+                                         1,
+                                         0, 
+                                         format, 
+                                         GL_UNSIGNED_BYTE, 
+                                         pData);
+                        } else {
+                            glTexStorage2D(type, 
+                                           mipMapCount,
+                                           formatInternal, 
+                                           width, 
+                                           height);
+                        }
                     }
                     else if (typeTexture == F_Texture_2D)
                     {
-                        glTexImage2D(type, 
-									 0, 
-									 formatInternal, 
-									 width, 
-									 height, 
-									 0, 
-									 format, 
-									 GL_UNSIGNED_BYTE, 
-									 pData);
+                        if (!isUnOrderedAccess) {
+                            glTexImage2D(type, 
+                                         0, 
+                                         formatInternal, 
+                                         width, 
+                                         height, 
+                                         0, 
+                                         format, 
+                                         GL_UNSIGNED_BYTE, 
+                                         pData);
+                        } else {
+                            glTexStorage2D(type, 
+                                           mipMapCount,
+                                           formatInternal, 
+                                           width, 
+                                           height);
+                        }
                     }
                     else if (typeTexture == F_Texture_2DArray)
                     {
-                        glTexImage3D(GL_TEXTURE_2D_ARRAY, 
-									 0, 
-									 formatInternal,               
-									 width,               
-									 height,               
-									 numArray,           
-									 0,                    
-									 format,               
-									 GL_UNSIGNED_BYTE,     
-									 pData);
+                        if (!isUnOrderedAccess) {
+                            glTexImage3D(type, 
+                                         0, 
+                                         formatInternal,               
+                                         width,               
+                                         height,               
+                                         numArray,           
+                                         0,                    
+                                         format,               
+                                         GL_UNSIGNED_BYTE,     
+                                         pData);
+                        } else {
+                            glTexStorage3D(type, 
+                                           mipMapCount,
+                                           formatInternal, 
+                                           width, 
+                                           height,
+                                           numArray);
+                        }
                     }
                     else if (typeTexture == F_Texture_3D)
                     {
-                        glTexImage3D(GL_TEXTURE_3D, 
-									 0, 
-									 formatInternal,               
-									 width,               
-									 height,               
-									 depth,           
-									 0,                    
-									 format,               
-									 GL_UNSIGNED_BYTE,     
-									 pData);
+                        if (!isUnOrderedAccess) {
+                            glTexImage3D(type, 
+                                         0, 
+                                         formatInternal,               
+                                         width,               
+                                         height,               
+                                         depth,           
+                                         0,                    
+                                         format,               
+                                         GL_UNSIGNED_BYTE,     
+                                         pData);
+                        } else {
+                            glTexStorage3D(type, 
+                                           mipMapCount,
+                                           formatInternal, 
+                                           width, 
+                                           height,
+                                           depth);
+                        }
                     }
                     else if (typeTexture == F_Texture_CubeMap)
                     {
                         for (int i = 0; i < numArray; i++)
 						{
 							uint8* pDataCur = pData + i * width * height * channel;
-							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-										 0, 
-										 formatInternal, 
-										 width, 
-										 height, 
-										 0, 
-										 format, 
-										 GL_UNSIGNED_BYTE, 
-										 pDataCur);
+                            if (!isUnOrderedAccess) {
+                                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                                             0, 
+                                             formatInternal, 
+                                             width, 
+                                             height, 
+                                             0, 
+                                             format, 
+                                             GL_UNSIGNED_BYTE, 
+                                             pDataCur);
+                            } else {
+                                glTexStorage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                                               mipMapCount,
+                                               formatInternal, 
+                                               width, 
+                                               height);
+                            }
 						}
                     }
                     else
@@ -4035,6 +4086,12 @@ namespace LostPeterOpenGLES
                                        0,
                                        access,
                                        format);
+                    
+                    GLenum glError = glGetError();
+                    if (GL_NO_ERROR != glError)
+                    {
+                        F_LogError("*********************** OpenGLESWindow::bindGLTextureImage: glBindImageTexture error, GL error: [%u] !", glError);
+                    }
                 }
 
 
