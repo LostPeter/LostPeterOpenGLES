@@ -126,7 +126,10 @@ License:
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_006_depth.png)
 
 ### <007> opengles_007_stencil
+[OpenGLES学习例子007: opengles_007_stencil 模板操作](https://zhuanlan.zhihu.com/p/2015397712057615879)
+* sample007: Use stencil buffer to render outline
 
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_007_stencil.png)
 
 ### <008> opengles_008_blend
 
