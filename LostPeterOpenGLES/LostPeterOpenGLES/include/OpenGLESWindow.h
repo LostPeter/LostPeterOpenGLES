@@ -537,6 +537,17 @@ namespace LostPeterOpenGLES
                                                      size_t bufSize, 
                                                      uint8* pBuf);
 
+					//BufferIndirectCommand
+					virtual GLESBufferIndirectCommand* createBufferIndirectCommand_DrawInstance(const String& nameBuffer,
+                                                                 							    GLenum usage,
+																							    int count);
+                    virtual void updateBufferIndirectCommand_DrawInstance(GLESBufferIndirectCommand* pBufferIndirectCommand);
+                    
+                    virtual GLESBufferIndirectCommand* createBufferIndirectCommand_DrawIndexedInstance(const String& nameBuffer,
+                                                                 							  		   GLenum usage,
+                                                                                                       int count);
+                    virtual void updateBufferIndirectCommand_DrawIndexedInstance(GLESBufferIndirectCommand* pBufferIndirectCommand);
+					
 
                     virtual bool createGLBufferVertex(const String& nameBuffer,
                                                       FMeshVertexType type,
@@ -584,6 +595,19 @@ namespace LostPeterOpenGLES
                     virtual void bindGLBufferUniform(uint32 nBufferUniformID);
                     virtual void bindGLBufferUniformBlockIndex(uint32 nBufferUniformID, uint32 bindingIndex, size_t offset, size_t bufSize);
                     virtual void destroyGLBufferUniform(uint32 nBufferUniformID);
+
+					virtual bool createGLBufferIndirectCommand(const String& nameBuffer,
+															   GLenum usage,
+															   size_t bufSize, 
+															   uint8* pBuf,
+															   uint32& nBufferIndirectCommandID);
+					virtual void updateGLBufferIndirectCommand(size_t offset,
+															   size_t bufSize,
+															   uint8* pBuf,
+															   uint32 nBufferIndirectCommandID);
+					virtual void bindGLBufferIndirectCommand(uint32 nBufferIndirectCommandID);
+                    virtual void destroyGLBufferIndirectCommand(uint32 nBufferIndirectCommandID);
+
 
                     virtual void* mapGLBufferRange(uint32 nBufferID, uint32 nBlockIndex, GLenum target, size_t offset, size_t bufSize, GLbitfield access);
                         virtual void flushGLMappedBufferRange(uint32 nBufferID, size_t offset, size_t bufSize);
@@ -1260,6 +1284,11 @@ namespace LostPeterOpenGLES
                         virtual void drawIndexed(GLenum mode, GLsizei count, GLenum type, const void* indices);
 						virtual void drawIndexedInstance(GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei instancecount);
 						virtual void drawIndexedInstancedBaseInstance(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLuint baseinstance);
+
+						virtual void drawInstanceIndirect(GLenum mode, const void* pIndirect);
+						virtual void drawIndexedInstanceIndirect(GLenum mode, GLenum type, const void* pIndirect);
+						virtual void drawMultiInstanceIndirect(GLenum mode, const void* pIndirect, GLsizei drawcount, GLsizei stride);
+						virtual void drawMultiIndexedInstanceIndirect(GLenum mode, GLenum type, const void* pIndirect, GLsizei drawcount, GLsizei stride);
 
                         virtual void dispatch(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z);
 

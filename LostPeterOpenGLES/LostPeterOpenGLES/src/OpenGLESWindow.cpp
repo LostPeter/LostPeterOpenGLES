@@ -2473,6 +2473,45 @@ namespace LostPeterOpenGLES
                                            pBuf);
                 }
 
+				GLESBufferIndirectCommand* OpenGLESWindow::createBufferIndirectCommand_DrawInstance(const String& nameBuffer,
+																								    GLenum usage,
+																								    int count)
+				{
+					GLESBufferIndirectCommand* pBufferIndirectCommand = new GLESBufferIndirectCommand(nameBuffer);
+                    if (!pBufferIndirectCommand->InitIndirectDrawInstance(usage,
+																		  count))
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createBufferIndirectCommand_DrawInstance: Failed to create buffer indirect command: [%s] !", nameBuffer.c_str());
+                        F_DELETE(pBufferIndirectCommand)
+                        return nullptr;
+                    }
+                    return pBufferIndirectCommand;
+				}
+                void OpenGLESWindow::updateBufferIndirectCommand_DrawInstance(GLESBufferIndirectCommand* pBufferIndirectCommand)
+				{
+					pBufferIndirectCommand->UpdateBuffer();
+				}	
+                    
+                GLESBufferIndirectCommand* OpenGLESWindow::createBufferIndirectCommand_DrawIndexedInstance(const String& nameBuffer,
+                                                                 							  		       GLenum usage,
+                                                                                                           int count)
+				{
+					GLESBufferIndirectCommand* pBufferIndirectCommand = new GLESBufferIndirectCommand(nameBuffer);
+                    if (!pBufferIndirectCommand->InitIndirectDrawIndexedInstance(usage,
+																				 count))
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createBufferIndirectCommand_DrawIndexedInstance: Failed to create buffer indirect command: [%s] !", nameBuffer.c_str());
+                        F_DELETE(pBufferIndirectCommand)
+                        return nullptr;
+                    }
+                    return pBufferIndirectCommand;
+				}
+                void OpenGLESWindow::updateBufferIndirectCommand_DrawIndexedInstance(GLESBufferIndirectCommand* pBufferIndirectCommand)
+				{
+					pBufferIndirectCommand->UpdateBuffer();
+				}
+
+
                 bool OpenGLESWindow::createGLBufferVertex(const String& nameBuffer,
                                                           FMeshVertexType type,
                                                           size_t bufSize,
@@ -2644,6 +2683,63 @@ namespace LostPeterOpenGLES
                         glDeleteBuffers(1, &nBufferUniformID);
                     }
                 }
+
+				bool OpenGLESWindow::createGLBufferIndirectCommand(const String& nameBuffer,
+															       GLenum usage,
+															       size_t bufSize, 
+															       uint8* pBuf,
+															       uint32& nBufferIndirectCommandID)
+				{
+					uint error;
+                    glGenBuffers(1, &nBufferIndirectCommandID);
+
+                    error = (uint)glGetError();
+                    if (GL_NO_ERROR != error) 
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createGLBufferIndirectCommand: create indirect command buffer error, glGenBuffers GL error: [%u] !", error);
+                    }
+
+                    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, nBufferIndirectCommandID);
+                    glBufferData(GL_DRAW_INDIRECT_BUFFER, bufSize, pBuf, usage);
+
+                    error = (uint)glGetError();
+                    if (GL_NO_ERROR != error) 
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createGLBufferIndirectCommand: create indirect command buffer error, glBufferData GL error: [%u] !", error);
+                    }
+
+                    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+
+                    error = (uint)glGetError();
+                    if (GL_NO_ERROR != error) 
+                    {
+                        F_LogError("*********************** OpenGLESWindow::createGLBufferIndirectCommand: create indirect command buffer error, glBindBufferRange GL error: [%u] !", error);
+                    }
+
+                    this->poDebug->SetGLBufferIndirectCommandName(nBufferIndirectCommandID, nameBuffer);
+                    return true;
+				}
+				void OpenGLESWindow::updateGLBufferIndirectCommand(size_t offset,
+															       size_t bufSize,
+															       uint8* pBuf,
+															       uint32 nBufferIndirectCommandID)
+				{
+					glBindBuffer(GL_DRAW_INDIRECT_BUFFER, nBufferIndirectCommandID);
+                    glBufferSubData(GL_DRAW_INDIRECT_BUFFER, offset, bufSize, pBuf);
+                    glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+				}
+				void OpenGLESWindow::bindGLBufferIndirectCommand(uint32 nBufferIndirectCommandID)
+				{
+					glBindBuffer(GL_DRAW_INDIRECT_BUFFER, nBufferIndirectCommandID); 
+				}
+				void OpenGLESWindow::destroyGLBufferIndirectCommand(uint32 nBufferIndirectCommandID)
+				{
+					if (nBufferIndirectCommandID > 0)
+                    {
+                        glDeleteBuffers(1, &nBufferIndirectCommandID);
+                    }
+				}	
+
 
                 void* OpenGLESWindow::mapGLBufferRange(uint32 nBufferID, uint32 nBlockIndex, GLenum target, size_t offset, size_t bufSize, GLbitfield access)
                 {
@@ -6036,6 +6132,23 @@ namespace LostPeterOpenGLES
 					void OpenGLESWindow::drawIndexedInstancedBaseInstance(GLenum mode, GLsizei count, GLenum type, const void *indices, GLsizei instancecount, GLuint baseinstance)
 					{
 						glDrawElementsInstancedBaseInstanceEXT(mode, count, type, indices, instancecount, baseinstance);
+					}
+
+					void OpenGLESWindow::drawInstanceIndirect(GLenum mode, const void* pIndirect)
+					{
+						glDrawArraysIndirect(mode, pIndirect);
+					}
+					void OpenGLESWindow::drawIndexedInstanceIndirect(GLenum mode, GLenum type, const void* pIndirect)
+					{
+						glDrawElementsIndirect(mode, type, pIndirect);
+					}
+					void OpenGLESWindow::drawMultiInstanceIndirect(GLenum mode, const void* pIndirect, GLsizei drawcount, GLsizei stride)
+					{
+						glMultiDrawArraysIndirectEXT(mode, pIndirect, drawcount, stride);
+					}
+					void OpenGLESWindow::drawMultiIndexedInstanceIndirect(GLenum mode, GLenum type, const void* pIndirect, GLsizei drawcount, GLsizei stride)
+					{
+						glMultiDrawElementsIndirectEXT(mode, type, pIndirect, drawcount, stride);
 					}
 
                     void OpenGLESWindow::dispatch(GLuint num_groups_x, GLuint num_groups_y, GLuint num_groups_z)

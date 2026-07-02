@@ -64,6 +64,7 @@ namespace LostPeterOpenGLES
         void SetGLBufferName(uint32 id, const String& name);
         void SetGLVertexArrayName(uint32 id, const String& name);
         void SetGLBufferUniformName(uint32 id, const String& name);
+		void SetGLBufferIndirectCommandName(uint32 id, const String& name);
 
         void SetGLShaderName(uint32 id, const String& name);
         void SetGLShaderProgramName(uint32 id, const String& name);

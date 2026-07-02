@@ -185,6 +185,10 @@ namespace LostPeterOpenGLES
     {
         ObjectLabel(GL_BUFFER, id, -1, name.c_str());
     }
+	void GLESDebug::SetGLBufferIndirectCommandName(uint32 id, const String& name)
+	{
+		ObjectLabel(GL_BUFFER, id, -1, name.c_str());
+	}
 
     void GLESDebug::SetGLShaderName(uint32 id, const String& name)
     {

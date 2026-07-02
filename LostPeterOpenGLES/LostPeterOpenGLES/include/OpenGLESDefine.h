@@ -1037,6 +1037,150 @@ namespace LostPeterOpenGLES
         }
     };
 
+	//////////////////////////////// ValueConstants /////////////////////////////////
+    struct openglesExport ValueFloatConstants
+    {
+        float value;
+        float reserve0;
+        float reserve1;
+        float reserve2;
+
+        ValueFloatConstants()
+            : value(0)
+            , reserve0(0)
+            , reserve1(0)
+            , reserve2(0)
+        {
+
+        }
+    };
+    struct openglesExport ValueIntConstants
+    {
+        int value;
+        int reserve0;
+        int reserve1;
+        int reserve2;
+
+        ValueIntConstants()
+            : value(0)
+            , reserve0(0)
+            , reserve1(0)
+            , reserve2(0)
+        {
+
+        }
+    };
+    struct openglesExport ValueUIntConstants
+    {
+        uint value;
+        uint reserve0;
+        uint reserve1;
+        uint reserve2;
+
+        ValueUIntConstants()
+            : value(0)
+            , reserve0(0)
+            , reserve1(0)
+            , reserve2(0)
+        {
+
+        }
+    };
+    struct openglesExport ValueVector2Constants
+    {
+        FVector2 value;
+        float reserve0;
+        float reserve1;
+
+        ValueVector2Constants()
+            : value(0)
+            , reserve0(0)
+            , reserve1(0)
+        {
+
+        }
+    };
+    struct openglesExport ValueVector3Constants
+    {
+        FVector3 value;
+        float reserve0;
+
+        ValueVector3Constants()
+            : value(0)
+            , reserve0(0)
+        {
+
+        }
+    };
+    struct openglesExport ValueVector4Constants
+    {
+        FVector4 value;
+
+        ValueVector4Constants()
+            : value(0)
+        {
+
+        }
+    };
+    struct openglesExport ValueMatrix3Constants
+    {
+        FMatrix3 value;
+
+        ValueMatrix3Constants()
+            : value(FMath::ms_mat3Unit)
+        {
+
+        }
+    };
+    struct openglesExport ValueMatrix4Constants
+    {
+        FMatrix4 value;
+
+        ValueMatrix4Constants()
+            : value(FMath::ms_mat4Unit)
+        {
+
+        }
+    };
+	
+
+	//////////////////////////////// IndirectDraw ///////////////////////////////////
+	struct openglesExport DrawArraysIndirectCommand
+	{
+		GLuint vertexCountPerInstance;
+		GLuint instanceCount;
+		GLuint baseVertexLocation;
+		GLuint startInstanceLocation;
+
+		DrawArraysIndirectCommand()
+			: vertexCountPerInstance(0)
+			, instanceCount(0)
+			, baseVertexLocation(0)
+			, startInstanceLocation(0)
+		{
+
+		}
+	};
+
+	struct openglesExport DrawElementsIndirectCommand
+	{
+		GLuint indexCountPerInstance;
+		GLuint instanceCount;
+		GLuint startIndexLocation;
+		GLuint baseVertexLocation;
+		GLuint startInstanceLocation;
+
+		DrawElementsIndirectCommand()
+			: indexCountPerInstance(0)
+			, instanceCount(0)
+			, startIndexLocation(0)
+			, baseVertexLocation(0)
+			, startInstanceLocation(0)
+		{
+
+		}
+	};
+	
 
 }; //LostPeterOpenGLES
 

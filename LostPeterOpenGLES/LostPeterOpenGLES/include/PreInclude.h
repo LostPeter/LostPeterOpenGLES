@@ -24,6 +24,7 @@
 
 #include "GLESDebug.h"
 #include "GLESBuffer.h"
+#include "GLESBufferIndirectCommand.h"
 #include "GLESBufferStorage.h"
 #include "GLESBufferUniform.h"
 #include "GLESBufferVertex.h"
