@@ -24,3 +24,4 @@ debug=${1}
 ./InstallRun_MacOS_Android_Sample.sh opengles_010_lighting $debug
 ./InstallRun_MacOS_Android_Sample.sh opengles_011_texturing $debug
 ./InstallRun_MacOS_Android_Sample.sh opengles_012_shadering $debug
+./InstallRun_MacOS_Android_Sample.sh opengles_013_indirectdraw $debug

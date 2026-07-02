@@ -22,3 +22,4 @@
 ./Clean_MacOS_Android_Sample.sh opengles_010_lighting
 ./Clean_MacOS_Android_Sample.sh opengles_011_texturing
 ./Clean_MacOS_Android_Sample.sh opengles_012_shadering
+./Clean_MacOS_Android_Sample.sh opengles_013_indirectdraw

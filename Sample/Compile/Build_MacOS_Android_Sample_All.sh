@@ -25,3 +25,4 @@ rebuild=${2}
 ./Build_MacOS_Android_Sample.sh opengles_010_lighting $debug $rebuild
 ./Build_MacOS_Android_Sample.sh opengles_011_texturing $debug $rebuild
 ./Build_MacOS_Android_Sample.sh opengles_012_shadering $debug $rebuild
+./Build_MacOS_Android_Sample.sh opengles_013_indirectdraw $debug $rebuild

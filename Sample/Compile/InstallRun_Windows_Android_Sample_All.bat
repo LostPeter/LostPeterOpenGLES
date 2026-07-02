@@ -22,3 +22,4 @@ call ./InstallRun_Windows_Android_Sample.bat opengles_009_instancing
 call ./InstallRun_Windows_Android_Sample.bat opengles_010_lighting
 call ./InstallRun_Windows_Android_Sample.bat opengles_011_texturing
 call ./InstallRun_Windows_Android_Sample.bat opengles_012_shadering
+call ./InstallRun_Windows_Android_Sample.bat opengles_013_indirectdraw
