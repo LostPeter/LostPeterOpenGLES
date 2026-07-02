@@ -150,6 +150,8 @@ namespace LostPeterOpenGLES
 
 		uint32 GetUniformBlockIndex(const String& name);
         void BindUniformBlockBinding(uint32 nUniformBlockIndex, uint32 nUniformBlockBinding);
+
+		GLESStatePipelineGraphics* NewStatePipelineGraphics(const String& nameStatePipelineGraphics);
 			
 	public:
 		void BindBufferUniform(GLESBufferUniform* pBufferUnifom, uint32 nBindingIndex);
