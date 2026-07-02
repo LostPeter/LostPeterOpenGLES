@@ -21,105 +21,36 @@ public:
     OpenGLES_013_IndirectDraw(String name);
 
 public:
-	/////////////////////////// ModelMesh ///////////////////////////
-    struct ModelMesh
+	/////////////////////////// ModelObjectRend /////////////////////
+    struct ModelObject;
+    struct ModelObjectRend
     {
-        OpenGLES_013_IndirectDraw* pWindow;
-        String nameMesh;
-        String pathMesh;
-        FMeshType typeMesh;
-        FMeshGeometryType typeGeometryType;
+		ModelObjectRend(const String& _nameObjectRend,
+                        ModelObject* _pModelObject,
+                        MeshSub* _pMeshSub,
+                        int _indexRend)
+            : nameObjectRend(_nameObjectRend)
+            , pModelObject(_pModelObject)
+            , pMeshSub(_pMeshSub)
+            , indexRend(_indexRend)
+            , isShow(true)
+            , isWireFrame(false)
+            , isRotate(false)
+            , isLighting(true)
+            , isTransparent(false)
 
-		//Vertex/Index
-		FMeshVertexType poTypeVertex;
-        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
-        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
-		uint32_t poVertexCount;
-		size_t poVertexBuffer_Size;
-		void* poVertexBuffer_Data;
-		std::vector<uint32_t> indices;
-		uint32_t poIndexCount;
-		size_t poIndexBuffer_Size;
-		void* poIndexBuffer_Data;
-		GLESBufferVertex* pBufferVertex;
-		GLESBufferVertexIndex* pBufferVertexIndex;
+            //Uniform
+			, countInstanceExt(0)
+            , countInstance(1)
 
-
-        ModelMesh(OpenGLES_013_IndirectDraw* _pWindow, 
-                  const String& _nameMesh,
-                  const String& _pathMesh,
-                  FMeshType _typeMesh,
-                  FMeshGeometryType _typeGeometryType,
-                  FMeshVertexType _poTypeVertex)
-            : pWindow(_pWindow)
-            , nameMesh(_nameMesh)
-            , pathMesh(_pathMesh)
-            , typeMesh(_typeMesh)
-            , typeGeometryType(_typeGeometryType)
-
-			//Vertex/Index
-			, poTypeVertex(_poTypeVertex)
-			, poVertexCount(0)
-			, poVertexBuffer_Size(0)
-			, poVertexBuffer_Data(nullptr)
-			, poIndexCount(0)
-			, poIndexBuffer_Size(0)
-			, poIndexBuffer_Data(nullptr)
-			, pBufferVertex(nullptr)
-			, pBufferVertexIndex(nullptr)
-        {
-
-        }
-
-        ~ModelMesh()
-        {
-            Destroy();
-        }
-
-        void Destroy()
-        {
-			//Vertex/Index
-			F_DELETE(this->pBufferVertex)
-			F_DELETE(this->pBufferVertexIndex)
-        }
-
-
-        bool LoadMesh(bool isFlipY, bool isTransformLocal, const FMatrix4& matTransformLocal);
-
-    };
-    typedef std::vector<ModelMesh*> ModelMeshPtrVector;
-    typedef std::map<String, ModelMesh*> ModelMeshPtrMap;
-
-    
-    /////////////////////////// ModelObject /////////////////////////
-	struct ModelObject
-	{
-		ModelObject(OpenGLES_013_IndirectDraw* _pWindow)
-			//Common
-			: pWindow(_pWindow)
-
-			//Name
-			, nameObject("")
-            , nameMesh("")
-			, isShow(true)
-			, isWireFrame(false)
-			, isRotate(true)
-			, isTransparent(false)
-			, isLighting(true)
-			, isUsedCompute(false)
-			, frameRand(0)
-
-			//Mesh
-            , pMesh(nullptr)
-			
-			//Uniform
-			, countInstanceExt(5)
-            , countInstance(11)
-			, poBufferUniform(nullptr)
+			, poBufferUniform_Object(nullptr)
 			, poBufferUniform_Material(nullptr)
-			, poBufferUniform_TextureCopy(nullptr)
-			
-			//Pipeline Graphics
+			, poBufferUniform_Offset(nullptr)
+			, isUsedIndirectDraw(false)
+			, poBufferUniform_Tessellation(nullptr)
+            , isUsedTessellation(false)
+
+            //Pipeline Graphics
 			, poStatePipelineGraphics(nullptr)
 
             //Pipeline Computes
@@ -156,66 +87,60 @@ public:
 			, poColorWriteMask_Green(true)
 			, poColorWriteMask_Blue(true)
 			, poColorWriteMask_Alpha(true)
-		{
-			
-		}
-		~ModelObject()
-		{
-			//Mesh
-            this->pMesh = nullptr;
+        {
+            
+        }
+        ~ModelObjectRend()
+        {
+            //MeshSub
+            this->pMeshSub = nullptr;
 
 			//Uniform
 			this->objectCBs.clear();
 			this->materialCBs.clear();
-			this->textureCopyCBs.clear();
+			this->tessellationCBs.clear();
 
             //Texture
             this->mapModelTexturesShaderSort.clear();
 
             //Clean
             CleanupSwapChain();
-
-			//Pipeline
-			F_DELETE(this->poStatePipelineGraphics)
-
-			//Pipeline Computes
-			size_t count = this->aPipelineComputes.size();
-            for (size_t i = 0; i < count; i++) 
-			{
-				F_DELETE(this->aPipelineComputes[i])
-			}
-			this->aPipelineComputes.clear();
-		}
-
-		void CleanupSwapChain()
-		{
-			//Uniform
-			F_DELETE(this->poBufferUniform)
-			F_DELETE(this->poBufferUniform_Material)
-			F_DELETE(this->poBufferUniform_TextureCopy)
-
-		}
-
-		void recreateSwapChain()
-        {
-
         }
 
-		//Common
-		OpenGLES_013_IndirectDraw* pWindow;
+        void CleanupSwapChain()
+        {
+            //Uniform
+            F_DELETE(this->poBufferUniform_Object)
+			F_DELETE(this->poBufferUniform_Material)
+			F_DELETE(this->poBufferUniform_Offset)
+			F_DELETE(this->poBufferUniform_Tessellation)
 
-		//Name
-		int indexModel;
-		String nameObject;
-        String nameMesh;
-		bool isShow;
-		bool isWireFrame;
-		bool isRotate;
-		bool isTransparent;
-		bool isLighting;
+            //Pipeline Graphics
+            F_DELETE(this->poStatePipelineGraphics)
 
-		//Mesh
-        ModelMesh* pMesh;
+            //Pipeline Computes
+            size_t count = this->aPipelineComputes.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                F_DELETE(this->aPipelineComputes[i])
+            }
+			this->aPipelineComputes.clear();
+        }
+
+        void RecreateSwapChain()
+        {
+
+        }   
+
+        String nameObjectRend;
+        ModelObject* pModelObject;
+        MeshSub* pMeshSub;
+        int indexRend;
+        bool isShow;
+        bool isWireFrame;
+        bool isRotate;
+        bool isLighting;
+        bool isTransparent;
 
 		//Texture
 		GLESTexturePtrShaderSortMap mapModelTexturesShaderSort;
@@ -225,16 +150,19 @@ public:
         int countInstance;
 
 		std::vector<ObjectConstants> objectCBs;
-		GLESBufferUniform* poBufferUniform;
+		GLESBufferUniform* poBufferUniform_Object;
 		std::vector<FMatrix4> instanceMatWorld;
 
 		std::vector<MaterialConstants> materialCBs;
 		GLESBufferUniform* poBufferUniform_Material;
 
-		std::vector<TextureCopyConstants> textureCopyCBs;
-		GLESBufferUniform* poBufferUniform_TextureCopy;
-		bool isUsedCompute;
-		int frameRand;
+		ValueUIntConstants offsetCBs;
+		GLESBufferUniform* poBufferUniform_Offset;
+		bool isUsedIndirectDraw;
+
+		std::vector<TessellationConstants> tessellationCBs;
+		GLESBufferUniform* poBufferUniform_Tessellation;
+        bool isUsedTessellation;
 
 		//Pipeline
 		GLESStatePipelineGraphics* poStatePipelineGraphics;
@@ -275,17 +203,6 @@ public:
 		GLboolean poColorWriteMask_Blue;
 		GLboolean poColorWriteMask_Alpha;
 
-
-	////Mesh
-        void SetMesh(ModelMesh* pMesh)
-        {
-            this->pMesh = pMesh;
-        }
-        ModelMesh* GetMesh()
-        {
-            return this->pMesh;
-        }
-
     ////Textures
         void AddTexture(const String& nameShaderSort, GLESTexture* pTexture)
         {
@@ -324,20 +241,286 @@ public:
             F_Assert (index >= 0 && index < (int)this->aPipelineComputes.size() && "ModelObject::GetPipelineCompute")
             return this->aPipelineComputes[index];
         }
+    };
+    typedef std::vector<ModelObjectRend*> ModelObjectRendPtrVector;
+    typedef std::map<String, ModelObjectRend*> ModelObjectRendPtrMap;
+
+
+    /////////////////////////// ModelObjectRendIndirect /////////////
+    struct ModelObjectRendIndirect
+    {
+		ModelObjectRendIndirect(const String& _nameObjectRendIndirect)
+            : nameObjectRendIndirect(_nameObjectRendIndirect)
+            , pRend(nullptr)
+
+            , isShow(true)
+            , isWireFrame(false)
+            , isRotate(false)
+            , isLighting(true)
+            , isTransparent(false)
+
+            //Vertex/Index
+            , poVertexCount(0)
+            , poVertexBuffer_Size(0)
+            , poVertexBuffer_Data(nullptr)
+            , poIndexCount(0)
+            , poIndexBuffer_Size(0)
+            , poIndexBuffer_Data(nullptr)
+            , pBufferVertex(nullptr)
+            , pBufferVertexIndex(nullptr)
+
+			//Uniform
+			, poBufferUniform_Object(nullptr)
+			, poBufferUniform_Material(nullptr)
+			, poBufferUniform_Offset(nullptr)
+			, slotUBO(4)
+			, poBufferUniform_Tessellation(nullptr)
+
+			//Pipeline Graphics
+			, poStatePipelineGraphics(nullptr)
+
+            //IndirectCommand
+            , countIndirectDraw(0)
+            , poBuffer_IndirectCommand(nullptr)
+        {
+            
+        }
+
+        ~ModelObjectRendIndirect()
+        {
+            Destroy();
+        }
+
+        void Destroy()
+		{
+			//Vertex/Index
+			F_DELETE(this->pBufferVertex)
+			F_DELETE(this->pBufferVertexIndex)
+
+			CleanupSwapChain();
+
+			this->aRends.clear();
+			this->aMeshSubs.clear();
+			this->pRend = nullptr;
+		}
+
+        void CleanupSwapChain()
+		{
+			//Uniform
+			F_DELETE(this->poBufferUniform_Object)
+			F_DELETE(this->poBufferUniform_Material)
+			F_DELETE(this->poBufferUniform_Offset)
+			F_DELETE(this->poBufferUniform_Tessellation)
+
+			F_DELETE(this->poBuffer_IndirectCommand)
+
+			F_DELETE(this->poStatePipelineGraphics)
+		}
+
+        void RecreateSwapChain()
+        {
+
+        }   
+
+
+        String nameObjectRendIndirect;
+        ModelObjectRendPtrVector aRends;
+        MeshSubPtrVector aMeshSubs;
+        ModelObjectRend* pRend;
+
+        bool isShow;
+        bool isWireFrame;
+        bool isRotate;
+        bool isLighting;
+        bool isTransparent;
+
+        //Vertex
+		FMeshVertexType poTypeVertex;
+        std::vector<FVertex_Pos3Color4Normal3Tex2> vertices_Pos3Color4Normal3Tex2;
+        std::vector<FVertex_Pos3Color4Normal3Tangent3Tex2> vertices_Pos3Color4Normal3Tangent3Tex2;
+        size_t poVertexCount;
+		size_t poVertexBuffer_PerVertexSize;
+        size_t poVertexBuffer_Size;
+        void* poVertexBuffer_Data;
+        std::vector<uint32_t> indices;
+        size_t poIndexCount;
+        size_t poIndexBuffer_Size;
+        void* poIndexBuffer_Data;
+        GLESBufferVertex* pBufferVertex;
+		GLESBufferVertexIndex* pBufferVertexIndex;
+
+        //Uniform
+        std::vector<ObjectConstants> objectCBs;
+		GLESBufferUniform* poBufferUniform_Object;
+
+        std::vector<MaterialConstants> materialCBs;
+		GLESBufferUniform* poBufferUniform_Material;
+
+		uint32 slotUBO;
+		std::vector<ValueUIntConstants> offsetCBs;
+		GLESBufferUniform* poBufferUniform_Offset;
+
+        std::vector<TessellationConstants> tessellationCBs;
+        GLESBufferUniform* poBufferUniform_Tessellation;
+
+		//Pipeline Graphics
+		GLESStatePipelineGraphics* poStatePipelineGraphics;
+
+        //IndirectCommand 
+        uint32_t countIndirectDraw;
+		std::vector<DrawElementsIndirectCommand> indirectDrawIndexedInstanceCommandCBs;
+		GLESBufferIndirectCommand* poBuffer_IndirectCommand;
+
+    ////Pipeline Graphics
+		void CreatePipelineGraphics();
+
+	////Command
+        void SetupVertexIndexBuffer(const ModelObjectRendPtrVector& _aRends);
+        void SetupUniformIndirectCommandBuffer();
+
+        void UpdateUniformBuffer();
+        void UpdateIndirectCommandBuffer();
+    };
+    typedef std::vector<ModelObjectRendIndirect*> ModelObjectRendIndirectPtrVector;
+    typedef std::map<String, ModelObjectRendIndirect*> ModelObjectRendIndirectPtrMap;
+    
+
+    /////////////////////////// ModelObject /////////////////////////
+	struct ModelObject
+	{
+		ModelObject(OpenGLES_013_IndirectDraw* _pWindow,
+					int _index)
+			//Common
+			: pWindow(_pWindow)
+			, index(_index)
+
+			//Name
+			, nameObject("")
+            , nameMesh("")
+			, isShow(true)
+			, isWireFrame(false)
+			, isRotate(true)
+			, isLighting(true)
+			, isIndirectDraw(false)
+            , isIndirectDrawMulti(false)
+
+			//Mesh
+            , pMesh(nullptr)
+
+			//ModelObjectRend
+            , pRendIndirect(nullptr)
+
+		{
+			
+		}
+		~ModelObject()
+		{
+			Destroy();
+		}
+
+		void Destroy()
+		{
+			//Mesh
+            this->pMesh = nullptr;
+            this->aMeshSubUsed.clear();
+
+            //ObjectRend
+            CleanupSwapChain();
+            size_t count = this->aRends.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                ModelObjectRend* pRend = this->aRends[i];
+                delete pRend;
+            }
+            this->aRends.clear();
+            F_DELETE(pRendIndirect)
+		}
+
+		void CleanupSwapChain()
+		{
+			size_t count = this->aRends.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                ModelObjectRend* pRend = this->aRends[i];
+                pRend->CleanupSwapChain();
+            }
+            if (pRendIndirect != nullptr)
+            {
+                pRendIndirect->CleanupSwapChain();
+            }
+		}
+
+		void RecreateSwapChain()
+        {
+			size_t count = this->aRends.size();
+            for (size_t i = 0; i < count; i++)
+            {
+                ModelObjectRend* pRend = this->aRends[i];
+                pRend->RecreateSwapChain();
+            }
+            if (pRendIndirect != nullptr)
+            {
+                pRendIndirect->RecreateSwapChain();
+            }
+        }
+
+		//Common
+		OpenGLES_013_IndirectDraw* pWindow;
+		int index;
+
+		//Name
+		int indexModel;
+		String nameObject;
+        String nameMesh;
+		bool isShow;
+		bool isWireFrame;
+		bool isRotate;
+		bool isLighting;
+		bool isIndirectDraw;
+        bool isIndirectDrawMulti;
+
+		//Mesh
+        Mesh* pMesh;
+
+		std::vector<int> aMeshSubUsed;
+
+        //ModelObjectRend
+        ModelObjectRendPtrVector aRends;
+        ModelObjectRendIndirect* pRendIndirect;
+
+	////Mesh
+        void SetMesh(Mesh* pMesh)
+        {
+            this->pMesh = pMesh;
+        }
+        Mesh* GetMesh()
+        {
+            return this->pMesh;
+        }
+
+	////ModelObjectRend
+        void AddObjectRend(ModelObjectRend* pRend)
+        {
+            this->aRends.push_back(pRend);
+        }
 	};
 	typedef std::vector<ModelObject*> ModelObjectPtrVector;
 	typedef std::map<String, ModelObject*> ModelObjectPtrMap;
 
 public:
-	ModelMeshPtrVector m_aModelMesh;
-    ModelMeshPtrMap m_mapModelMesh;    
+	MeshPtrVector m_aModelMesh;
+    MeshPtrMap m_mapModelMesh;    
 
     GLESTexturePtrVector m_aModelTexture;
     GLESTexturePtrMap m_mapModelTexture;
 
 	ModelObjectPtrVector m_aModelObjects;
-	ModelObjectPtrVector m_aModelObjects_Render;
-	ModelObjectPtrMap m_mapModelObjects;
+    ModelObjectPtrMap m_mapModelObjects;
+    ModelObjectRendPtrVector m_aModelObjectRends_All;
+    ModelObjectRendPtrVector m_aModelObjectRends_Opaque;
+    ModelObjectRendPtrVector m_aModelObjectRends_Transparent;
+    bool m_isDrawIndirect;
+    bool m_isDrawIndirectMulti;
 
 	GLESShaderPtrVector m_aGLESShaderModules;
     GLESShaderPtrMap m_mapGLESShaderModules;
@@ -347,6 +530,8 @@ public:
 
 protected:
 	//Create Pipeline
+		virtual void setUpEnabledFeatures();
+
 
 	//Load Assets
 		//Camera
@@ -354,6 +539,7 @@ protected:
 
 		//Geometry/Texture
 		virtual void loadModel_Custom();
+			void createIndirectCommands();
 
 		//ConstBuffers
 		virtual void createCustomCB();
@@ -365,6 +551,12 @@ protected:
 
 		//DescriptorSets
 		virtual void createDescriptorSets_Custom();
+			void createDescriptorSets_Graphics(ModelObjectRend* pRend,
+											   GLESStatePipelineGraphics* pStatePipelineGraphics,
+											   GLESBufferUniform* pBufferUniform_Object,
+											   GLESBufferUniform* pBufferUniform_Material,
+											   GLESBufferUniform* pBufferUniform_Offset,
+											   GLESBufferUniform* pBufferUniform_Tessellation);
 
 	//Compute/Update
 		virtual void updateCompute_BeforeRender_Custom();
@@ -389,10 +581,10 @@ protected:
 private:
     void rebuildInstanceCBs(bool isCreateBuffer);
 
-////ModelMesh
+////Mesh
     void destroyMeshes();
     void createMeshes();
-    ModelMesh* findMesh(const String& nameMesh);
+    Mesh* findMesh(const String& nameMesh);
 
 ////Texture
     void destroyTextures();
@@ -409,6 +601,12 @@ private:
 	void createDescriptorSetLayouts();
 	DescriptorSetLayout* findDescriptorSetLayout(const String& nameDescriptorSetLayout);
 	
+////Draw
+    void drawModelObjectRends(ModelObjectRendPtrVector& aRends);
+    void drawModelObjectRend(ModelObjectRend* pRend);
+
+	void drawModelObjectRendIndirects(ModelObjectRendPtrVector& aRends);
+    void drawModelObjectRendIndirect(ModelObjectRendIndirect* pRendIndirect);
 };
 
 

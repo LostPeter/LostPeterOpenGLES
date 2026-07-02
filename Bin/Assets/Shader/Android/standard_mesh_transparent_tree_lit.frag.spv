@@ -292,7 +292,7 @@ void main()
     color = colorLight * colorTexture.xyz * colorVertex;
 
 	//Final Alpha
-    float alpha = mat.alpha * colorTexture.w;
+    float alpha = mat.lighting.y * colorTexture.w;
 
     outColor = vec4(color.xyz, alpha);
 }
