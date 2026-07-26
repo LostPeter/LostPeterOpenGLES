@@ -132,7 +132,10 @@ License:
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_007_stencil.png)
 
 ### <008> opengles_008_blend
+[OpenGLES学习例子008: opengles_008_blend 混合操作](https://zhuanlan.zhihu.com/p/2054557841994920685)
+* sample008: Use blend state to render transparent effect
 
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_008_blend.png)
 
 ### <009> opengles_009_instancing
 

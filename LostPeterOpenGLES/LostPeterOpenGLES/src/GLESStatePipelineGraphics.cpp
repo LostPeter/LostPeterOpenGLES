@@ -360,6 +360,7 @@ namespace LostPeterOpenGLES
 		bindStateDepth(this->poDepthEnabled);
 		bindStateStencil(this->poStencilEnabled);
 		bindStateBlend(this->poBlendEnabled);
+		pWindow->setColorMask(this->poColorWriteMask_Red, this->poColorWriteMask_Green, this->poColorWriteMask_Blue, this->poColorWriteMask_Alpha);
 	}
 	void GLESStatePipelineGraphics::UnBindState()
 	{
