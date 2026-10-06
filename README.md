@@ -138,7 +138,10 @@ License:
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_008_blend.png)
 
 ### <009> opengles_009_instancing
+[OpenGLES学习例子009: opengles_009_instancing 实例渲染](https://zhuanlan.zhihu.com/p/2087297432086492715)
+* sample009: OpenGLES instance rendering
 
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_009_instancing.png)
 
 ### <010> opengles_010_lighting
 
