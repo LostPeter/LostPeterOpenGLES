@@ -49,6 +49,7 @@ else
     build_type="Release"
     isDebug=0
 fi
+name_lib_src="lib"$name_project".a"
 
 ################################ Compile armv7a ################################
 
@@ -69,6 +70,7 @@ rm -rf "../Lib/Android/"$name_armv8a"/"$name_lib
 
 # NDK
 NDKABI_armv8a=21
+ndk_bin="${ANDROID_NDK}/toolchains/llvm/prebuilt/darwin-x86_64/bin"
 
 cd ..
 cd Build
@@ -84,12 +86,14 @@ cmake -DDEBUG=$isDebug ../../../../Sources/$name/ \
     -DANDROID_ABI=arm64-v8a \
     -DANDROID_NDK=${ANDROID_NDK} \
     -DANDROID_NATIVE_API_LEVEL=$NDKABI_armv8a \
-    -DANDROID_TOOLCHAIN=clang 
+    -DANDROID_TOOLCHAIN=clang \
+    -DCMAKE_AR:FILEPATH="${ndk_bin}/llvm-ar" \
+    -DCMAKE_RANLIB:FILEPATH="${ndk_bin}/llvm-ranlib"
 
 make
 
 # Copy
-cp -rf "./libimgui-1.85_gles3_android.a" "../../../../Lib/Android/"$name_armv8a"/"$name_lib
+cp -rf "./$name_lib_src" "../../../../Lib/Android/"$name_armv8a"/"$name_lib
 
 
 cd ..

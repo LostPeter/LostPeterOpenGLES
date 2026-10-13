@@ -26,4 +26,3 @@ rebuild=${2}
 ./Build_MacOS_Android_lib_glad.sh 3.2 $debug $rebuild
 ./Build_MacOS_Android_lib_imgui.sh $debug $rebuild
 ./Build_MacOS_Android_lib_assimp.sh $debug $rebuild
-./Build_MacOS_Android_lib_zthread.sh $debug $rebuild

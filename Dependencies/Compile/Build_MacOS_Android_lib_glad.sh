@@ -45,6 +45,7 @@ rm -rf "../Lib/Android/"$name_armv8a"/"$name_lib
 
 # NDK
 NDKABI_armv8a=21
+ndk_bin="${ANDROID_NDK}/toolchains/llvm/prebuilt/darwin-x86_64/bin"
 
 cd ..
 cd Build
@@ -56,12 +57,15 @@ cmake -DDEBUG=$isDebug ../../../../Sources/$name/ \
     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
     -DCMAKE_BUILD_TYPE=$build_type \
     -DANDROID=1 \
+    -DANDROID_PLATFORM=android-21 \
     -DANDROID_ABI=arm64-v8a \
     -DANDROID_NDK=${ANDROID_NDK} \
     -DANDROID_NATIVE_API_LEVEL=$NDKABI_armv8a \
     -DANDROID_TOOLCHAIN=clang \
     -DBUILD_SHARED_LIBS=0 \
-    -DANDROID_ARMV8A=1
+    -DANDROID_ARMV8A=1 \
+    -DCMAKE_AR:FILEPATH="${ndk_bin}/llvm-ar" \
+    -DCMAKE_RANLIB:FILEPATH="${ndk_bin}/llvm-ranlib"
 
 make
 

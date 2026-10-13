@@ -44,14 +44,10 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
+            version (project.findProperty("nativeCmakeVersion") ?: "3.30.9")
         }
     }
-
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['../../../Plugins/Android']
-        }
-    }
+    
 }
 
 dependencies {
