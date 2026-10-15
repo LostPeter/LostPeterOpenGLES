@@ -91,15 +91,15 @@ cd %name_project%
 
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 -DZLIB_INCLUDE_DIR=%dirZlibInclude% -DZLIB_LIBRARY=%dirDependencyLib_d% ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ./zziplib.sln /p:configuration=debug /p:platform=ARM64
-    copy /Y ".\zzip\Debug\libzzip.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
-    copy /Y ".\zzipwrap\Debug\libzzipwrap.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib_wrap%
+    cmake -DDEBUG=1 -DZLIB_INCLUDE_DIR=%dirZlibInclude% -DZLIB_LIBRARY=%dirDependencyLib_d% ../../../../Sources/%name%/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake --build . --target libzzip libzzipwrap
+    copy /Y ".\zzip\libzzip.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    copy /Y ".\zzipwrap\libzzipwrap.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib_wrap%
 ) else (
-    cmake -DZLIB_INCLUDE_DIR=%dirZlibInclude% -DZLIB_LIBRARY=%dirDependencyLib% ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ./zziplib.sln /p:configuration=release /p:platform=ARM64
-    copy /Y ".\zzip\Release\libzzip-0.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
-    copy /Y ".\zzipwrap\Release\libzzipwrap-0.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib_wrap%
+    cmake -DZLIB_INCLUDE_DIR=%dirZlibInclude% -DZLIB_LIBRARY=%dirDependencyLib% ../../../../Sources/%name%/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake --build . --target libzzip libzzipwrap
+    copy /Y ".\zzip\libzzip-0.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    copy /Y ".\zzipwrap\libzzipwrap-0.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib_wrap%
 )
 
 

@@ -74,13 +74,13 @@ cd %name_project%
 
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_static -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ./Assimp.sln /p:configuration=debug /p:platform=ARM64
-    copy /Y ".\lib\Debug\libassimpd.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_static -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake --build . --target assimp
+    copy /Y ".\lib\libassimpd.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_static -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ./Assimp.sln /p:configuration=release /p:platform=ARM64
-    copy /Y ".\lib\Release\libassimp.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake ../../../../Sources/%name%/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_static -DANDROID_CPP_FEATURES="rtti exceptions" -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake --build . --target assimp
+    copy /Y ".\lib\libassimp.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 )
 
 

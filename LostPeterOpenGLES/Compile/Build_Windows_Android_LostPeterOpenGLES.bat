@@ -32,7 +32,7 @@ if "%debug%" == "debug" (
 
 
 @REM 1) Build LostPeterFoundation
-call ./Build_Windows_LostPeterFoundation.bat %debug% %rebuild%
+cmd /c Build_Windows_Android_LostPeterFoundation.bat %debug% %rebuild%
 
 
 @REM 2) Build LostPeterOpenGLES
@@ -76,13 +76,13 @@ cd %name_project%
 
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 ../../../../LostPeterOpenGLES/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_shared -DANDROID_CPP_FEATURES="rtti exceptions"
-    msbuild %name_project%.sln /p:configuration=debug /p:platform=ARM64
-    copy /Y ".\Debug\%name_lib%" "..\..\..\..\..\Plugins\Android\"%name_armv8a%"\"%name_lib%
+    cmake -DDEBUG=1 ../../../../LostPeterOpenGLES/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_shared -DANDROID_CPP_FEATURES="rtti exceptions"
+    cmake --build .
+    copy /Y ".\%name_lib%" "..\..\..\..\..\Plugins\Android\"%name_armv8a%"\"%name_lib%
 ) else (
-    cmake ../../../../LostPeterOpenGLES/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_shared -DANDROID_CPP_FEATURES="rtti exceptions"
-    msbuild %name_project%.sln /p:configuration=release /p:platform=ARM64
-    copy /Y ".\Release\%name_lib%" "..\..\..\..\..\Plugins\Android\"%name_armv8a%"\"%name_lib%
+    cmake ../../../../LostPeterOpenGLES/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DANDROID_STL=c++_shared -DANDROID_CPP_FEATURES="rtti exceptions"
+    cmake --build .
+    copy /Y ".\%name_lib%" "..\..\..\..\..\Plugins\Android\"%name_armv8a%"\"%name_lib%
 )
 
 

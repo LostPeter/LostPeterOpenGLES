@@ -73,13 +73,13 @@ cd %name_armv8a%
 cd %name_project%
 
 if "%debug%" == "debug" (
-    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ./cpuid.sln /p:configuration=debug /p:platform=ARM64
-    copy /Y ".\libcpuid\Debug\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake -DDEBUG=1 ../../../../Sources/%name%/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake --build . --target cpuid
+    copy /Y ".\libcpuid\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 ) else (
-    cmake ../../../../Sources/%name%/ -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
-    msbuild ./cpuid.sln /p:configuration=release /p:platform=ARM64
-    copy /Y ".\libcpuid\Release\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
+    cmake ../../../../Sources/%name%/ -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=%NDKPATH%/build/cmake/android.toolchain.cmake -DCMAKE_BUILD_TYPE=%build_type% -DANDROID=1 -DANDROID_ABI=arm64-v8a -DANDROID_NDK=%NDKPATH% -DANDROID_NATIVE_API_LEVEL=%NDKABI_armv8a% -DANDROID_TOOLCHAIN=clang -DBUILD_SHARED_LIBS=0 -DANDROID_ARMV8A=1
+    cmake --build . --target cpuid
+    copy /Y ".\libcpuid\libcpuid.a" "..\..\..\..\Lib\Android\"%name_armv8a%"\"%name_lib%
 )
 
 
