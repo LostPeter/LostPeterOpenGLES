@@ -5726,7 +5726,214 @@ namespace LostPeterOpenGLES
                         }
                             void OpenGLESWindow::lightConfigItem(LightConstants& lc, const String& name, int index, bool canChangeType, bool bIsMainLight)
                             {
+                                struct EnumLightDesc { LightType Value; const char* Name; const char* Tooltip; };
+                                static const EnumLightDesc s_aLightDescs[] =
+                                {
+                                    { Light_Directional,     "Directional",      "Directional Light" },
+                                    { Light_Point,           "Point",            "Point Light" },
+                                    { Light_Spot,            "Spot",             "Spot Light" },
+                                };
 
+                                struct EnumLightingDesc { LightingType Value; const char* Name; const char* Tooltip; };
+                                static const EnumLightingDesc s_aLightingDescs[] =
+                                {
+                                    { Lighting_None,                                     "None",                                     "None Lighting" },
+                                    { Lighting_Ambient,                                  "Ambient",                                  "Ambient Lighting" },
+                                    { Lighting_DiffuseLambert,                           "DiffuseLambert",                           "DiffuseLambert Lighting" },
+                                    { Lighting_SpecularPhong,                            "SpecularPhong",                            "SpecularPhong Lighting" },
+                                    { Lighting_SpecularBlinnPhong,                       "SpecularBlinnPhong",                       "SpecularBlinnPhong Lighting" },
+                                    { Lighting_AmbientDiffuseLambert,                    "AmbientDiffuseLambert",                    "AmbientDiffuseLambert Lighting" },
+                                    { Lighting_AmbientSpecularPhong,                     "AmbientSpecularPhong",                     "AmbientSpecularPhong Lighting" },
+                                    { Lighting_AmbientSpecularBlinnPhong,                "AmbientSpecularBlinnPhong",                "AmbientSpecularBlinnPhong Lighting" },
+                                    { Lighting_DiffuseLambertSpecularPhong,              "DiffuseLambertSpecularPhong",              "DiffuseLambertSpecularPhong Lighting" },
+                                    { Lighting_DiffuseLambertSpecularBlinnPhong,         "DiffuseLambertSpecularBlinnPhong",         "DiffuseLambertSpecularBlinnPhong Lighting" },
+                                    { Lighting_AmbientDiffuseLambertSpecularPhong,       "AmbientDiffuseLambertSpecularPhong",       "AmbientDiffuseLambertSpecularPhong Lighting" },
+                                    { Lighting_AmbientDiffuseLambertSpecularBlinnPhong,  "AmbientDiffuseLambertSpecularBlinnPhong",  "AmbientDiffuseLambertSpecularBlinnPhong Lighting" },
+                                };
+                                
+                                if (ImGui::CollapsingHeader(name.c_str()))
+                                {
+                                    //Light Enable
+                                    bool isEnable = lc.common.y == 0.0f ? false : true;
+                                    String nameEnable = "LightEnable - " + FUtilString::SaveInt(index);
+                                    if (ImGui::Checkbox(nameEnable.c_str(), &isEnable))
+                                    {   
+                                        lc.common.y = isEnable ? 1.0f : 0.0f;
+                                    }
+                                    ImGui::Spacing();
+
+                                    //Light Type
+                                    {
+                                        int nIndex = 0;
+                                        for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightDescs); nIndex++)
+                                        {
+                                            if (s_aLightDescs[nIndex].Value == lc.common.x)
+                                                break;
+                                        }
+                                        const char* preview_text = s_aLightDescs[nIndex].Name;
+                                        String nameType = "LightType - " + FUtilString::SaveInt(index);
+                                        if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                        {
+                                            for (int j = 0; j < IM_ARRAYSIZE(s_aLightDescs); j++)
+                                            {
+                                                if (ImGui::Selectable(s_aLightDescs[j].Name, nIndex == j))
+                                                {
+                                                    if (canChangeType)
+                                                    {
+                                                        lc.common.x = (float)((int)(s_aLightDescs[j].Value));
+                                                    }
+                                                    break;
+                                                }
+                                            }
+                                            ImGui::EndCombo();
+                                        }
+                                    }
+                                    ImGui::Spacing();
+
+                                    //Lighting Type
+                                    {
+                                        int nIndex = 0;
+                                        for (nIndex = 0; nIndex < IM_ARRAYSIZE(s_aLightingDescs); nIndex++)
+                                        {
+                                            if (s_aLightingDescs[nIndex].Value == lc.common.z)
+                                                break;
+                                        }
+                                        const char* preview_text = s_aLightingDescs[nIndex].Name;
+                                        String nameType = "LightingType - " + FUtilString::SaveInt(index);
+                                        if (ImGui::BeginCombo(nameType.c_str(), preview_text))
+                                        {
+                                            for (int j = 0; j < IM_ARRAYSIZE(s_aLightingDescs); j++)
+                                            {
+                                                if (ImGui::Selectable(s_aLightingDescs[j].Name, nIndex == j))
+                                                {
+                                                    lc.common.z = (float)((int)(s_aLightingDescs[j].Value));
+                                                    break;
+                                                }
+                                            }
+                                            ImGui::EndCombo();
+                                        }
+                                    }
+                                    ImGui::Spacing();
+
+                                    //position
+                                    FVector3 vPosition(lc.position.x, lc.position.y, lc.position.z);
+                                    String namePosition = "Position - " + FUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat3(namePosition.c_str(), &vPosition[0], 0.01f, -FLT_MAX, FLT_MAX))
+                                    {
+                                        lc.position.x = vPosition.x;
+                                        lc.position.y = vPosition.y;
+                                        lc.position.z = vPosition.z;
+
+                                        if (bIsMainLight)
+                                        {
+                                            this->pCameraMainLight->SetPos(vPosition);
+                                            this->pCameraMainLight->UpdateViewMatrix();
+                                        }
+                                    }
+                                    ImGui::Spacing();
+
+                                    //Euler Angle
+                                    String nameEulerAngle = "EulerAngle - " + FUtilString::SaveInt(index);
+                                    FVector3 vEulerAngle = FMath::ToEulerAngles(FVector3(lc.direction.x, lc.direction.y, lc.direction.z));
+                                    if (ImGui::DragFloat3(nameEulerAngle.c_str(), &vEulerAngle[0], 0.1f, -180, 180))
+                                    {
+                                        FVector3 dir = FMath::ToDirection(vEulerAngle);
+                                        lc.direction.x = dir.x; 
+                                        lc.direction.y = dir.y; 
+                                        lc.direction.z = dir.z; 
+
+                                        if (bIsMainLight)
+                                        {
+                                            this->pCameraMainLight->SetEulerAngles(vEulerAngle);
+                                            this->pCameraMainLight->UpdateViewMatrix();
+                                        }
+                                    }
+                                    //direction
+                                    FVector3 vDirection = lc.direction;
+                                    String nameDirection = "Direction - " + FUtilString::SaveInt(index);
+                                    if (ImGui::DragFloat3(nameDirection.c_str(), &vDirection[0], 0.0001f, -1.0f, 1.0f))
+                                    {
+                                        
+                                    }
+                                    ImGui::Spacing();
+
+                                    //ambient
+                                    String nameAmbient = "Ambient - " + FUtilString::SaveInt(index);
+                                    if (ImGui::ColorEdit4(nameAmbient.c_str(), (float*)&lc.ambient))
+                                    {
+
+                                    }
+                                    ImGui::Spacing();
+
+                                    //diffuse
+                                    String nameDiffuse = "Diffuse - " + FUtilString::SaveInt(index);
+                                    if (ImGui::ColorEdit4(nameDiffuse.c_str(), (float*)&lc.diffuse))
+                                    {
+
+                                    }
+                                    ImGui::Spacing();
+
+                                    //specular
+                                    String nameSpecular = "Specular - " + FUtilString::SaveInt(index);
+                                    if (ImGui::ColorEdit4(nameSpecular.c_str(), (float*)&lc.specular))
+                                    {
+
+                                    }
+                                    ImGui::Spacing();
+
+                                    if (lc.common.x == (int)Light_Directional)
+                                    {
+                                        
+                                    }
+                                    else if (lc.common.x == (int)Light_Point)
+                                    {
+                                        //falloffStart
+                                        float fFalloffStart = lc.position.w;
+                                        String nameFalloffStart = "FalloffStart - " + FUtilString::SaveInt(index);
+                                        if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
+                                        {
+                                            lc.position.w = fFalloffStart;
+                                        }
+                                        ImGui::Spacing();
+
+                                        //falloffEnd
+                                        float fFalloffEnd = lc.direction.w;
+                                        String nameFalloffEnd = "FalloffEnd - " + FUtilString::SaveInt(index);
+                                        if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
+                                        {
+                                            lc.direction.w = fFalloffEnd;
+                                        }
+                                    }
+                                    else if (lc.common.x == (int)Light_Spot)
+                                    {
+                                        //falloffStart
+                                        float fFalloffStart = lc.position.w;
+                                        String nameFalloffStart = "FalloffStart - " + FUtilString::SaveInt(index);
+                                        if (ImGui::DragFloat(nameFalloffStart.c_str(), &fFalloffStart, 0.001f, 0.01f, 10.0f))
+                                        {
+                                            lc.position.w = fFalloffStart;
+                                        }
+                                        ImGui::Spacing();
+
+                                        //falloffEnd
+                                        float fFalloffEnd = lc.direction.w;
+                                        String nameFalloffEnd = "FalloffEnd - " + FUtilString::SaveInt(index);
+                                        if (ImGui::DragFloat(nameFalloffEnd.c_str(), &fFalloffEnd, 0.001f, 0.01f, 10.0f))
+                                        {
+                                            lc.direction.w = fFalloffEnd;
+                                        }
+                                        ImGui::Spacing();
+
+                                        //spotPower
+                                        float fSpotPower = lc.common.w;
+                                        String nameSpotPower = "SpotPower - " + FUtilString::SaveInt(index);
+                                        if (ImGui::DragFloat(nameSpotPower.c_str(), &fSpotPower, 0.01f, 0.1f, 200.0f))
+                                        {
+                                            lc.common.w = fSpotPower;
+                                        }
+                                    }
+                                    
+                                }
                             }
                             void OpenGLESWindow::lightMainReset()
                             {
