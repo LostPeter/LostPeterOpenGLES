@@ -144,7 +144,10 @@ License:
 ![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_009_instancing.png)
 
 ### <010> opengles_010_lighting
+[OpenGLES学习例子010: opengles_010_lighting 经典Lambert/Phong/Blinn-Phong光照](https://zhuanlan.zhihu.com/p/2094892174781462431)
+* sample010: OpenGLES classic lighting model, Ambient, Lambert Diffuse, Phong Specular, Blinn-Phong Specular
 
+![image](https://github.com/LostPeter/LostPeterOpenGLES/blob/main/Images/opengles_010_lighting.png)
 
 ### <011> opengles_011_texturing
 
